@@ -1,11 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useLogin } from "@/hooks/useLogin";
 
 type LoginTab = "otp" | "email";
 
-export function LoginForm() {
+type LoginFormProps = {
+    onSwitchToRegister?: () => void;
+    onLoginSuccess?: () => void;
+};
+
+export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps) {
     const [activeTab, setActiveTab] = useState<LoginTab>("otp");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -37,6 +43,7 @@ export function LoginForm() {
             if (success) {
                 setEmail("");
                 setPassword("");
+                onLoginSuccess?.();
             }
 
             return;
@@ -52,13 +59,14 @@ export function LoginForm() {
             setMobile("");
             setOtp("");
             setOtpSent(false);
+            onLoginSuccess?.();
         }
     }
 
     return (
         <div className="mx-auto flex w-full max-w-md flex-col gap-6 p-0 mt-6 rounded-xl border border-slate-200 bg-slate-50">
-            <div className="flex flex-col bg-primary-light text-white py-3">
-                <h1 className="mt-2 text-center font-semibold text-white">Welcome to Mukurtham</h1>
+            <div className="flex flex-col bg-primary-light text-white px-6 py-6 rounded-tl-xl rounded-tr-xl">
+                <h1 className="mt-2 mb-6 text-center font-semibold text-white">Welcome to Mukurtham</h1>
                 <p className="mt-1 text-center text-sm text-white">
                     Sign in to manage bookings, wishlist & wedding plans
                 </p>
@@ -173,10 +181,25 @@ export function LoginForm() {
                     <button
                         type="submit"
                         disabled={loading || (activeTab === "otp" && !otpSent)}
-                        className="w-full cursor-pointer bg-primary hover:bg-primary-light rounded-xl mb-6 px-4 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-secondary-light"
+                        className="w-full cursor-pointer bg-primary hover:bg-primary-light rounded-xl mb-5 px-4 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-secondary-light"
                     >
                         {loading ? "Signing in..." : activeTab === "otp" ? "Verify & Login" : "Sign in"}
                     </button>
+
+                    {onSwitchToRegister ? (
+                        <button
+                            type="button"
+                            onClick={onSwitchToRegister}
+                            className="mb-6 text-center text-sm font-medium text-primary transition hover:text-primary hover:text-primary-dark"
+                        >
+                            Create an account
+                        </button>
+                    ) : (
+                        <Link href="/register" className="hover:text-primary hover:text-primary-dark mb-6 text-center text-sm font-medium text-primary transition">
+                            Create an account
+                        </Link>
+                    )}
+
                 </form>
             </div>
         </div>
