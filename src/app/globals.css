@@ -23,6 +23,8 @@
   --color-primary: #A2004B;
   --color-primary-light: #C2185B;
   --color-primary-dark: #7A0038;
+
+  --color-secondary-light: #c64d84;
 }
 
 body {

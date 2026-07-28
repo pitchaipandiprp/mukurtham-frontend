@@ -3,65 +3,182 @@
 import { FormEvent, useState } from "react";
 import { useLogin } from "@/hooks/useLogin";
 
+type LoginTab = "otp" | "email";
+
 export function LoginForm() {
+    const [activeTab, setActiveTab] = useState<LoginTab>("otp");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { login, loading, error } = useLogin();
+    const [mobile, setMobile] = useState("");
+    const [otp, setOtp] = useState("");
+    const {
+        loginWithEmail,
+        loginWithOtp,
+        sendOtp,
+        loading,
+        sendingOtp,
+        error,
+        setError,
+        otpSent,
+        setOtpSent,
+        resendCountdown,
+    } = useLogin();
+
+    async function handleSendOtp() {
+        await sendOtp(mobile);
+    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        const success = await login(email, password);
+        if (activeTab === "email") {
+            const success = await loginWithEmail(email, password);
+
+            if (success) {
+                setEmail("");
+                setPassword("");
+            }
+
+            return;
+        }
+
+        if (!otpSent) {
+            return;
+        }
+
+        const success = await loginWithOtp(mobile, otp);
 
         if (success) {
-            setEmail("");
-            setPassword("");
+            setMobile("");
+            setOtp("");
+            setOtpSent(false);
         }
     }
 
     return (
-        <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-6 py-12">
-            <div>
-                <h1 className="mt-2 text-3xl font-semibold text-slate-950">Login</h1>
+        <div className="mx-auto flex w-full max-w-md flex-col gap-6 p-0 mt-6 rounded-xl border border-slate-200 bg-slate-50">
+            <div className="flex flex-col bg-primary-light text-white py-3">
+                <h1 className="mt-2 text-center font-semibold text-white">Welcome to Mukurtham</h1>
+                <p className="mt-1 text-center text-sm text-white">
+                    Sign in to manage bookings, wishlist & wedding plans
+                </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <label className="block text-sm font-medium text-slate-700">
-                    Email
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-slate-900"
-                        placeholder="you@example.com"
-                    />
-                    {error && !email ? (
-                        <p className="text-sm text-rose-600">Email is required</p>
-                    ) : null}
-                </label>
-
-                <label className="block text-sm font-medium text-slate-700">
-                    Password
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-slate-900"
-                        placeholder="Enter your password"
-                    />
-                    {error && !password ? (
-                        <p className="text-sm text-rose-600">Password is required</p>
-                    ) : null}
-                </label>
-
+            <div className="flex">
                 <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full cursor-pointer bg-primary hover:bg-primary-light rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-slate-400"
+                    type="button"
+                    onClick={() => {
+                        setActiveTab("otp");
+                        setError("");
+                        setOtp("");
+                    }}
+                    className={`flex-1 px-4 py-2 text-sm font-semibold transition cursor-pointer ${activeTab === "otp"
+                        ? "border-b-2 border-primary text-primary"
+                        : "border-b-2 border-transparent text-slate-600 hover:text-slate-900"
+                        }`}
                 >
-                    {loading ? "Signing in..." : "Sign in"}
+                    OTP
                 </button>
-            </form>
+                <button
+                    type="button"
+                    onClick={() => {
+                        setActiveTab("email");
+                        setError("");
+                        setOtp("");
+                        setOtpSent(false);
+                    }}
+                    className={`flex-1 px-4 py-2 text-sm font-semibold transition cursor-pointer ${activeTab === "email"
+                        ? "border-b-2 border-primary text-primary"
+                        : "border-b-2 border-transparent text-slate-600 hover:text-slate-900"
+                        }`}
+                >
+                    Email
+                </button>
+            </div>
+            <div className="px-6 py-1">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    {activeTab === "email" ? (
+                        <>
+                            <label className="block text-sm font-medium text-slate-700">
+                                Email
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(event) => setEmail(event.target.value)}
+                                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-primary-light"
+                                    placeholder="you@example.com"
+                                />
+                            </label>
+
+                            <label className="block text-sm font-medium text-slate-700">
+                                Password
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(event) => setPassword(event.target.value)}
+                                    className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-primary-light"
+                                    placeholder="Enter your password"
+                                />
+                            </label>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex items-end gap-2">
+                                <label className="block flex-1 text-sm font-medium text-slate-700">
+                                    Mobile Number
+                                    <input
+                                        type="tel"
+                                        value={mobile}
+                                        onChange={(event) => setMobile(event.target.value)}
+                                        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-primary-light"
+                                        placeholder="Enter your mobile number"
+                                    />
+                                </label>
+
+                                <button
+                                    type="button"
+                                    onClick={handleSendOtp}
+                                    disabled={sendingOtp || !mobile || (otpSent && resendCountdown > 0)}
+                                    className="whitespace-nowrap cursor-pointer rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light disabled:cursor-not-allowed disabled:bg-secondary-light"
+                                >
+                                    {sendingOtp
+                                        ? "Sending..."
+                                        : otpSent && resendCountdown > 0
+                                            ? `Resend OTP in ${resendCountdown}s`
+                                            : otpSent
+                                                ? "Resend OTP"
+                                                : "Send OTP"}
+                                </button>
+                            </div>
+
+                            {otpSent ? (
+                                <label className="block text-sm font-medium text-slate-700">
+                                    OTP
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        maxLength={6}
+                                        value={otp}
+                                        onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
+                                        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-primary-light"
+                                        placeholder="Enter 6-digit OTP"
+                                    />
+                                </label>
+                            ) : null}
+                        </>
+                    )}
+
+                    {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+
+                    <button
+                        type="submit"
+                        disabled={loading || (activeTab === "otp" && !otpSent)}
+                        className="w-full cursor-pointer bg-primary hover:bg-primary-light rounded-xl mb-6 px-4 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:bg-secondary-light"
+                    >
+                        {loading ? "Signing in..." : activeTab === "otp" ? "Verify & Login" : "Sign in"}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

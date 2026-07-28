@@ -54,7 +54,7 @@ export function setAuthData(data: any): void {
     }
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
-    localStorage.setItem("user",JSON.stringify(data.user));
+    localStorage.setItem("user", JSON.stringify(data.user));
 }
 
 export function clearAuthData(): void {
