@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import ContactUs from "@/components/pages/about/contact-us";
 
 export const metadata: Metadata = {
     title: "Mukurtham - Contact Us",
@@ -6,7 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function ContactUsPage() {
-    return (
-        <h3>Contact Us</h3>
-    );
+    return <ContactUs />
 }

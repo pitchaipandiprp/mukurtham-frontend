@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import AboutUs from "@/components/pages/about/about-us";
 
 export const metadata: Metadata = {
     title: "Mukurtham - About Us",
@@ -6,7 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AboutUsPage() {
-    return (
-        <h3>About Us</h3>
-    );
+    return <AboutUs />;
 }
