@@ -6,7 +6,7 @@ const success = (message?: string, title = "Success") => {
         title,
         text: message,
         confirmButtonText: "OK",
-        confirmButtonColor: "#198754",
+        confirmButtonColor: "#A2004B",
     });
 };
 
@@ -36,7 +36,7 @@ const info = (message?: string, title = "Info") => {
         title,
         text: message,
         confirmButtonText: "OK",
-        confirmButtonColor: "#0dcaf0",
+        confirmButtonColor: "#A2004B",
     });
 };
 
@@ -50,8 +50,8 @@ const confirm = (message?: string, title = "Confirm") => {
         cancelButtonText: "No",
         width: "350px",
         padding: "1rem",
-        confirmButtonColor: "#0d6efd",
-        cancelButtonColor: "#dc3545",
+        confirmButtonColor: "#A2004B",
+        cancelButtonColor: "#c64d84",
     });
 };
 

@@ -102,7 +102,7 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
 
     return (
         <div className="mx-auto mt-6 flex w-full max-w-md flex-col gap-6 rounded-xl border border-slate-200 bg-slate-50 p-0">
-            <div className="flex flex-col bg-primary-light px-6 py-6 text-white rounded-tl-xl rounded-tr-xl">
+            <div className="flex flex-col bg-primary px-6 py-6 text-white rounded-tl-xl rounded-tr-xl">
                 <h1 className="mt-2 mb-2 text-center font-semibold text-white">Create your Mukurtham account</h1>
                 <p className="mt-1 text-center text-sm text-white">
                     Register to manage bookings, wishlist & wedding plans
@@ -196,12 +196,12 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
                         <button
                             type="button"
                             onClick={onSwitchToLogin}
-                            className="mb-5 text-center text-sm font-medium text-primary transition hover:text-primary hover:text-primary-dark"
+                            className="cursor-pointer mb-5 text-center text-sm font-medium text-primary transition hover:text-primary hover:text-primary-dark"
                         >
                             Already have an account? Login
                         </button>
                     ) : (
-                        <Link href="/login" className="hover:text-primary hover:text-primary-dark mb-5 text-center text-sm font-medium text-primary transition">
+                        <Link href="/login" className="cursor-pointer hover:text-primary hover:text-primary-dark mb-5 text-center text-sm font-medium text-primary transition">
                             Already have an account? Login
                         </Link>
                     )}

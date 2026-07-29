@@ -65,7 +65,7 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
 
     return (
         <div className="mx-auto flex w-full max-w-md flex-col gap-6 p-0 mt-6 rounded-xl border border-slate-200 bg-slate-50">
-            <div className="flex flex-col bg-primary-light text-white px-6 py-6 rounded-tl-xl rounded-tr-xl">
+            <div className="flex flex-col bg-primary text-white px-6 py-6 rounded-tl-xl rounded-tr-xl">
                 <h1 className="mt-2 mb-6 text-center font-semibold text-white">Welcome to Mukurtham</h1>
                 <p className="mt-1 text-center text-sm text-white">
                     Sign in to manage bookings, wishlist & wedding plans
@@ -190,12 +190,12 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
                         <button
                             type="button"
                             onClick={onSwitchToRegister}
-                            className="mb-6 text-center text-sm font-medium text-primary transition hover:text-primary hover:text-primary-dark"
+                            className="cursor-pointer mb-6 text-center text-sm font-medium text-primary transition hover:text-primary hover:text-primary-dark"
                         >
                             Create an account
                         </button>
                     ) : (
-                        <Link href="/register" className="hover:text-primary hover:text-primary-dark mb-6 text-center text-sm font-medium text-primary transition">
+                        <Link href="/register" className="cursor-pointer hover:text-primary hover:text-primary-dark mb-6 text-center text-sm font-medium text-primary transition">
                             Create an account
                         </Link>
                     )}
