@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { AuthModal } from "@/components/pages/users/auth-modal";
 import { useLogout } from "@/hooks/useLogout";
-import { authUserId } from "@/utils/auth";
 import { useState, useEffect } from "react";
 import { FiMenu, FiX, FiBell, FiChevronDown, FiHeart, FiMapPin, FiMessageCircle, FiSearch, } from "react-icons/fi";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 const navLinks = [
     { label: "Home", href: "/" },
@@ -17,19 +17,10 @@ const navLinks = [
 
 export function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [userId, setUserId] = useState<string | null>(null);
+    const { isAuthenticated } = useAuthUser();
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { logout } = useLogout();
 
-    useEffect(() => {
-        const updateAuth = () => { setUserId(authUserId()); };
-        updateAuth();
-        window.addEventListener("auth-change", updateAuth);
-
-        return () => {
-            window.removeEventListener("auth-change", updateAuth);
-        };
-    }, []);
 
     function goToLogin() {
         setIsAuthModalOpen(true);
@@ -110,7 +101,7 @@ export function Header() {
                             </span>
                         </button>
 
-                        {!userId && (
+                        {!isAuthenticated && (
                             <button
                                 onClick={goToLogin}
                                 type="button"
@@ -120,7 +111,7 @@ export function Header() {
                             </button>
                         )}
 
-                        {userId && (
+                        {isAuthenticated && (
                             <button
                                 onClick={logout}
                                 type="button"
@@ -247,7 +238,7 @@ export function Header() {
 
                                 {/* Login / Logout */}
                                 <div className="mt-4 border-t border-gray-200 pt-4">
-                                    {!userId ? (
+                                    {!isAuthenticated ? (
                                         <button
                                             onClick={() => {
                                                 setIsMobileMenuOpen(false);

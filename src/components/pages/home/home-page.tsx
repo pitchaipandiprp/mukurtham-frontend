@@ -1,8 +1,39 @@
+"use client";
+
 import { FaBuilding, FaCamera, FaUtensils, FaPaintBrush, FaSpa, FaCar, FaMusic, FaEnvelopeOpenText, FaEllipsisH } from "react-icons/fa";
 import { FiMapPin, FiSearch, FiCheckCircle, FiTag, FiCreditCard } from "react-icons/fi";
-
+import commonService from "@/services/common/common.service";
+import { useEffect, useState } from "react";
+import * as FaIcons from "react-icons/fa";
+import type { IconType } from "react-icons";
 
 export function HomePage() {
+
+    const [categoryList, setCategoryList] = useState<any[]>([]);
+
+    const categoryColors = [
+        "bg-rose-100/60 text-rose-600",
+        "bg-blue-100/60 text-blue-600",
+        "bg-orange-100/60 text-orange-600",
+        "bg-pink-100/60 text-pink-600",
+        "bg-green-100/60 text-green-600",
+        "bg-indigo-100/60 text-indigo-600",
+        "bg-emerald-100/60 text-emerald-600",
+        "bg-red-100/60 text-red-600",
+    ];
+
+    useEffect(() => {
+        async function loadCategories() {
+            try {
+                const categories = await commonService.getCategories();
+                setCategoryList(categories?.data);
+            } catch (error) {
+                console.error("Failed to load categories:", error);
+            }
+        }
+        loadCategories();
+    }, []);
+
     return (
         <main className="mx-auto max-w-screen-2xl space-y-12 px-4 py-6 sm:px-6 lg:px-8">
             {/* Hero Section */}
@@ -77,54 +108,29 @@ export function HomePage() {
                 </div>
 
                 <div className="grid grid-cols-4 gap-4 text-center md:grid-cols-9">
-                    <div className="group flex cursor-pointer flex-col items-center space-y-2">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-100/60 text-primary transition group-hover:bg-primary group-hover:text-white">
-                            <FaBuilding aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700">Wedding Halls</span>
-                    </div>
-                    <div className="group flex cursor-pointer flex-col items-center space-y-2">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-100/60 text-purple-600 transition group-hover:bg-primary group-hover:text-white">
-                            <FaCamera aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700">Photography</span>
-                    </div>
-                    <div className="group flex cursor-pointer flex-col items-center space-y-2">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100/60 text-amber-600 transition group-hover:bg-primary group-hover:text-white">
-                            <FaUtensils aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700">Catering</span>
-                    </div>
-                    <div className="group flex cursor-pointer flex-col items-center space-y-2">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100/60 text-emerald-600 transition group-hover:bg-primary group-hover:text-white">
-                            <FaPaintBrush aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700">Decoration</span>
-                    </div>
-                    <div className="group flex cursor-pointer flex-col items-center space-y-2">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-100/60 text-teal-600 transition group-hover:bg-primary group-hover:text-white">
-                            <FaSpa aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700">Beautician</span>
-                    </div>
-                    <div className="group flex cursor-pointer flex-col items-center space-y-2">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100/60 text-blue-600 transition group-hover:bg-primary group-hover:text-white">
-                            <FaCar aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700">Transport</span>
-                    </div>
-                    <div className="group flex cursor-pointer flex-col items-center space-y-2">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-pink-100/60 text-pink-600 transition group-hover:bg-primary group-hover:text-white">
-                            <FaMusic aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700">DJ & Music</span>
-                    </div>
-                    <div className="group flex cursor-pointer flex-col items-center space-y-2">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100/60 text-indigo-600 transition group-hover:bg-primary group-hover:text-white">
-                            <FaEnvelopeOpenText aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700">Invitations</span>
-                    </div>
+                    {
+                        categoryList.map((category, index) => {
+                            const Icon = FaIcons[category.icon as keyof typeof FaIcons] ?? '';
+                            const colorClass = categoryColors[index] ?? "bg-gray-100/60 text-gray-600";
+
+                            return (
+                                <div
+                                    key={category.id}
+                                    className="group flex cursor-pointer flex-col items-center space-y-2">
+                                    <div className={`flex h-16 w-16 items-center justify-center rounded-2xl transition group-hover:bg-primary group-hover:text-white ${colorClass}`}>
+                                        {Icon && (
+                                            <Icon
+                                                aria-hidden="true"
+                                                className="h-7 w-7 rounded-md bg-current/20 p-1.5"
+                                            />
+                                        )}
+                                    </div>
+                                    <span className="text-xs font-semibold text-gray-700">{category.name}</span>
+                                </div>
+                            )
+                        })
+                    }
+
                     <div className="group flex cursor-pointer flex-col items-center space-y-2">
                         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-200 text-gray-600 transition group-hover:bg-primary group-hover:text-white">
                             <FaEllipsisH aria-hidden="true" className="h-7 w-7 rounded-md bg-current/20 p-1.5" />
