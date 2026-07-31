@@ -4,24 +4,17 @@ import { useEffect, useState } from "react";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import CustomerDashboard from "@/components/pages/customer/customer-dashboard";
 import VendorDashboard from "@/components/pages/vendor/vendor-dashboard";
-import { authUserRole } from "@/utils/auth";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function DashboardPage() {
   useAuthRedirect();
 
-  const [role, setRole] = useState<string | null>(null);
+  const { userRole } = useAuthUser();
 
-  useEffect(() => {
-    const userRole = authUserRole();
-    const normalizedRole = userRole?.trim().toLowerCase() ?? null;
-    setRole(normalizedRole);
-  }, []);
-
-
-  if (role === "customer") {
+  if (userRole === "customer") {
     return <CustomerDashboard />;
   }
-  if (role === "vendor") {
+  if (userRole === "vendor") {
     return <VendorDashboard />;
   }
 }

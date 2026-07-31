@@ -57,57 +57,70 @@ export function ChangePassword() {
     }
 
     return (
-        <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-6 py-12">
-            <div>
-                <h1 className="mt-2 text-3xl font-semibold text-slate-950">Change Password</h1>
+        <div className="space-y-5 min-h-screen bg-[#fff8fb]">
+            <div className="text-xl font-bold text-primary pt-4 pl-5">
+                Change Password
             </div>
+            <div className="m-5 p-4 rounded-lg border border-primary/10 bg-white shadow-sm">
+                <div className="max-w-xl justify-center mx-auto">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <div className="mb-5">
+                            <label htmlFor="currentPassword" className="mb-2 block text-sm font-medium text-gray-700">
+                                Current Password
+                            </label>
+                            <input
+                                id="currentPassword"
+                                type="password"
+                                placeholder="Enter your current password"
+                                className="w-full rounded-lg border border-gray-400 px-4 py-3 text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 focus:shadow-md transition-all duration-300 ease-in-out"
+                                value={currentPassword}
+                                onChange={(event) => setCurrentPassword(event.target.value)}
+                            />
+                        </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <label className="block text-sm font-medium text-slate-700">
-                    Current Password
-                    <input
-                        type="password"
-                        value={currentPassword}
-                        onChange={(event) => setCurrentPassword(event.target.value)}
-                        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-slate-900"
-                        placeholder="Current Password"
-                    />
-                </label>
-                <label className="block text-sm font-medium text-slate-700">
-                    New Password
-                    <input
-                        type="password"
-                        value={newPassword}
-                        onChange={(event) => setNewPassword(event.target.value)}
-                        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-slate-900"
-                        placeholder="New password"
-                    />
-                </label>
-                <label className="block text-sm font-medium text-slate-700">
-                    Confirm Password
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(event) => setConfirmPassword(event.target.value)}
-                        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-slate-900"
-                        placeholder="Confirm password"
-                    />
-                </label>
+                        <div className="mb-5">
+                            <label htmlFor="newPassword" className="mb-2 block text-sm font-medium text-gray-700">
+                                New Password
+                            </label>
+                            <input
+                                id="newPassword"
+                                type="password"
+                                placeholder="Enter your new password"
+                                className="w-full rounded-lg border border-gray-400 px-4 py-3 text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 focus:shadow-md transition-all duration-300 ease-in-out"
+                                value={newPassword}
+                                onChange={(event) => setNewPassword(event.target.value)}
+                            />
+                        </div>
 
-                {error && (
-                    <p className="text-sm text-rose-600">
-                        {error}
-                    </p>
-                )}
+                        <div className="mb-5">
+                            <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-gray-700">
+                                Confirm Password
+                            </label>
+                            <input
+                                id="confirmPassword"
+                                type="password"
+                                placeholder="Confirm your new password"
+                                className="w-full rounded-lg border border-gray-400 px-4 py-3 text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 focus:shadow-md transition-all duration-300 ease-in-out"
+                                value={confirmPassword}
+                                onChange={(event) => setConfirmPassword(event.target.value)}
+                            />
+                        </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full cursor-pointer rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
-                >
-                    Change Password
-                </button>
-            </form>
+                        {error && (
+                            <div className="text-sm text-rose-600">
+                                {error}
+                            </div>
+                        )}
+                        <button
+                            type="submit"
+                            className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-primary/20 hover:bg-primary-dark disabled:bg-secondary-light cursor-pointer"
+                            disabled={loading}
+                        >
+                            Change Password
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 }

@@ -2,14 +2,11 @@
 
 import Link from "next/link";
 import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
-import { FiHome, FiSearch, FiCalendar, FiHeart, FiUser, } from "react-icons/fi";
-import { useAuthUser } from "@/hooks/useAuthUser";
 
 export function Footer() {
-    const { isAuthenticated } = useAuthUser();
 
     return (
-        <footer className="mt-10 bg-gradient-to-br from-red-600 via-pink-700 to-amber-600 text-white">
+        <footer className="bg-gradient-to-br from-red-600 via-pink-700 to-amber-600 text-white">
             <div className="mx-auto max-w-7xl px-4 py-10">
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
@@ -62,42 +59,6 @@ export function Footer() {
                     </div>
                 </div>
             </div>
-
-
-            <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white shadow-lg md:hidden">
-                <div className="mx-auto flex h-16 max-w-md items-center justify-around">
-                    <Link href="/" className="flex flex-col items-center gap-1 text-primary cursor-pointer">
-                        <FiHome className="h-5 w-5" />
-                        <span className="text-[10px] font-medium">Home</span>
-                    </Link>
-                    <Link href="/category-search" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
-                        <FiSearch className="h-5 w-5" />
-                        <span className="text-[10px] font-medium">Search</span>
-                    </Link>
-
-                    {isAuthenticated && (
-                        <>
-                            <Link href="/users/bookings" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
-                                <FiCalendar className="h-5 w-5" />
-                                <span className="text-[10px] font-medium">Bookings</span>
-                            </Link>
-
-                            <Link href="/users/wishlist" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
-                                <FiHeart className="h-5 w-5" />
-                                <span className="text-[10px] font-medium">Wishlist</span>
-                            </Link>
-
-                            <Link href="/users/profile" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
-                                <FiUser className="h-5 w-5" />
-                                <span className="text-[10px] font-medium">Profile</span>
-                            </Link>
-                        </>
-                    )}
-
-
-
-                </div>
-            </nav>
         </footer>
     );
 }

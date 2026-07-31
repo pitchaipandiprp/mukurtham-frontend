@@ -9,14 +9,18 @@ import {
 
 export function useAuthUser() {
     const [userId, setUserId] = useState<string | null>(null);
-    const [role, setRole] = useState<string | null>(null);
-    const [user, setUser] = useState<any | null>(null);
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [userProfile, setUserProfile] = useState<any | null>(null);
 
     useEffect(() => {
         const updateAuth = () => {
-            setUserId(authUserId());
-            setRole(authUserRole() ?? null);
-            setUser(authUser() ?? null);
+            const id = authUserId();
+            const role = authUserRole();
+            const profile = authUser();
+
+            setUserId(id);
+            setUserRole(role?.toLowerCase() ?? null);
+            setUserProfile(profile ?? null);
         };
 
         // Initial authentication state
@@ -32,8 +36,8 @@ export function useAuthUser() {
 
     return {
         userId,
-        role,
-        user,
+        userRole,
+        userProfile,
         isAuthenticated: !!userId,
     };
 }
