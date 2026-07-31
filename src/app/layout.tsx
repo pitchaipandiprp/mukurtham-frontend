@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import "../assets/css/custom.css";
+import MobileBottomNav from "@/components/layout/mobile-bottom-nav";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <MobileBottomNav />
         </div>
       </body>
     </html>

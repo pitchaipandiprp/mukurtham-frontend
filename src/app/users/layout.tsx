@@ -74,15 +74,14 @@ export default function UserDashboardLayout({
                                 <span className="text-[10px] font-medium">Wishlist</span>
                             </Link>
 
-                            <button
-                                type="button"
+                            <Link
+                                href="#"
+                                className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer"
                                 onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                                className="group relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-primary/5 text-primary transition-all duration-300 hover:bg-primary hover:text-white active:scale-95 cursor-pointer"
-                                aria-label="Toggle menu"
-                                aria-expanded={isMobileMenuOpen}
                             >
                                 <FiMenu className="h-5 w-5" />
-                            </button>
+                                <span className="text-[10px] font-medium">Dashboard</span>
+                            </Link>
                         </>
                     )}
                 </div>
