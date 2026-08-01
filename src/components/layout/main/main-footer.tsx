@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 
-export function Footer() {
+export function MainFooter() {
 
     return (
         <footer className="bg-gradient-to-br from-red-600 via-pink-700 to-amber-600 text-white">

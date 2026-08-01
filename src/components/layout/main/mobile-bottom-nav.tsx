@@ -2,26 +2,8 @@
 
 import Link from "next/link";
 import { FiHome, FiCalendar, FiHeart, FiUser, FiMenu } from "react-icons/fi";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import { usePathname } from "next/navigation";
 
 export default function MobileBottomNav() {
-    const pathname = usePathname();
-
-    const { isAuthenticated } = useAuthUser();
-
-    const dashboardRoutes = [
-        "/users",
-        "/vendors",
-        "/admin",
-    ];
-    const isDashboardRoute = dashboardRoutes.some((route) =>
-        pathname.startsWith(route)
-    );
-
-    if (!isAuthenticated || isDashboardRoute) {
-        return null;
-    }
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white shadow-lg md:hidden">

@@ -1,91 +1,86 @@
 "use client";
 
-import Link from "next/link";
-import { FiMenu, FiX, FiHome, FiSearch, FiCalendar, FiHeart, FiUser } from "react-icons/fi";
-import { useState } from "react";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import CustomerLeftMenu from "@/components/layout/user-dashboard/customer-left-menu";
+import React, { useState } from 'react';
+import PanelFooter from '@/components/layout/panel/panel-footer';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import CustomerLeftMenu from '@/components/layout/panel/customer-left-menu';
+import PanelHeader from '@/components/layout/panel/panel-header';
+import MobileBottomNav from '@/components/layout/main/mobile-bottom-nav';
+
 
 export default function UserDashboardLayout({
     children,
-}: {
-    children: React.ReactNode;
-}) {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+}: { children: React.ReactNode }) {
+    useAuthRedirect();
+
     const { userRole } = useAuthUser();
-    const { isAuthenticated } = useAuthUser();
+
+    const [activeMainTab, setActiveMainTab] = useState<string>('dashboard');
+    const [activeSubTitle, setActiveSubTitle] = useState('Dashboard');
+    const [isSecondaryOpen, setIsSecondaryOpen] = useState(true);
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+    const handleMainTabClick = (itemId: string) => {
+        if (activeMainTab === itemId) {
+            setIsSecondaryOpen(!isSecondaryOpen);
+        } else {
+            setActiveMainTab(itemId);
+            setIsSecondaryOpen(true);
+        }
+    };
 
     return (
-        <>
-            <div className="min-h-screen bg-primary antialiased">
+        <div className="flex h-screen bg-slate-100 font-sans overflow-hidden">
 
-                {/* Mobile Header */}
-                <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-primary/10 bg-white/95 px-4 shadow-sm backdrop-blur lg:hidden">
+            {/* Mobile Backdrop */}
+            <AnimatePresence>
+                {isMobileOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsMobileOpen(false)}
+                        className="fixed inset-0 bg-primary/80 backdrop-blur-sm z-40 lg:hidden"
+                    />
+                )}
+            </AnimatePresence>
 
-                    <div>
-                        <h1 className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-lg font-extrabold text-transparent">
-                            My Dashboard
-                        </h1>
+            {/* Left Menu */}
+            {userRole === "customer" && (
+                <CustomerLeftMenu
+                    isMobileOpen={isMobileOpen}
+                    setIsMobileOpen={setIsMobileOpen}
+                    activeMainTab={activeMainTab}
+                    activeSubTitle={activeSubTitle}
+                    setActiveSubTitle={setActiveSubTitle}
+                    isSecondaryOpen={isSecondaryOpen}
+                    setIsSecondaryOpen={setIsSecondaryOpen}
+                    handleMainTabClick={handleMainTabClick}
+                />
+            )}
 
-                        <p className="text-[10px] font-medium text-gray-400">
-                            Manage your wedding journey
-                        </p>
-                    </div>
-                </header>
 
-                {/* Dashboard Layout */}
-                <div className="flex min-h-[calc(100vh-4rem)] lg:min-h-screen">
+            {/* Main Content Dashboard */}
+            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-                    {/* Menu */}
-                    {userRole === "customer" && (
-                        <CustomerLeftMenu
-                            isMobileMenuOpen={isMobileMenuOpen}
-                            onCloseMobileMenu={() => setIsMobileMenuOpen(false)}
-                        />
-                    )}
+                {/* Header */}
+                <PanelHeader
+                    setIsMobileOpen={() => setIsMobileOpen(true)}
+                    setIsSecondaryOpen={() => setIsSecondaryOpen(!isSecondaryOpen)}
+                />
 
-                    {/* Main Body */}
-                    <main className="min-w-0 flex-1 bg-white">
-                        <div className="p-0 m-0 min-h-[calc(100vh-4rem)] lg:min-h-screen">
-                            {children}
-                        </div>
-                    </main>
+                {/* Dashboard Content Canvas */}
+                <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                    {children}
+                </main>
 
-                </div>
-
+                {/* Footer */}
+                <PanelFooter />
+                <MobileBottomNav />
             </div>
 
-            <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white shadow-lg md:hidden">
-                <div className="mx-auto flex h-16 max-w-md items-center justify-around">
-                    <Link href="/" className="flex flex-col items-center gap-1 text-primary cursor-pointer">
-                        <FiHome className="h-5 w-5" />
-                        <span className="text-[10px] font-medium">Home</span>
-                    </Link>
-
-                    {isAuthenticated && (
-                        <>
-                            <Link href="/users/bookings" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
-                                <FiCalendar className="h-5 w-5" />
-                                <span className="text-[10px] font-medium">Bookings</span>
-                            </Link>
-
-                            <Link href="/users/wishlist" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
-                                <FiHeart className="h-5 w-5" />
-                                <span className="text-[10px] font-medium">Wishlist</span>
-                            </Link>
-
-                            <Link
-                                href="#"
-                                className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer"
-                                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                            >
-                                <FiMenu className="h-5 w-5" />
-                                <span className="text-[10px] font-medium">Dashboard</span>
-                            </Link>
-                        </>
-                    )}
-                </div>
-            </nav>
-        </>
+        </div>
     );
 }

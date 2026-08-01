@@ -57,11 +57,11 @@ export function ChangePassword() {
     }
 
     return (
-        <div className="space-y-5 min-h-screen bg-[#fff8fb]">
-            <div className="text-xl font-bold text-primary pt-4 pl-5">
-                Change Password
+        <div className="d-block">
+            <div className="mb-6">
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Change Password</h1>
             </div>
-            <div className="m-5 p-4 rounded-lg border border-primary/10 bg-white shadow-sm">
+            <div className="min-h-full px-4 py-12 rounded-lg border border-primary/10 bg-white shadow-sm">
                 <div className="max-w-xl justify-center mx-auto">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                         <div className="mb-5">

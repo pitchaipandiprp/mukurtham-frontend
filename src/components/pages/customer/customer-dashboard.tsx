@@ -1,35 +1,42 @@
 "use client";
 import Link from "next/link";
 import { FiCalendar, FiClock, FiHeart, FiUser, FiCamera, FiHome } from "react-icons/fi";
+import { DollarSign, TrendingUp, CreditCard, Users } from 'lucide-react';
 
 export default function CustomerDashboard() {
     return (
-        <div className="p-4 space-y-6">
+        <div className="flex flex-col gap-6">
 
-            {/* Welcome Banner */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-dark via-primary to-primary-light p-6 text-white shadow-lg shadow-primary/10 sm:p-8">
-
-                {/* Decorative Circles */}
-                <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10" />
-                <div className="absolute -bottom-16 right-24 h-32 w-32 rounded-full bg-white/5" />
-
-                <div className="relative">
-                    <p className="mb-2 text-sm font-medium text-white/70">
-                        Welcome Maya
-                    </p>
-
-                    <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                        Customer Dashboard
-                    </h1>
-
-                    <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">
-                        Manage your bookings, explore wedding services, save your
-                        favorite vendors, and make your special day unforgettable.
-                    </p>
-                </div>
+            {/* Breadcrumbs Header */}
+            <div className="mb-6">
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Dashboard</h1>
+                <p className="text-xs text-slate-500 mt-1">
+                    Gull Dashboard Layout
+                </p>
             </div>
 
-
+            {/* High-Contrast Gull Style Stat Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {[
+                    { label: 'New Sales', val: '1,240', icon: DollarSign, color: 'bg-primary' },
+                    { label: 'Conversion Rate', val: '40.5%', icon: TrendingUp, color: 'bg-primary-light' },
+                    { label: 'Order Processed', val: '$85,240', icon: CreditCard, color: 'bg-primary' },
+                    { label: 'Total Users', val: '24.5K', icon: Users, color: 'bg-secondary-light' },
+                ].map((stat, idx) => {
+                    const StatIcon = stat.icon;
+                    return (
+                        <div key={idx} className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{stat.label}</p>
+                                <h3 className="text-xl font-black text-slate-900 mt-1">{stat.val}</h3>
+                            </div>
+                            <div className={`h-12 w-12 rounded-2xl ${stat.color} text-white flex items-center justify-center shadow-md shadow-primary/20`}>
+                                <StatIcon className="w-6 h-6" />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
 

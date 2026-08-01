@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { AuthModal } from "@/components/pages/users/auth-modal";
 import { useLogout } from "@/hooks/useLogout";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FiMenu, FiX, FiBell, FiChevronDown, FiHeart, FiMapPin, FiMessageCircle, FiSearch, } from "react-icons/fi";
 import { useAuthUser } from "@/hooks/useAuthUser";
 
@@ -15,7 +15,7 @@ const navLinks = [
     { label: "Categories", href: "/category-search" },
     { label: "Contact", href: "/contact-us" },];
 
-export function Header() {
+export function MainHeader() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { isAuthenticated } = useAuthUser();
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);

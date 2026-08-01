@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
+import AppHeader from "@/components/layout/app-header";
+import AppFooter from "@/components/layout/app-footer";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import "../assets/css/custom.css";
-import MobileBottomNav from "@/components/layout/mobile-bottom-nav";
+import MobileBottomNav from "@/components/layout/main/mobile-bottom-nav";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,9 +26,9 @@ export default function RootLayout({
     <html lang="en" className={`h-full antialiased ${poppins.variable}`}>
       <body className="min-h-full bg-gray-100 text-gray-800 antialiased">
         <div className="flex min-h-screen flex-col">
-          <Header />
+          <AppHeader />
           <main className="flex-1">{children}</main>
-          <Footer />
+          <AppFooter />
           <MobileBottomNav />
         </div>
       </body>
