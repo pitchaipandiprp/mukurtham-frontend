@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import CustomerLeftMenu from '@/components/layout/panel/customer-left-menu';
+import VendorLeftMenu from '@/components/layout/panel/vendor-left-menu';
 import PanelHeader from '@/components/layout/panel/panel-header';
 import MobileBottomNav from '@/components/layout/main/mobile-bottom-nav';
 
@@ -50,6 +51,19 @@ export default function UserDashboardLayout({
             {/* Left Menu */}
             {userRole === "customer" && (
                 <CustomerLeftMenu
+                    isMobileOpen={isMobileOpen}
+                    setIsMobileOpen={setIsMobileOpen}
+                    activeMainTab={activeMainTab}
+                    activeSubTitle={activeSubTitle}
+                    setActiveSubTitle={setActiveSubTitle}
+                    isSecondaryOpen={isSecondaryOpen}
+                    setIsSecondaryOpen={setIsSecondaryOpen}
+                    handleMainTabClick={handleMainTabClick}
+                />
+            )}
+
+            {userRole === "vendor" && (
+                <VendorLeftMenu
                     isMobileOpen={isMobileOpen}
                     setIsMobileOpen={setIsMobileOpen}
                     activeMainTab={activeMainTab}
