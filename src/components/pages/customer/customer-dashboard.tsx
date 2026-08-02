@@ -11,7 +11,7 @@ export default function CustomerDashboard() {
             <div className="mb-6">
                 <h1 className="text-2xl font-black text-slate-900 tracking-tight">Dashboard</h1>
                 <p className="text-xs text-slate-500 mt-1">
-                    Gull Dashboard Layout
+                    Mukurtham Dashboard
                 </p>
             </div>
 

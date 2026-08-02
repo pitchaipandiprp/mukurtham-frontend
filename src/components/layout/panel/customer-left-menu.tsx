@@ -1,6 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, Users, ShoppingBag, Settings, BarChart3, ShieldCheck, UserPlus, LogOut, Sparkles, Menu, X, Bell, Search, ChevronRight, TrendingUp, CreditCard, DollarSign, LucideIcon } from 'lucide-react';
+import { useRouter } from "next/navigation";
 
 interface SubNavItem {
     title: string;
@@ -22,38 +23,36 @@ const navItems: NavItem[] = [
         title: 'Dashboards',
         icon: LayoutDashboard,
         subItems: [
-            { title: 'Sales Dashboard', href: '#/sales' },
-            { title: 'Analytics View', href: '#/analytics' },
-            { title: 'Crypto & Assets', href: '#/crypto', badge: 'Hot' },
+            { title: 'Dashboard', href: '/users/dashboard' },
+            { title: 'Wishlist', href: '/users/wishlist' },
         ],
     },
     {
-        id: 'apps',
-        title: 'Apps & Users',
-        icon: Users,
-        subItems: [
-            { title: 'User List', href: '#/users' },
-            { title: 'Add Member', icon: UserPlus, href: '#/users/add' },
-            { title: 'Roles & Rights', icon: ShieldCheck, href: '#/roles' },
-        ],
-    },
-    {
-        id: 'ecommerce',
-        title: 'E-Commerce',
+        id: 'bookings',
+        title: 'Bookings',
         icon: ShoppingBag,
         subItems: [
-            { title: 'Products List', href: '#/products' },
-            { title: 'Order History', href: '#/orders' },
-            { title: 'Customer Records', href: '#/customers' },
+            { title: 'Recent Bookings', href: '/users/bookings' },
+            { title: 'Booking History', href: '/users/bookings' },
         ],
     },
     {
-        id: 'charts',
-        title: 'Charts',
-        icon: BarChart3,
+        id: 'payments',
+        title: 'Payments',
+        icon: CreditCard,
         subItems: [
-            { title: 'Apex Charts', href: '#/charts/apex' },
-            { title: 'Recharts Suite', href: '#/charts/recharts' },
+            { title: 'Recent Payments', href: '/users/payments' },
+            { title: 'Payment History', href: '/users/payments' },
+        ],
+    },
+    {
+        id: 'support',
+        title: 'Support',
+        icon: ShieldCheck,
+        subItems: [
+            { title: 'My Enquiries', href: '/users/support' },
+            { title: 'My Reviews', href: '/users/support' },
+            { title: 'My Support Tickets', href: '/users/support' },
         ],
     },
     {
@@ -61,8 +60,8 @@ const navItems: NavItem[] = [
         title: 'Settings',
         icon: Settings,
         subItems: [
-            { title: 'Profile Settings', href: '#/settings/profile' },
-            { title: 'Security & Auth', href: '#/settings/security' },
+            { title: 'Profile Settings', href: '/users/change-profile' },
+            { title: 'Security & Auth', href: '/users/change-password' },
         ],
     },
 ];
@@ -89,6 +88,11 @@ export default function CustomerLeftMenu({
     setIsSecondaryOpen,
     handleMainTabClick,
 }: CustomerLeftMenuProps) {
+    const router = useRouter();
+
+    const goToPage = (href: string) => {
+        router.push(href);
+    };
 
     const selectedMainItem = navItems.find((item) => item.id === activeMainTab);
 
@@ -103,7 +107,7 @@ export default function CustomerLeftMenu({
                 </div>
 
                 {/* Icon Navigation Rails */}
-                <nav className="space-y-4 my-auto w-full px-2">
+                <nav className="space-y-4 my-auto w-full px-2 py-5 h-full">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = activeMainTab === item.id;
@@ -112,7 +116,7 @@ export default function CustomerLeftMenu({
                             <button
                                 key={item.id}
                                 onClick={() => handleMainTabClick(item.id)}
-                                className={`w-full py-3 px-1 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all duration-200 group ${isActive
+                                className={`cursor-pointer w-full py-3 px-1 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all duration-200 group ${isActive
                                     ? 'bg-primary text-white shadow-lg shadow-primary-darker/50 font-semibold'
                                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                                     }`}
@@ -125,11 +129,11 @@ export default function CustomerLeftMenu({
                 </nav>
 
                 {/* Profile Quick Toggle */}
-                <div className="relative group">
+                <div className="relative group rounded-lg bg-white transition hover:bg-primary cursor-pointer">
                     <img
-                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
+                        src="/images/profile.svg"
                         alt="User"
-                        className="w-9 h-9 rounded-full ring-2 ring-primary-light/50 object-cover cursor-pointer"
+                        className="w-9 h-9 rounded-lg object-cover transition group-hover:brightness-0 group-hover:invert"
                     />
                 </div>
             </div>
@@ -151,7 +155,7 @@ export default function CustomerLeftMenu({
                                 </h3>
                                 <button
                                     onClick={() => setIsSecondaryOpen(false)}
-                                    className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 hidden lg:block"
+                                    className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 hidden lg:block cursor-pointer transition-colors"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -164,15 +168,14 @@ export default function CustomerLeftMenu({
                                     const isActive = activeSubTitle === sub.title;
 
                                     return (
-                                        <a
+                                        <button
                                             key={sub.title}
-                                            href={sub.href}
-                                            onClick={(e) => {
-                                                e.preventDefault();
+                                            onClick={() => {
                                                 setActiveSubTitle(sub.title);
                                                 setIsMobileOpen(false);
+                                                goToPage(sub.href); // Navigate to the subpage
                                             }}
-                                            className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${isActive
+                                            className={`cursor-pointer flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${isActive
                                                 ? 'bg-primary/10 text-primary font-bold'
                                                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                                 }`}
@@ -189,20 +192,20 @@ export default function CustomerLeftMenu({
                                             )}
 
                                             {isActive && <ChevronRight className="w-3.5 h-3.5 text-primary" />}
-                                        </a>
+                                        </button>
                                     );
                                 })}
                             </div>
                         </div>
 
                         {/* Gull Style Bottom Help Box */}
-                        <div className="p-4 m-3 rounded-2xl bg-gradient-to-br from-primary to-primary-dark text-white text-xs">
+                        {/* <div className="p-4 m-3 rounded-2xl bg-gradient-to-br from-primary to-primary-dark text-white text-xs">
                             <p className="font-bold mb-1">Gull Features</p>
                             <p className="text-[10px] text-white/80 leading-relaxed mb-3">Multi-sidebar integration with smooth state management.</p>
                             <button className="w-full py-1.5 bg-white text-primary rounded-xl font-bold text-[10px] shadow-sm hover:bg-slate-100 transition-colors">
                                 Upgrade Plan
                             </button>
-                        </div>
+                        </div> */}
                     </motion.div>
                 )}
             </AnimatePresence>

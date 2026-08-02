@@ -112,13 +112,16 @@ export function MainHeader() {
                         )}
 
                         {isAuthenticated && (
-                            <button
-                                onClick={logout}
+                            <Link href="/users/dashboard"
                                 type="button"
-                                className="cursor-pointer rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary-light"
+                                className="group cursor-pointer rounded-lg bg-white p-3 transition hover:bg-primary"
                             >
-                                Logout
-                            </button>
+                                <img
+                                    src="/images/profile.svg"
+                                    alt="User Profile"
+                                    className="h-6 w-6 rounded-lg object-cover transition group-hover:brightness-0 group-hover:invert"
+                                />
+                            </Link>
                         )}
                     </div>
 
