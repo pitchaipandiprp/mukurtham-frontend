@@ -3,7 +3,8 @@
 import { LogOut, Menu, Search, Bell, Home } from "lucide-react";
 import Link from "next/link";
 import { useLogout } from "@/hooks/useLogout";
-
+import { authUser, } from "@/utils/auth";
+import { useEffect, useState } from "react";
 
 
 interface HeaderProps {
@@ -14,6 +15,12 @@ interface HeaderProps {
 export default function PanelHeader({ setIsMobileOpen, setIsSecondaryOpen }: HeaderProps) {
 
     const { logout } = useLogout();
+    const [autoProfile, setAutoProfile] = useState<any>(null);
+
+    useEffect(() => {
+        const profile = authUser();
+        setAutoProfile(profile);
+    }, []);
 
     return (
         <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0">
@@ -63,8 +70,8 @@ export default function PanelHeader({ setIsMobileOpen, setIsSecondaryOpen }: Hea
 
                 <div className="flex justify-center gap-2 w-20">
                     <div className="text-right hidden sm:block">
-                        <p className="text-xs font-bold text-slate-800">John Doe</p>
-                        <p className="text-[10px] text-slate-400">Super Admin</p>
+                        <p className="text-xs font-bold text-slate-800">{autoProfile?.name ?? ""}</p>
+                        {/* <p className="text-[10px] text-slate-400">Super Admin</p> */}
                     </div>
                 </div>
             </div>
