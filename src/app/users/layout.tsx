@@ -7,6 +7,7 @@ import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import CustomerLeftMenu from '@/components/layout/panel/customer-left-menu';
 import VendorLeftMenu from '@/components/layout/panel/vendor-left-menu';
+import AdminLeftMenu from '@/components/layout/panel/admin-left-menu';
 import PanelHeader from '@/components/layout/panel/panel-header';
 import MobileBottomNav from '@/components/layout/main/mobile-bottom-nav';
 
@@ -64,6 +65,19 @@ export default function UserDashboardLayout({
 
             {userRole === "vendor" && (
                 <VendorLeftMenu
+                    isMobileOpen={isMobileOpen}
+                    setIsMobileOpen={setIsMobileOpen}
+                    activeMainTab={activeMainTab}
+                    activeSubTitle={activeSubTitle}
+                    setActiveSubTitle={setActiveSubTitle}
+                    isSecondaryOpen={isSecondaryOpen}
+                    setIsSecondaryOpen={setIsSecondaryOpen}
+                    handleMainTabClick={handleMainTabClick}
+                />
+            )}
+
+            {userRole === "admin" && (
+                <AdminLeftMenu
                     isMobileOpen={isMobileOpen}
                     setIsMobileOpen={setIsMobileOpen}
                     activeMainTab={activeMainTab}

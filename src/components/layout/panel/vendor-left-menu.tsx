@@ -32,8 +32,19 @@ const navItems: NavItem[] = [
         title: 'Bookings',
         icon: ShoppingBag,
         subItems: [
-            { title: 'Recent Bookings', href: '/users/bookings' },
-            { title: 'Booking History', href: '/users/bookings' },
+            { title: 'Bookings Details', href: '/users/booking-details' },
+            { title: 'Booking History', href: '/users/booking-history' },
+        ],
+    },
+    {
+        id: 'services',
+        title: 'Services',
+        icon: ShoppingBag,
+        subItems: [
+            { title: 'Service List', href: '/users/service-list' },
+            { title: 'Add Individual Service', href: '/users/add-individual-service' },
+            { title: 'Package List', href: '/users/package-list' },
+            { title: 'Add Package', href: '/users/add-package' },
         ],
     },
     {
@@ -41,18 +52,8 @@ const navItems: NavItem[] = [
         title: 'Payments',
         icon: CreditCard,
         subItems: [
-            { title: 'Recent Payments', href: '/users/payments' },
-            { title: 'Payment History', href: '/users/payments' },
-        ],
-    },
-    {
-        id: 'support',
-        title: 'Support',
-        icon: ShieldCheck,
-        subItems: [
-            { title: 'My Enquiries', href: '/users/support' },
-            { title: 'My Reviews', href: '/users/support' },
-            { title: 'My Support Tickets', href: '/users/support' },
+            { title: 'Recent Payments', href: '/users/recent-payments' },
+            { title: 'Payment History', href: '/users/payment-history' },
         ],
     },
     {
@@ -62,6 +63,18 @@ const navItems: NavItem[] = [
         subItems: [
             { title: 'Profile Settings', href: '/users/change-profile' },
             { title: 'Security & Auth', href: '/users/change-password' },
+            { title: 'Business Profile', href: '/users/business-profile' },
+            { title: 'Verification Documents', href: '/users/upload-verification-documents' },
+        ],
+    },
+    {
+        id: 'support',
+        title: 'Support',
+        icon: ShieldCheck,
+        subItems: [
+            { title: 'Enquiries', href: '/users/enquiry-list' },
+            { title: 'Reviews', href: '/users/review-list' },
+            { title: 'Support Tickets', href: '/users/support-ticket-list' },
         ],
     },
 ];
@@ -175,7 +188,7 @@ export default function VendorLeftMenu({
                                                 setIsMobileOpen(false);
                                                 goToPage(sub.href); // Navigate to the subpage
                                             }}
-                                            className={`cursor-pointer flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${isActive
+                                            className={`w-full cursor-pointer flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${isActive
                                                 ? 'bg-primary/10 text-primary font-bold'
                                                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                                 }`}

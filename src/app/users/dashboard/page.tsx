@@ -2,6 +2,7 @@
 
 import CustomerDashboard from "@/components/pages/customer/customer-dashboard";
 import VendorDashboard from "@/components/pages/vendor/vendor-dashboard";
+import AdminDashboard from "@/components/pages/admin/admin-dashboard";
 import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function DashboardPage() {
@@ -11,7 +12,10 @@ export default function DashboardPage() {
   if (userRole === "customer") {
     return <CustomerDashboard />;
   }
-  if (userRole === "vendor") {
+  else if (userRole === "vendor") {
     return <VendorDashboard />;
+  }
+  else if (userRole === "admin") {
+    return <AdminDashboard />;
   }
 }

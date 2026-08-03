@@ -141,7 +141,7 @@ export function HomePage() {
             </section>
 
             {/* Featured Vendors Section */}
-            <section>
+            <section>sasasas
                 <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-gray-900">Featured Vendors</h2>
                     <a href="#" className="text-sm font-semibold text-primary hover:underline">View all</a>
@@ -149,10 +149,10 @@ export function HomePage() {
 
                 <div className="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:shadow-md">
-                        <div className="relative h-44">
+                        <div className="relative h-44 group overflow-hidden">
                             <img
                                 src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=600"
-                                className="h-full w-full object-cover"
+                                className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                                 alt="Grand Palace"
                             />
                             <span className="absolute left-3 top-3 rounded bg-red-800 px-2 py-0.5 text-[10px] font-bold uppercase text-white">POPULAR</span>
@@ -182,10 +182,10 @@ export function HomePage() {
                     </div>
 
                     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:shadow-md">
-                        <div className="relative h-44">
+                        <div className="relative h-44 group overflow-hidden">
                             <img
                                 src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&q=80&w=600"
-                                className="h-full w-full object-cover"
+                                className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                                 alt="Photo Story"
                             />
                             <span className="absolute left-3 top-3 rounded bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">TOP RATED</span>
@@ -215,10 +215,10 @@ export function HomePage() {
                     </div>
 
                     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:shadow-md">
-                        <div className="relative h-44">
+                        <div className="relative h-44 group overflow-hidden">
                             <img
                                 src="https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=600"
-                                className="h-full w-full object-cover"
+                                className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                                 alt="Royal Catering"
                             />
                             <span className="absolute left-3 top-3 rounded bg-red-600 px-2 py-0.5 text-[10px] font-bold uppercase text-white">BEST SELLER</span>
@@ -248,10 +248,10 @@ export function HomePage() {
                     </div>
 
                     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:shadow-md">
-                        <div className="relative h-44">
+                        <div className="relative h-44 group overflow-hidden">
                             <img
                                 src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=600"
-                                className="h-full w-full object-cover"
+                                className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                                 alt="Dream Decorators"
                             />
                         </div>

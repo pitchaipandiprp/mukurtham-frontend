@@ -24,16 +24,8 @@ const navItems: NavItem[] = [
         icon: LayoutDashboard,
         subItems: [
             { title: 'Dashboard', href: '/users/dashboard' },
-            { title: 'Wishlist', href: '/users/wishlist' },
-        ],
-    },
-    {
-        id: 'bookings',
-        title: 'Bookings',
-        icon: ShoppingBag,
-        subItems: [
-            { title: 'Recent Bookings', href: '/users/bookings' },
-            { title: 'Booking History', href: '/users/bookings' },
+            { title: 'Vendors', href: '/users/vendor-list' },
+            { title: 'Customer', href: '/users/customer-list' },
         ],
     },
     {
@@ -41,18 +33,7 @@ const navItems: NavItem[] = [
         title: 'Payments',
         icon: CreditCard,
         subItems: [
-            { title: 'Recent Payments', href: '/users/payments' },
-            { title: 'Payment History', href: '/users/payments' },
-        ],
-    },
-    {
-        id: 'support',
-        title: 'Support',
-        icon: ShieldCheck,
-        subItems: [
-            { title: 'My Enquiries', href: '/users/support' },
-            { title: 'My Reviews', href: '/users/support' },
-            { title: 'My Support Tickets', href: '/users/support' },
+            { title: 'Payment History', href: '/users/payment-history' },
         ],
     },
     {
@@ -64,9 +45,19 @@ const navItems: NavItem[] = [
             { title: 'Security & Auth', href: '/users/change-password' },
         ],
     },
+    {
+        id: 'support',
+        title: 'Support',
+        icon: ShieldCheck,
+        subItems: [
+            { title: 'Enquiries', href: '/users/enquiry-list' },
+            { title: 'Reviews', href: '/users/review-list' },
+            { title: 'Support Tickets', href: '/users/support-ticket-list' },
+        ],
+    },
 ];
 
-export interface CustomerLeftMenuProps {
+export interface AdminLeftMenuProps {
     isMobileOpen: boolean;
     setIsMobileOpen: (open: boolean) => void;
     activeMainTab: string;
@@ -78,7 +69,7 @@ export interface CustomerLeftMenuProps {
 }
 
 
-export default function CustomerLeftMenu({
+export default function AdminLeftMenu({
     isMobileOpen,
     setIsMobileOpen,
     activeMainTab,
@@ -87,7 +78,7 @@ export default function CustomerLeftMenu({
     isSecondaryOpen,
     setIsSecondaryOpen,
     handleMainTabClick,
-}: CustomerLeftMenuProps) {
+}: AdminLeftMenuProps) {
     const router = useRouter();
 
     const goToPage = (href: string) => {
