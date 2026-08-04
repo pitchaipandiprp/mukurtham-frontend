@@ -1,4 +1,3 @@
-/* SweetAlert Popup */
 .swal2-popup {
     width: 350px !important;
     padding: 1rem !important;
@@ -16,15 +15,9 @@
     margin: 0.5rem 0 !important;
 }
 
-/* Icon */
+/* Keep SweetAlert2 default icon */
 .swal2-icon {
-    width: 60px !important;
-    height: 60px !important;
     margin: 0.5rem auto !important;
-}
-
-.swal2-icon .swal2-icon-content {
-    font-size: 2.5rem !important;
 }
 
 /* Button container */
@@ -32,7 +25,7 @@
     margin-top: 0.75rem !important;
 }
 
-/* Confirm & Cancel buttons */
+/* Buttons */
 .swal2-confirm,
 .swal2-cancel {
     padding: 5px 12px !important;

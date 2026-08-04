@@ -2,12 +2,13 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { sweetalert } from "@/utils/sweetalert";
+import { common } from "@/utils/common";
 import { vendorService } from "@/services/vendor/vendor.service";
 import commonService from "@/services/common/common.service";
-import { sweetalert } from "@/utils/sweetalert";
 import LocalitySelect, { LocalityOption } from "@/components/common/locality-select";
-import { common } from "@/utils/common";
-
+import { apiConfig } from "@/environments/api";
 
 type IndividualServiceForm = {
     category_id: string;
@@ -61,10 +62,17 @@ export default function AddIndividualService() {
     const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
     const [categories, setCategories] = useState<any[]>([]);
     const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+    const [loadingDetails, setLoadingDetails] = useState(false);
+    const searchParams = useSearchParams();
+    const categoryServiceId = searchParams.get("id");
+    const isEditMode = Boolean(categoryServiceId);
 
     useEffect(() => {
         loadCategories();
-    }, []);
+        if (categoryServiceId) {
+            loadIndividualService();
+        }
+    }, [categoryServiceId]);
 
     const loadCategories = async () => {
         const result = await commonService.getCategories();
@@ -117,6 +125,66 @@ export default function AddIndividualService() {
         }));
 
         setBannerPreview(URL.createObjectURL(file));
+    };
+
+    const loadIndividualService = async () => {
+        setLoadingDetails(true);
+        setError("");
+
+        try {
+            if (!categoryServiceId) {
+                setError("Invalid service ID");
+                setLoadingDetails(false);
+                return;
+            }
+
+            const result = await vendorService.getIndividualService({ id: Number(categoryServiceId) });
+
+            if (!result?.success) {
+                return;
+            }
+
+            const serviceData = result.data;
+            const BACKEND_BASE_URL = apiConfig.baseUrl;
+
+            setForm({
+                category_id: serviceData.category_id ?? "",
+                state_id: serviceData.state_id ?? "",
+                city_id: serviceData.city_id ?? "",
+                locality_id: serviceData.locality_id ?? "",
+                service_name: serviceData.service_name ?? "",
+                service_description: serviceData.service_description ?? "",
+                service_address: serviceData.service_address ?? "",
+                service_banner_image: serviceData.service_banner_image ?? "",
+                capacity: String(serviceData.capacity ?? ""),
+                number_of_rooms: String(serviceData.number_of_rooms ?? 0),
+                car_parking: serviceData.car_parking ?? "",
+                ac_available: serviceData.ac_available ?? "",
+                latitude: serviceData.latitude ?? "",
+                longitude: serviceData.longitude ?? "",
+                pricing_type: serviceData.pricing_type ?? "",
+                amount: String(serviceData.amount ?? 0),
+                discount: String(serviceData.discount ?? 0),
+                tax_percentage: String(serviceData.tax_percentage ?? 0),
+                status: serviceData.status,
+            });
+
+            setSelectedLocality({
+                value: Number(serviceData.locality_id),
+                label: String(serviceData?.locality?.name),
+                stateId: Number(serviceData.state_id),
+                cityId: Number(serviceData.city_id),
+                stateName: serviceData?.state?.name,
+                cityName: serviceData?.city?.name,
+            });
+
+            setBannerPreview(serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : null);
+
+        } catch (caughtError) {
+            console.error("Failed to load individual service:", caughtError);
+        } finally {
+            setLoadingDetails(false);
+        }
     };
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -189,12 +257,16 @@ export default function AddIndividualService() {
         );
         formData.append("status", form.status);
 
+        if (isEditMode) {
+            formData.append("id", categoryServiceId!);
+        }
+
         try {
             const result = await vendorService.createIndividualService(formData);
 
             if (result?.success) {
                 // setForm(initialForm);
-                await sweetalert.success(result.message || "Individual service created successfully");
+                await sweetalert.success(result.message);
             }
         } catch (caughtError) {
             console.error("Create individual service failed:", caughtError);
