@@ -9,6 +9,9 @@ export interface LocalityOption {
     label: string;
     stateId: number;
     cityId: number;
+    stateName: string;
+    cityName: string;
+
 }
 
 interface LocalitySelectProps {
@@ -52,9 +55,11 @@ export default function LocalitySelect({
 
             return result.data.map((item: any) => ({
                 value: item.id,
-                label: item.name,
+                label: item.name + (item.city_name ? `, ${item.city_name}` : "") + (item.state_name ? `, ${item.state_name}` : ""),
                 stateId: item.state_id,
                 cityId: item.city_id,
+                stateName: item.state_name,
+                cityName: item.city_name,
             }));
 
         } catch (error) {
@@ -85,169 +90,44 @@ export default function LocalitySelect({
             noOptionsMessage={() =>
                 "No locality found"
             }
-            styles={{
-                control: (
-                    base,
-                    state
-                ) => ({
-                    ...base,
+            classNames={{
+                control: (state) =>
+                    `!w-full !rounded-lg !border !bg-white !text-sm !text-slate-800 !shadow-sm !outline-none !transition-all !duration-300 ${state.isFocused
+                        ? "!border-primary !ring-4 !ring-primary/5"
+                        : "!border-slate-300 hover:!border-slate-300"
+                    }`,
 
-                    minHeight: "48px",
+                valueContainer: () =>
+                    "!px-4 !py-2",
 
-                    borderRadius: "8px",
+                input: () =>
+                    "!m-0 !p-0 !text-sm !text-slate-800",
 
-                    borderColor:
-                        state.isFocused
-                            ? "var(--primary-color)"
-                            : "#cbd5e1",
+                placeholder: () =>
+                    "!text-slate-400",
 
-                    backgroundColor:
-                        "white",
+                singleValue: () =>
+                    "!text-slate-800",
 
-                    boxShadow:
-                        state.isFocused
-                            ? "0 0 0 4px rgba(0, 0, 0, 0.05)"
-                            : "0 1px 2px rgba(0, 0, 0, 0.05)",
+                indicatorSeparator: () =>
+                    "!hidden",
 
-                    transition:
-                        "all 300ms ease",
+                dropdownIndicator: () =>
+                    "!text-slate-400 hover:!text-slate-600 cursor-pointer",
 
-                    "&:hover": {
-                        borderColor:
-                            "#cbd5e1",
-                    },
-                }),
+                clearIndicator: () =>
+                    "!text-slate-400 hover:!text-pink-500 cursor-pointer",
 
-                valueContainer: (
-                    base
-                ) => ({
-                    ...base,
+                menu: () =>
+                    "!z-50 !mt-1 !overflow-hidden !rounded-lg !border !border-slate-200 !bg-white !shadow-lg",
 
-                    padding:
-                        "6px 16px",
-                }),
-
-                input: (
-                    base
-                ) => ({
-                    ...base,
-
-                    margin: 0,
-
-                    padding: 0,
-
-                    fontSize:
-                        "0.875rem",
-
-                    color:
-                        "#1e293b",
-                }),
-
-                placeholder: (
-                    base
-                ) => ({
-                    ...base,
-
-                    color:
-                        "#94a3b8",
-
-                    fontSize:
-                        "0.875rem",
-                }),
-
-                singleValue: (
-                    base
-                ) => ({
-                    ...base,
-
-                    color:
-                        "#1e293b",
-
-                    fontSize:
-                        "0.875rem",
-                }),
-
-                indicatorSeparator: () => ({
-                    display: "none",
-                }),
-
-                dropdownIndicator: (
-                    base
-                ) => ({
-                    ...base,
-
-                    color:
-                        "#94a3b8",
-
-                    "&:hover": {
-                        color:
-                            "#64748b",
-                    },
-                }),
-
-                clearIndicator: (
-                    base
-                ) => ({
-                    ...base,
-
-                    color:
-                        "#94a3b8",
-
-                    "&:hover": {
-                        color:
-                            "#ef4444",
-                    },
-                }),
-
-                menu: (
-                    base
-                ) => ({
-                    ...base,
-
-                    zIndex: 50,
-
-                    borderRadius:
-                        "8px",
-
-                    overflow:
-                        "hidden",
-
-                    boxShadow:
-                        "0 10px 25px rgba(0, 0, 0, 0.1)",
-                }),
-
-                option: (
-                    base,
-                    state
-                ) => ({
-                    ...base,
-
-                    padding:
-                        "10px 16px",
-
-                    fontSize:
-                        "0.875rem",
-
-                    cursor:
-                        "pointer",
-
-                    backgroundColor:
-                        state.isSelected
-                            ? "var(--primary-color)"
-                            : state.isFocused
-                                ? "rgba(0, 0, 0, 0.05)"
-                                : "white",
-
-                    color:
-                        state.isSelected
-                            ? "white"
-                            : "#334155",
-
-                    "&:active": {
-                        backgroundColor:
-                            "var(--primary-color)",
-                    },
-                }),
+                option: (state) =>
+                    `!cursor-pointer !px-4 !py-3 !text-sm ${state.isSelected
+                        ? "!bg-secondary-light !text-white"
+                        : state.isFocused
+                            ? "!bg-slate-50 !text-slate-800"
+                            : "!bg-white !text-slate-700"
+                    }`,
             }}
         />
     );

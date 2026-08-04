@@ -6,6 +6,7 @@ import { vendorService } from "@/services/vendor/vendor.service";
 import commonService from "@/services/common/common.service";
 import { sweetalert } from "@/utils/sweetalert";
 import LocalitySelect, { LocalityOption } from "@/components/common/locality-select";
+import { common } from "@/utils/common";
 
 
 type IndividualServiceForm = {
@@ -16,7 +17,7 @@ type IndividualServiceForm = {
     service_name: string;
     service_description: string;
     service_address: string;
-    service_image: string;
+    service_banner_image: File | null;
     capacity: string;
     number_of_rooms: string;
     car_parking: string;
@@ -38,7 +39,7 @@ const initialForm: IndividualServiceForm = {
     service_name: "",
     service_description: "",
     service_address: "",
-    service_image: "",
+    service_banner_image: null,
     capacity: "",
     car_parking: "",
     ac_available: "",
@@ -59,6 +60,7 @@ export default function AddIndividualService() {
     const [loading, setLoading] = useState(false);
     const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
     const [categories, setCategories] = useState<any[]>([]);
+    const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
     useEffect(() => {
         loadCategories();
@@ -85,6 +87,36 @@ export default function AddIndividualService() {
             ...prev,
             [field]: value,
         }));
+    };
+
+
+    const handleBannerImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] || null;
+
+        if (!file) {
+            return;
+        }
+
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+            setError("Please select a valid image");
+            return;
+        }
+
+        // Validate file size - 5MB
+        if (file.size > 5 * 1024 * 1024) {
+            setError("Banner image must be less than 5MB");
+            return;
+        }
+
+        setError("");
+
+        setForm((prev) => ({
+            ...prev,
+            service_banner_image: file,
+        }));
+
+        setBannerPreview(URL.createObjectURL(file));
     };
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -118,28 +150,47 @@ export default function AddIndividualService() {
 
         setLoading(true);
 
+        //Create a FormData object to send the data as multipart/form-data
+        const formData = new FormData();
+
+        formData.append("category_id", form.category_id);
+        formData.append("state_id", form.state_id);
+        formData.append("city_id", form.city_id);
+        formData.append("locality_id", form.locality_id);
+
+        formData.append("service_name", form.service_name);
+        formData.append("service_description", form.service_description);
+        formData.append("service_address", form.service_address);
+
+        if (form.service_banner_image) {
+            formData.append(
+                "service_banner_image",
+                form.service_banner_image
+            );
+        }
+
+        formData.append("capacity", form.capacity);
+        formData.append(
+            "number_of_rooms",
+            form.number_of_rooms
+        );
+        formData.append("car_parking", form.car_parking);
+        formData.append("ac_available", form.ac_available);
+
+        formData.append("latitude", form.latitude);
+        formData.append("longitude", form.longitude);
+
+        formData.append("pricing_type", form.pricing_type);
+        formData.append("amount", form.amount);
+        formData.append("discount", form.discount);
+        formData.append(
+            "tax_percentage",
+            form.tax_percentage
+        );
+        formData.append("status", form.status);
+
         try {
-            const result = await vendorService.createIndividualService({
-                category_id: Number(form.category_id),
-                state_id: Number(form.state_id),
-                city_id: Number(form.city_id),
-                locality_id: Number(form.locality_id),
-                service_name: form.service_name,
-                service_description: form.service_description,
-                service_address: form.service_address,
-                service_image: form.service_image,
-                capacity: form.capacity,
-                number_of_rooms: Number(form.number_of_rooms || 0),
-                car_parking: form.car_parking,
-                ac_available: form.ac_available,
-                latitude: form.latitude,
-                longitude: form.longitude,
-                pricing_type: form.pricing_type,
-                amount: Number(form.amount || 0),
-                discount: Number(form.discount || 0),
-                tax_percentage: Number(form.tax_percentage || 0),
-                status: Number(form.status || 1),
-            });
+            const result = await vendorService.createIndividualService(formData);
 
             if (result?.success) {
                 // setForm(initialForm);
@@ -152,7 +203,8 @@ export default function AddIndividualService() {
         }
     }
 
-    const inputClassName = "w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/5 shadow-sm outline-none transition-all duration-300 hover:border-slate-300";
+    const inputClassName = common.inputClass;
+    const buttonClassName = common.buttonClass;
 
     return (
         <div className="d-block">
@@ -353,7 +405,7 @@ export default function AddIndividualService() {
                             </h2>
                         </div>
 
-                        <div className="md:col-span-4">
+                        <div className="md:col-span-4 mb-4">
                             <label htmlFor="localityId" className="mb-2 block text-sm font-medium text-gray-700">
                                 Locality
                             </label>
@@ -392,21 +444,56 @@ export default function AddIndividualService() {
                             />
                         </div>
 
-                        <div className="md:col-span-4">
+                        <div className="md:col-span-12 mb-3">
+                            <label htmlFor="serviceBannerImage" className="mb-2 block text-sm font-medium text-gray-700">
+                                Banner Image
+                            </label>
+                            <div className="flex items-center gap-3">
+                                <label
+                                    htmlFor="serviceBannerImage"
+                                    className="inline-flex h-8 cursor-pointer items-center rounded-xl bg-primary-light px-5 py-2 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-lg"
+                                >
+                                    Browse
+                                </label>
+
+                                <input
+                                    id="serviceBannerImage"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={handleBannerImageChange}
+                                    className="hidden"
+                                />
+
+                                <span className="text-sm text-slate-500">
+                                    {form.service_banner_image ? '' : "No image selected"}
+                                </span>
+                            </div>
+                            {bannerPreview && (
+                                <div className="mt-5">
+                                    <img
+                                        src={bannerPreview}
+                                        alt="Banner Preview"
+                                        className="h-15 w-50 rounded-xl object-cover shadow-md"
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="md:col-span-6">
                             <label htmlFor="serviceAddress" className="mb-2 block text-sm font-medium text-gray-700">
                                 Service Address
                             </label>
                             <textarea
                                 id="serviceAddress"
                                 placeholder="Enter service address"
-                                rows={1}
+                                rows={2}
                                 className={inputClassName}
                                 value={form.service_address}
                                 onChange={(event) => updateField("service_address", event.target.value)}
                             ></textarea>
                         </div>
 
-                        <div className="md:col-span-12">
+                        <div className="md:col-span-6">
                             <label htmlFor="serviceDescription" className="mb-2 block text-sm font-medium text-gray-700">
                                 Service Description
                             </label>
@@ -432,7 +519,7 @@ export default function AddIndividualService() {
                         <div className="md:col-span-12 flex justify-end">
                             <button
                                 type="submit"
-                                className="rounded-lg bg-primary px-6 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-primary/20 hover:bg-primary-dark disabled:bg-secondary-light cursor-pointer"
+                                className={buttonClassName}
                                 disabled={loading}
                             >
                                 {loading ? "Saving..." : "Save"}

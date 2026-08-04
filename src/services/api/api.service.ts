@@ -30,17 +30,41 @@ const requestWithBody = async <T>(
 ): Promise<T> => {
   const accessToken = getAccessTokens();
 
-  const response = await fetch(buildUrl(path), {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-      ...(options.headers ?? {}),
-    },
-    body: JSON.stringify(withDefaultBody(body)),
-    ...options,
-  });
+  const isFormData = body instanceof FormData;
+
+  const headers = new Headers();
+
+  headers.set("Accept", "application/json");
+
+  if (accessToken) {
+    headers.set("Authorization", `Bearer ${accessToken}`);
+  }
+
+  // Only add Content-Type for JSON
+  if (!isFormData) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  // Add custom headers from options
+  if (options.headers) {
+    const customHeaders = new Headers(
+      options.headers
+    );
+
+    customHeaders.forEach((value, key) => {
+      headers.set(key, value);
+    });
+  }
+
+  const response = await fetch(
+    buildUrl(path),
+    {
+      ...options,
+      method,
+      headers,
+      body: isFormData ? body as FormData : JSON.stringify(withDefaultBody(body)),
+    }
+  );
 
   return handleResponse<T>(response);
 };
