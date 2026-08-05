@@ -4,6 +4,10 @@ const createIndividualService = async (formData: FormData) => {
     return await apiService.post<any>("/vendors/create-individual-service", formData);
 };
 
+const deleteIndividualService = async (payload: any) => {
+    return await apiService.post<any>("/vendors/delete-individual-service", payload);
+};
+
 const getIndividualService = async (payload: any) => {
     return await apiService.post<any>("/vendors/get-individual-service", payload);
 };
@@ -16,4 +20,5 @@ export const vendorService = {
     createIndividualService,
     getIndividualService,
     individualServiceList,
+    deleteIndividualService,
 };

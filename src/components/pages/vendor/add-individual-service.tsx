@@ -202,6 +202,11 @@ export default function AddIndividualService() {
             return;
         }
 
+        if (!form.capacity.trim()) {
+            setError("Capacity is required");
+            return;
+        }
+
         if (!form.amount.trim()) {
             setError("Amount is required");
             return;
@@ -266,7 +271,7 @@ export default function AddIndividualService() {
             const result = await vendorService.createIndividualService(formData);
 
             if (result?.success) {
-                // setForm(initialForm);
+                setForm(initialForm);
                 await sweetalert.success(result.message);
             }
         } catch (caughtError) {

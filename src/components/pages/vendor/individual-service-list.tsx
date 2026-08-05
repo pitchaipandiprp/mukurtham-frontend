@@ -4,11 +4,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { vendorService } from "@/services/vendor/vendor.service";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
+import { Pencil, Trash2, Eye, Copy, MoreVertical, } from "lucide-react";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
 import TablePagination from "@/components/common/datatable/pagination";
 import { common as commonUtils } from "@/utils/common";
+import { sweetalert } from "@/utils/sweetalert";
 
 
 
@@ -34,6 +36,9 @@ export default function IndividualServiceList() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
+    const buttonClass = commonUtils.buttonClass;
+    const buttonClassBlue = commonUtils.buttonClassBlue;
+    const buttonClassRed = commonUtils.buttonClassRed;
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -74,8 +79,22 @@ export default function IndividualServiceList() {
         console.log(row);
     };
 
-    const handleDelete = (row: any) => {
+    const handleDelete = async (row: any) => {
         console.log(row);
+        const swalConfirm = await sweetalert.confirm("Are you sure you want to delete?", "Delete Confirmation");
+        if (!swalConfirm.isConfirmed) {
+            return;
+        }
+
+        try {
+            const result = await vendorService.deleteIndividualService({ id: row.id });
+            if (result?.success) {
+                sweetalert.success(result.message);
+                fetchServiceData();
+            }
+        } catch (error) {
+            console.error("Delete failed:", error);
+        }
     };
 
     const columns = useMemo<ColumnDef<any>[]>(() => {
@@ -122,6 +141,33 @@ export default function IndividualServiceList() {
                     );
                 },
             },
+
+            {
+                accessorKey: "action",
+                header: "Action",
+                cell: ({ row }) => {
+                    return (
+                        <>
+                            <Link href={`/users/add-individual-service?id=${row.original.id}`}>
+                                <button
+                                    className={`mr-4 ${buttonClassBlue}`}
+                                    title="Edit"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </button>
+                            </Link>
+
+                            <button
+                                className={buttonClassRed}
+                                title="Delete"
+                                onClick={() => handleDelete(row.original)}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </button>
+                        </>
+                    );
+                },
+            },
         ];
     }, []);
 
@@ -132,7 +178,6 @@ export default function IndividualServiceList() {
     });
     //Data Table Code End
 
-    const buttonClass = commonUtils.buttonClass;
 
     return (
         <div className="d-block">
