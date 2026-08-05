@@ -41,7 +41,7 @@ export default function TablePagination({
     const pageNumbers = getPageNumbers();
 
     return (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-t rounded-xl border border-slate-200 bg-white px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-t rounded-xl border border-slate-200 bg-white px-5 py-4 overflow-x-auto">
 
             <div className="text-sm text-slate-600">
                 <span className="text-slate-400">Page</span> <strong>{page}</strong> <span className="text-slate-400">of</span> <strong>{totalPages}</strong>

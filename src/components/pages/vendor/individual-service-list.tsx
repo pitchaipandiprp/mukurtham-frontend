@@ -175,7 +175,7 @@ export default function IndividualServiceList() {
 
 
     return (
-        <div className="d-block">
+        <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
                 <b className="text-2xl text-slate-600 tracking-tight">Service Lists</b>
             </div>

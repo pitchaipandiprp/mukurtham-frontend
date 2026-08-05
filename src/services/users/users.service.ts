@@ -23,8 +23,8 @@ const userList = async (payload: any) => {
     return await apiService.post<any>("/users/user-list", payload);
 }
 
-const userDelete = async (payload: any) => {
-    return await apiService.post<any>("/users/delete", payload);
+const updateStatus = async (payload: any) => {
+    return await apiService.post<any>("/users/update-status", payload);
 }
 
 export const userService = {
@@ -33,5 +33,5 @@ export const userService = {
     userUpdate,
     userProfile,
     userList,
-    userDelete,
+    updateStatus,
 };

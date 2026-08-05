@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { userService } from "@/services/users/users.service";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2, Eye, Copy, MoreVertical, } from "lucide-react";
+import { Pencil, Trash2, CheckCircle2, XCircle, Eye, Copy, MoreVertical, } from "lucide-react";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
@@ -32,6 +32,8 @@ export default function UserList({
     const buttonClass = commonUtils.buttonClass;
     const buttonClassBlue = commonUtils.buttonClassBlue;
     const buttonClassRed = commonUtils.buttonClassRed;
+    const buttonClassGreen = commonUtils.buttonClassGreen;
+    const buttonClassOrange = commonUtils.buttonClassOrange;
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -69,16 +71,27 @@ export default function UserList({
         }
     };
 
-    const handleDelete = async (row: any) => {
-        const swalConfirm = await sweetalert.confirm("Are you sure you want to delete?", "Delete Confirmation");
+    const handleStatusUpdate = async (row: any, status: number) => {
+        let msg = "Are you sure you want to delete?";
+        let title = "Delete Confirmation";
+
+        if (status === 1) {
+            msg = "Are you sure you want to approve?";
+            title = "Approve Confirmation";
+        } else if (status === 0) {
+            msg = "Are you sure you want to disapprove?";
+            title = "Disapprove Confirmation";
+        }
+
+        const swalConfirm = await sweetalert.confirm(msg, title);
         if (!swalConfirm.isConfirmed) {
             return;
         }
 
         try {
-            const result = await userService.userDelete({ id: row.id });
+            const result = await userService.updateStatus({ id: row.id, status });
             if (result?.success) {
-                sweetalert.success(result.message);
+                sweetalert.success('Updated successfully');
                 fetchUserData();
             }
         } catch (error) {
@@ -125,8 +138,29 @@ export default function UserList({
                 accessorKey: "action",
                 header: "Action",
                 cell: ({ row }) => {
+                    const isApproved = Number(row.original.status) === 1;
                     return (
                         <>
+                            {isApproved ? (
+                                <button
+                                    type="button"
+                                    onClick={() => handleStatusUpdate(row.original, 0)}
+                                    title="Disapprove"
+                                    className={`mr-4 ${buttonClassOrange}`}
+                                >
+                                    <XCircle className="h-4 w-4" />
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => handleStatusUpdate(row.original, 1)}
+                                    title="Approve"
+                                    className={`mr-4 ${buttonClassGreen}`}
+                                >
+                                    <CheckCircle2 className="h-5 w-5" />
+                                </button>
+                            )}
+
                             <Link href={`/panel/edit-user?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
@@ -139,7 +173,7 @@ export default function UserList({
                             <button
                                 className={buttonClassRed}
                                 title="Delete"
-                                onClick={() => handleDelete(row.original)}
+                                onClick={() => handleStatusUpdate(row.original, 2)}
                             >
                                 <Trash2 className="h-4 w-4" />
                             </button>
@@ -159,7 +193,7 @@ export default function UserList({
 
 
     return (
-        <div className="d-block">
+        <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
                 <b className="text-2xl text-slate-600 tracking-tight">{roleTitle} Lists</b>
             </div>
