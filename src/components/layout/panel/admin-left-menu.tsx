@@ -23,9 +23,9 @@ const navItems: NavItem[] = [
         title: 'Dashboards',
         icon: LayoutDashboard,
         subItems: [
-            { title: 'Dashboard', href: '/users/dashboard' },
-            { title: 'Vendors', href: '/users/vendor-list' },
-            { title: 'Customer', href: '/users/customer-list' },
+            { title: 'Dashboard', href: '/panel/dashboard' },
+            { title: 'Vendors', href: '/panel/vendor-list' },
+            { title: 'Customer', href: '/panel/customer-list' },
         ],
     },
     {
@@ -33,7 +33,7 @@ const navItems: NavItem[] = [
         title: 'Payments',
         icon: CreditCard,
         subItems: [
-            { title: 'Payment History', href: '/users/payment-history' },
+            { title: 'Payment History', href: '/panel/payment-history' },
         ],
     },
     {
@@ -41,8 +41,8 @@ const navItems: NavItem[] = [
         title: 'Settings',
         icon: Settings,
         subItems: [
-            { title: 'Profile Settings', href: '/users/change-profile' },
-            { title: 'Security & Auth', href: '/users/change-password' },
+            { title: 'Profile Settings', href: '/panel/change-profile' },
+            { title: 'Security & Auth', href: '/panel/change-password' },
         ],
     },
     {
@@ -50,9 +50,9 @@ const navItems: NavItem[] = [
         title: 'Support',
         icon: ShieldCheck,
         subItems: [
-            { title: 'Enquiries', href: '/users/enquiry-list' },
-            { title: 'Reviews', href: '/users/review-list' },
-            { title: 'Support Tickets', href: '/users/support-ticket-list' },
+            { title: 'Enquiries', href: '/panel/enquiry-list' },
+            { title: 'Reviews', href: '/panel/review-list' },
+            { title: 'Support Tickets', href: '/panel/support-ticket-list' },
         ],
     },
 ];

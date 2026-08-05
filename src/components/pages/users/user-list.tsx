@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { vendorService } from "@/services/vendor/vendor.service";
+import { userService } from "@/services/users/users.service";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, Eye, Copy, MoreVertical, } from "lucide-react";
 import Link from "next/link";
@@ -15,18 +15,11 @@ import { sweetalert } from "@/utils/sweetalert";
 
 
 const PAGE_SIZE = 10;
-const formatAmount = (amount: number | null) => {
-    if (amount === null || Number.isNaN(amount)) {
-        return "-";
-    }
-    return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0,
-    }).format(amount);
-};
 
-export default function IndividualServiceList() {
+export default function UserList({
+    roleId = 0,
+    roleTitle = "User",
+}) {
 
     //Data Table Code Start
     const [rows, setRows] = useState<any[]>([]);
@@ -50,18 +43,19 @@ export default function IndividualServiceList() {
     }, [searchInput]);
 
     useEffect(() => {
-        fetchServiceData();
+        fetchUserData();
     }, [page, searchTerm]);
 
-    const fetchServiceData = async () => {
 
+    const fetchUserData = async () => {
         try {
             setLoading(true);
 
-            const response = await vendorService.individualServiceList({
+            const response = await userService.userList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
+                role_id: roleId,
             });
 
             const responData = response.data;
@@ -82,10 +76,10 @@ export default function IndividualServiceList() {
         }
 
         try {
-            const result = await vendorService.deleteIndividualService({ id: row.id });
+            const result = await userService.userDelete({ id: row.id });
             if (result?.success) {
                 sweetalert.success(result.message);
-                fetchServiceData();
+                fetchUserData();
             }
         } catch (error) {
             console.error("Delete failed:", error);
@@ -95,29 +89,19 @@ export default function IndividualServiceList() {
     const columns = useMemo<ColumnDef<any>[]>(() => {
         return [
             {
-                accessorKey: "service_name",
-                header: "Service Name",
+                accessorKey: "name",
+                header: "Name",
                 cell: ({ getValue }) => getValue<any>() ?? "-",
             },
             {
-                accessorKey: "category_id",
-                header: "Category",
-                cell: ({ row }) => row.original.category?.name ?? "-",
+                accessorKey: "email",
+                header: "Email ID",
+                cell: ({ getValue }) => getValue<any>() ?? "-",
             },
             {
-                id: "locality",
-                header: "Locality",
-                cell: ({ row }) => (row.original.locality?.name && row.original.city?.name && row.original.state?.name) ? row.original.locality?.name + ", " + row.original.city?.name + ", " + row.original.state?.name : "-",
-            },
-            {
-                accessorKey: "capacity",
-                header: "Capacity",
-                cell: ({ row }) => row.original.capacity ?? "-",
-            },
-            {
-                accessorKey: "final_amount",
-                header: "Final Amount",
-                cell: ({ row }) => formatAmount(row.original.final_amount),
+                id: "mobile",
+                header: "Mobile",
+                cell: ({ row }) => row.original.mobile ?? "-",
             },
             {
                 accessorKey: "status",
@@ -143,7 +127,7 @@ export default function IndividualServiceList() {
                 cell: ({ row }) => {
                     return (
                         <>
-                            <Link href={`/panel/add-individual-service?id=${row.original.id}`}>
+                            <Link href={`/panel/edit-user?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -177,7 +161,7 @@ export default function IndividualServiceList() {
     return (
         <div className="d-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">Service Lists</b>
+                <b className="text-2xl text-slate-600 tracking-tight">{roleTitle} Lists</b>
             </div>
 
             <section className="space-y-5">
@@ -185,16 +169,16 @@ export default function IndividualServiceList() {
                     <TableSearch
                         value={searchInput}
                         onChange={setSearchInput}
-                        placeholder="Search Service..."
+                        placeholder="Search User..."
                     />
-                    <Link href="/panel/add-individual-service" className={buttonClass}> Add Service </Link>
+                    <Link href="/panel/add-user" className={buttonClass}> Add {roleTitle} </Link>
                 </div>
 
 
                 <DataTable
                     table={table}
                     loading={loading}
-                    emptyMessage="No Services Found"
+                    emptyMessage="No Users Found"
                 />
 
                 <TablePagination

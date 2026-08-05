@@ -19,9 +19,19 @@ const userProfile = async (payload: any) => {
     return await apiService.post<any>("/users/profile", payload);
 }
 
+const userList = async (payload: any) => {
+    return await apiService.post<any>("/users/user-list", payload);
+}
+
+const userDelete = async (payload: any) => {
+    return await apiService.post<any>("/users/delete", payload);
+}
+
 export const userService = {
     createUser,
     changePassword,
     userUpdate,
     userProfile,
+    userList,
+    userDelete,
 };

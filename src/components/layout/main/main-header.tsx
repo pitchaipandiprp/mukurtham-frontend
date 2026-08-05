@@ -112,7 +112,7 @@ export function MainHeader() {
                         )}
 
                         {isAuthenticated && (
-                            <Link href="/users/dashboard"
+                            <Link href="/panel/dashboard"
                                 type="button"
                                 className="group cursor-pointer rounded-lg bg-white p-3 transition hover:bg-primary"
                             >

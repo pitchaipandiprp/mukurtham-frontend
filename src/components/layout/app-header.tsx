@@ -7,6 +7,7 @@ export default function AppHeader() {
     const pathname = usePathname();
 
     const dashboardRoutes = [
+        "/panel",
         "/users",
         "/vendors",
         "/admin",

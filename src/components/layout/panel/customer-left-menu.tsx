@@ -23,8 +23,8 @@ const navItems: NavItem[] = [
         title: 'Dashboards',
         icon: LayoutDashboard,
         subItems: [
-            { title: 'Dashboard', href: '/users/dashboard' },
-            { title: 'Wishlist', href: '/users/wishlist' },
+            { title: 'Dashboard', href: '/panel/dashboard' },
+            { title: 'Wishlist', href: '/panel/wishlist' },
         ],
     },
     {
@@ -32,8 +32,8 @@ const navItems: NavItem[] = [
         title: 'Bookings',
         icon: ShoppingBag,
         subItems: [
-            { title: 'Recent Bookings', href: '/users/bookings' },
-            { title: 'Booking History', href: '/users/bookings' },
+            { title: 'Recent Bookings', href: '/panel/bookings' },
+            { title: 'Booking History', href: '/panel/bookings' },
         ],
     },
     {
@@ -41,8 +41,8 @@ const navItems: NavItem[] = [
         title: 'Payments',
         icon: CreditCard,
         subItems: [
-            { title: 'Recent Payments', href: '/users/payments' },
-            { title: 'Payment History', href: '/users/payments' },
+            { title: 'Recent Payments', href: '/panel/payments' },
+            { title: 'Payment History', href: '/panel/payments' },
         ],
     },
     {
@@ -50,9 +50,9 @@ const navItems: NavItem[] = [
         title: 'Support',
         icon: ShieldCheck,
         subItems: [
-            { title: 'My Enquiries', href: '/users/support' },
-            { title: 'My Reviews', href: '/users/support' },
-            { title: 'My Support Tickets', href: '/users/support' },
+            { title: 'My Enquiries', href: '/panel/support' },
+            { title: 'My Reviews', href: '/panel/support' },
+            { title: 'My Support Tickets', href: '/panel/support' },
         ],
     },
     {
@@ -60,8 +60,8 @@ const navItems: NavItem[] = [
         title: 'Settings',
         icon: Settings,
         subItems: [
-            { title: 'Profile Settings', href: '/users/change-profile' },
-            { title: 'Security & Auth', href: '/users/change-password' },
+            { title: 'Profile Settings', href: '/panel/change-profile' },
+            { title: 'Security & Auth', href: '/panel/change-password' },
         ],
     },
 ];

@@ -23,8 +23,8 @@ const navItems: NavItem[] = [
         title: 'Dashboards',
         icon: LayoutDashboard,
         subItems: [
-            { title: 'Dashboard', href: '/users/dashboard' },
-            { title: 'Wishlist', href: '/users/wishlist' },
+            { title: 'Dashboard', href: '/panel/dashboard' },
+            { title: 'Wishlist', href: '/panel/wishlist' },
         ],
     },
     {
@@ -32,8 +32,8 @@ const navItems: NavItem[] = [
         title: 'Bookings',
         icon: ShoppingBag,
         subItems: [
-            { title: 'Bookings Details', href: '/users/booking-details' },
-            { title: 'Booking History', href: '/users/booking-history' },
+            { title: 'Bookings Details', href: '/panel/booking-details' },
+            { title: 'Booking History', href: '/panel/booking-history' },
         ],
     },
     {
@@ -41,10 +41,10 @@ const navItems: NavItem[] = [
         title: 'Services',
         icon: ShoppingBag,
         subItems: [
-            { title: 'Service List', href: '/users/individual-service-list' },
-            { title: 'Add Individual Service', href: '/users/add-individual-service' },
-            { title: 'Package List', href: '/users/package-list' },
-            { title: 'Add Package', href: '/users/add-package' },
+            { title: 'Service List', href: '/panel/individual-service-list' },
+            { title: 'Add Individual Service', href: '/panel/add-individual-service' },
+            { title: 'Package List', href: '/panel/package-list' },
+            { title: 'Add Package', href: '/panel/add-package' },
         ],
     },
     {
@@ -52,8 +52,8 @@ const navItems: NavItem[] = [
         title: 'Payments',
         icon: CreditCard,
         subItems: [
-            { title: 'Recent Payments', href: '/users/recent-payments' },
-            { title: 'Payment History', href: '/users/payment-history' },
+            { title: 'Recent Payments', href: '/panel/recent-payments' },
+            { title: 'Payment History', href: '/panel/payment-history' },
         ],
     },
     {
@@ -61,10 +61,10 @@ const navItems: NavItem[] = [
         title: 'Settings',
         icon: Settings,
         subItems: [
-            { title: 'Profile Settings', href: '/users/change-profile' },
-            { title: 'Security & Auth', href: '/users/change-password' },
-            { title: 'Business Profile', href: '/users/business-profile' },
-            { title: 'Verification Documents', href: '/users/upload-verification-documents' },
+            { title: 'Profile Settings', href: '/panel/change-profile' },
+            { title: 'Security & Auth', href: '/panel/change-password' },
+            { title: 'Business Profile', href: '/panel/business-profile' },
+            { title: 'Verification Documents', href: '/panel/upload-verification-documents' },
         ],
     },
     {
@@ -72,9 +72,9 @@ const navItems: NavItem[] = [
         title: 'Support',
         icon: ShieldCheck,
         subItems: [
-            { title: 'Enquiries', href: '/users/enquiry-list' },
-            { title: 'Reviews', href: '/users/review-list' },
-            { title: 'Support Tickets', href: '/users/support-ticket-list' },
+            { title: 'Enquiries', href: '/panel/enquiry-list' },
+            { title: 'Reviews', href: '/panel/review-list' },
+            { title: 'Support Tickets', href: '/panel/support-ticket-list' },
         ],
     },
 ];
