@@ -32,6 +32,11 @@ const requestWithBody = async <T>(
 
   const isFormData = body instanceof FormData;
 
+  const userId = authUserId();
+  if (isFormData && userId) {
+    body.append("user_id", userId);
+  }
+
   const headers = new Headers();
 
   headers.set("Accept", "application/json");

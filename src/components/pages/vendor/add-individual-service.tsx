@@ -3,11 +3,12 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { sweetalert } from "@/utils/sweetalert";
-import { common } from "@/utils/common";
+import { common as commonUtils } from "@/utils/common";
 import { vendorService } from "@/services/vendor/vendor.service";
 import commonService from "@/services/common/common.service";
-import LocalitySelect, { LocalityOption } from "@/components/common/locality-select";
+import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
 import { apiConfig } from "@/environments/api";
 
 type IndividualServiceForm = {
@@ -201,11 +202,6 @@ export default function AddIndividualService() {
             return;
         }
 
-        if (!form.service_description.trim()) {
-            setError("Description is required");
-            return;
-        }
-
         if (!form.amount.trim()) {
             setError("Amount is required");
             return;
@@ -213,6 +209,11 @@ export default function AddIndividualService() {
 
         if (!form.locality_id || !form.state_id || !form.city_id) {
             setError("Locality is required");
+            return;
+        }
+
+        if (!form.service_description.trim()) {
+            setError("Description is required");
             return;
         }
 
@@ -275,16 +276,18 @@ export default function AddIndividualService() {
         }
     }
 
-    const inputClassName = common.inputClass;
-    const buttonClassName = common.buttonClass;
+    const inputClass = commonUtils.inputClass;
+    const buttonClass = commonUtils.buttonClass;
+    const buttonClassSubmit = commonUtils.buttonClassSubmit;
 
     return (
         <div className="d-block">
-            <div className="mb-6">
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Add Individual Service</h3>
+            <div className="mb-6 ml-1 flex items-center justify-between">
+                <b className="text-2xl text-slate-600 tracking-tight">Add Individual Service</b>
+                <Link href="/users/individual-service-list" className={buttonClass}> Service Lists</Link>
             </div>
 
-            <div className="min-h-full px-4 py-4 rounded-lg border border-primary/10 bg-white shadow-sm">
+            <div className="min-h-full px-4 py-4 rounded-xl border border-primary/10 bg-white shadow-sm">
                 <form onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
                         <div className="md:col-span-12">
@@ -301,7 +304,7 @@ export default function AddIndividualService() {
                                 id="status"
                                 value={form.status}
                                 onChange={(event) => updateField("status", event.target.value)}
-                                className={inputClassName}
+                                className={inputClass}
                             >
                                 <option value="">Select status</option>
                                 <option value="1">Active</option>
@@ -317,7 +320,7 @@ export default function AddIndividualService() {
                                 id="categoryId"
                                 value={form.category_id}
                                 onChange={(event) => updateField("category_id", event.target.value)}
-                                className={inputClassName}
+                                className={inputClass}
                             >
                                 <option value="">Select category</option>
                                 {categories.map((item) => (
@@ -336,7 +339,7 @@ export default function AddIndividualService() {
                                 id="serviceName"
                                 type="text"
                                 placeholder="Enter service name"
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.service_name}
                                 onChange={(event) => updateField("service_name", event.target.value)}
                             />
@@ -351,7 +354,7 @@ export default function AddIndividualService() {
                                 id="capacity"
                                 type="text"
                                 placeholder="Enter capacity"
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.capacity}
                                 onChange={(event) => updateField("capacity", event.target.value)}
                             />
@@ -366,7 +369,7 @@ export default function AddIndividualService() {
                                 id="numberOfRooms"
                                 type="text"
                                 placeholder="Enter number of rooms"
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.number_of_rooms}
                                 onChange={(event) => updateField("number_of_rooms", event.target.value)}
                             />
@@ -381,7 +384,7 @@ export default function AddIndividualService() {
                                 id="carParking"
                                 value={form.car_parking}
                                 onChange={(event) => updateField("car_parking", event.target.value)}
-                                className={inputClassName}
+                                className={inputClass}
                             >
                                 <option value="">Select car parking</option>
                                 <option value="Yes">Yes</option>
@@ -397,7 +400,7 @@ export default function AddIndividualService() {
                                 id="acAvailable"
                                 value={form.ac_available}
                                 onChange={(event) => updateField("ac_available", event.target.value)}
-                                className={inputClassName}
+                                className={inputClass}
                             >
                                 <option value="">Select AC availability</option>
                                 <option value="Yes">Yes</option>
@@ -419,7 +422,7 @@ export default function AddIndividualService() {
                                 id="pricingType"
                                 value={form.pricing_type}
                                 onChange={(event) => updateField("pricing_type", event.target.value)}
-                                className={inputClassName}
+                                className={inputClass}
                             >
                                 <option value="">Select pricing type</option>
                                 <option value="Fixed">Fixed</option>
@@ -437,7 +440,7 @@ export default function AddIndividualService() {
                                 id="amount"
                                 type="text"
                                 placeholder="Enter amount"
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.amount}
                                 onChange={(event) => updateField("amount", event.target.value)}
                             />
@@ -451,7 +454,7 @@ export default function AddIndividualService() {
                                 id="discount"
                                 type="text"
                                 placeholder="Enter discount"
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.discount}
                                 onChange={(event) => updateField("discount", event.target.value)}
                             />
@@ -465,7 +468,7 @@ export default function AddIndividualService() {
                                 id="taxPercentage"
                                 type="text"
                                 placeholder="Enter tax percentage"
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.tax_percentage}
                                 onChange={(event) => updateField("tax_percentage", event.target.value)}
                             />
@@ -496,7 +499,7 @@ export default function AddIndividualService() {
                                 id="cityId"
                                 type="text"
                                 placeholder="Enter city"
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.city_id}
                                 onChange={(event) => updateField("city_id", event.target.value)}
                             />
@@ -510,7 +513,7 @@ export default function AddIndividualService() {
                                 id="stateId"
                                 type="text"
                                 placeholder="Enter state"
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.state_id}
                                 onChange={(event) => updateField("state_id", event.target.value)}
                             />
@@ -523,7 +526,7 @@ export default function AddIndividualService() {
                             <div className="flex items-center gap-3">
                                 <label
                                     htmlFor="serviceBannerImage"
-                                    className="inline-flex h-8 cursor-pointer items-center rounded-xl bg-primary-light px-5 py-2 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-lg"
+                                    className={buttonClass}
                                 >
                                     Browse
                                 </label>
@@ -559,7 +562,7 @@ export default function AddIndividualService() {
                                 id="serviceAddress"
                                 placeholder="Enter service address"
                                 rows={2}
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.service_address}
                                 onChange={(event) => updateField("service_address", event.target.value)}
                             ></textarea>
@@ -573,7 +576,7 @@ export default function AddIndividualService() {
                                 id="serviceDescription"
                                 placeholder="Enter service description"
                                 rows={2}
-                                className={inputClassName}
+                                className={inputClass}
                                 value={form.service_description}
                                 onChange={(event) => updateField("service_description", event.target.value)}
                             ></textarea>
@@ -591,7 +594,7 @@ export default function AddIndividualService() {
                         <div className="md:col-span-12 flex justify-end">
                             <button
                                 type="submit"
-                                className={buttonClassName}
+                                className={buttonClassSubmit}
                                 disabled={loading}
                             >
                                 {loading ? "Saving..." : "Save"}

@@ -8,7 +8,12 @@ const getIndividualService = async (payload: any) => {
     return await apiService.post<any>("/vendors/get-individual-service", payload);
 };
 
+const individualServiceList = async (payload: any) => {
+    return await apiService.post<any>("/vendors/individual-service-list", payload);
+};
+
 export const vendorService = {
     createIndividualService,
     getIndividualService,
+    individualServiceList,
 };
