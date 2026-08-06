@@ -61,7 +61,7 @@ const venues = [
     },
 ];
 
-export default function CategorySearch() {
+export default function CategoryServiceSearch() {
     return (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4">
             <div className="hidden md:flex bg-white p-2 rounded-2xl shadow-sm border border-gray-200 items-center justify-between mb-4">

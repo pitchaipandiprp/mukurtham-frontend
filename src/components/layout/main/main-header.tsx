@@ -12,7 +12,7 @@ const navLinks = [
     { label: "About", href: "/about-us" },
     { label: "Vendors", href: "/service-details" },
     { label: "Venues", href: "/service-details" },
-    { label: "Categories", href: "/category-search" },
+    { label: "Categories", href: "/service-search" },
     { label: "Contact", href: "/contact-us" },];
 
 export function MainHeader() {

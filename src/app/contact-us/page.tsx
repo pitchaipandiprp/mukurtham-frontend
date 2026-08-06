@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import ContactUs from "@/components/pages/about/contact-us";
+import ContactUs from "@/components/pages/main/about/contact-us";
 
 export const metadata: Metadata = {
     title: "Mukurtham - Contact Us",
