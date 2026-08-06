@@ -5,6 +5,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import "../assets/css/custom.css";
 import MobileBottomNav from "@/components/layout/main/mobile-bottom-nav";
+import GlobalLoader from "@/components/common/loader/global-loader";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,7 +28,13 @@ export default function RootLayout({
       <body className="min-h-full bg-gray-100 text-gray-800 antialiased">
         <div className="flex min-h-screen flex-col">
           <AppHeader />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1">
+
+            <GlobalLoader />
+
+            {children}
+
+          </main>
           <AppFooter />
           <MobileBottomNav />
         </div>
