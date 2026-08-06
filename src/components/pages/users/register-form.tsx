@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { userService } from "@/services/users/users.service";
+import { userService } from "@/services/api/users.service";
 import { sweetalert } from "@/utils/sweetalert";
 
 type UserType = "customer" | "vendor";

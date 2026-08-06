@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { vendorService } from "@/services/vendor/vendor.service";
+import { vendorService } from "@/services/api/vendor.service";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, Eye, Copy, MoreVertical, } from "lucide-react";
 import Link from "next/link";

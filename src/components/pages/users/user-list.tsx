@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { userService } from "@/services/users/users.service";
+import { userService } from "@/services/api/users.service";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, CheckCircle2, XCircle, Eye, Copy, MoreVertical, } from "lucide-react";
 import Link from "next/link";

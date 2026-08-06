@@ -2,7 +2,7 @@
 
 import { FaBuilding, FaCamera, FaUtensils, FaPaintBrush, FaSpa, FaCar, FaMusic, FaEnvelopeOpenText, FaEllipsisH } from "react-icons/fa";
 import { FiMapPin, FiSearch, FiCheckCircle, FiTag, FiCreditCard } from "react-icons/fi";
-import commonService from "@/services/common/common.service";
+import commonService from "@/services/api/common.service";
 import { useEffect, useState } from "react";
 import * as FaIcons from "react-icons/fa";
 import type { IconType } from "react-icons";

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { userService } from "@/services/users/users.service";
+import { userService } from "@/services/api/users.service";
 import { sweetalert } from "@/utils/sweetalert";
 
 export function ChangePassword() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { authService } from "@/services/auth/auth.service";
+import { authService } from "@/services/api/auth.service";
 import { sweetalert } from "@/utils/sweetalert";
 import { clearAuthData } from "@/utils/auth";
 

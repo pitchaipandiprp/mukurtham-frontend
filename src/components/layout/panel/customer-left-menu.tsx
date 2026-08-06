@@ -148,8 +148,8 @@ export default function CustomerLeftMenu({
                         transition={{ duration: 0.25, ease: 'easeInOut' }}
                         className="bg-white border-r border-slate-200 text-slate-800 flex flex-col justify-between overflow-hidden z-10"
                     >
-                        <div className="p-4">
-                            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+                        <div className="p-0">
+                            <div className="flex items-center justify-between p-4 mb-4 border-b border-slate-100">
                                 <h3 className="text-xs font-black uppercase tracking-wider text-primary">
                                     {selectedMainItem.title}
                                 </h3>
@@ -175,8 +175,8 @@ export default function CustomerLeftMenu({
                                                 setIsMobileOpen(false);
                                                 goToPage(sub.href); // Navigate to the subpage
                                             }}
-                                            className={`w-full cursor-pointer flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${isActive
-                                                ? 'bg-primary/10 text-primary font-bold'
+                                            className={`w-full cursor-pointer flex items-center justify-between m-0 px-3 py-3 text-xs font-semibold transition-all border-b border-b-slate-200 ${isActive
+                                                ? 'bg-primary/20 text-primary font-bold'
                                                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                                 }`}
                                         >
@@ -191,7 +191,7 @@ export default function CustomerLeftMenu({
                                                 </span>
                                             )}
 
-                                            {isActive && <ChevronRight className="w-3.5 h-3.5 text-primary" />}
+                                            {/* {isActive && <ChevronRight className="w-3.5 h-3.5 text-primary" />} */}
                                         </button>
                                     );
                                 })}

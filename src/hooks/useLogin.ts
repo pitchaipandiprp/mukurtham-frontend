@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { authService } from "@/services/auth/auth.service";
+import { authService } from "@/services/api/auth.service";
 import { setAuthData } from "@/utils/auth";
 
 export function useLogin(redirectTo = "/panel/dashboard") {

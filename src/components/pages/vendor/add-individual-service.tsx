@@ -6,8 +6,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sweetalert } from "@/utils/sweetalert";
 import { common as commonUtils } from "@/utils/common";
-import { vendorService } from "@/services/vendor/vendor.service";
-import commonService from "@/services/common/common.service";
+import { vendorService } from "@/services/api/vendor.service";
+import commonService from "@/services/api/common.service";
 import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
 import { apiConfig } from "@/environments/api";
 

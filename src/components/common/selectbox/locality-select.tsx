@@ -2,7 +2,7 @@
 
 import AsyncSelect from "react-select/async";
 import type { SingleValue } from "react-select";
-import commonService from "@/services/common/common.service";
+import commonService from "@/services/api/common.service";
 
 export interface LocalityOption {
     value: number;
