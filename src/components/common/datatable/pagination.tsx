@@ -6,6 +6,7 @@ interface TablePaginationProps {
     page: number;
     totalPages: number;
     totalRecords?: number;
+    size?: number;
     loading?: boolean;
     onPageChange: (page: number) => void;
 }
@@ -14,6 +15,7 @@ export default function TablePagination({
     page,
     totalPages,
     totalRecords = 0,
+    size = 5,
     loading = false,
     onPageChange,
 }: TablePaginationProps) {
@@ -25,7 +27,7 @@ export default function TablePagination({
     const canGoNext = page < totalPages;
 
     const getPageNumbers = () => {
-        const windowSize = 5;
+        const windowSize = size;
 
         let start = Math.max(1, page - Math.floor(windowSize / 2));
         let end = Math.min(totalPages, start + windowSize - 1);

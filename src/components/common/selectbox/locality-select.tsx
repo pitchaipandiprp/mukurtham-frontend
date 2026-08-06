@@ -30,7 +30,7 @@ export default function LocalitySelect({
     onChange,
     stateId = null,
     cityId = null,
-    placeholder = "Search locality...",
+    placeholder = "Search Location...",
     isDisabled = false,
 }: LocalitySelectProps) {
 
@@ -63,7 +63,7 @@ export default function LocalitySelect({
             }));
 
         } catch (error) {
-            console.error("Failed to load localities:", error);
+            console.error("Failed to load location:", error);
             return [];
         }
     };
@@ -85,7 +85,7 @@ export default function LocalitySelect({
             isSearchable
             isDisabled={isDisabled}
             loadingMessage={() =>
-                "Searching localities..."
+                "Searching Location..."
             }
             noOptionsMessage={() =>
                 "No locality found"

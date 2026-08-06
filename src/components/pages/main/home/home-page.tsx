@@ -141,7 +141,7 @@ export function HomePage() {
             </section>
 
             {/* Featured Vendors Section */}
-            <section>sasasas
+            <section>
                 <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-gray-900">Featured Vendors</h2>
                     <a href="#" className="text-sm font-semibold text-primary hover:underline">View all</a>

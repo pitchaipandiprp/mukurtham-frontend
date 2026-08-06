@@ -271,7 +271,6 @@ export default function CreateCategoryService() {
             const result = await vendorService.createCategoryService(formData);
 
             if (result?.success) {
-                setForm(initialForm);
                 await sweetalert.success(result.message);
             }
         } catch (caughtError) {

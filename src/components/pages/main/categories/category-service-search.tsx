@@ -2,76 +2,224 @@
 
 import { FiChevronsDown, FiCalendar, FiChevronDown, FiCrosshair, FiHeart, FiLock, FiMapPin, FiMinus, FiPlus, FiSearch, FiSliders, FiStar, FiUsers, FiWind, } from "react-icons/fi";
 import { FaBuilding } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { common as commonUtils } from "@/utils/common";
+import commonService from "@/services/api/common.service";
+import mainService from "@/services/api/main.service";
+import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
+import { apiConfig } from "@/environments/api";
+import TablePagination from "@/components/common/datatable/pagination";
 
-const locationOptions = ["All Madurai", "Anna Nagar", "KK Nagar", "Alagar Kovil Road", "Tirupparankundram"];
+const initialSearch = {
+    search_text: "",
+    category_id: "1",
+    state_id: "",
+    city_id: "",
+    locality_id: "",
+    search_date: "",
+    price_range: "",
+    min_price_range: "",
+    max_price_range: "",
+    min_capacity: "",
+    max_capacity: "",
+    facility_ids: "",
+    category_name: "",
+    location_name: "",
+    page: 1,
+    limit: 3,
+};
 
-const amenityOptions = [
-    { label: "AC Hall", checked: true },
-    { label: "Parking", checked: true },
-    { label: "Rooms Available", checked: false },
-    { label: "Dining Area", checked: false },
-    { label: "Lift", checked: false },
-    { label: "Power Backup", checked: false },
-    { label: "Valet Parking", checked: false },
-    { label: "Lawn", checked: false },
+const capacities = [
+    { min: 0, max: 50, label: "0 - 50" },
+    { min: 50, max: 100, label: "50 - 100" },
+    { min: 100, max: 150, label: "100 - 150" },
+    { min: 150, max: 200, label: "150 - 200" },
+    { min: 200, max: 250, label: "200 - 250" },
+    { min: 250, max: 300, label: "250 - 300" },
+    { min: 300, max: 500, label: "300 - 500" },
+    { min: 500, max: 1000, label: "500 - 1000" },
+    { min: 1000, max: 2000, label: "1000 - 2000" },
+    { min: 2000, max: 3000, label: "2000 - 3000" },
+    { min: 3000, max: "5000+", label: "5000+" },
 ];
 
-const venues = [
-    {
-        name: "Grand Palace",
-        rating: "4.6",
-        reviews: "256",
-        location: "KK Nagar, Madurai",
-        capacity: "500 - 1000",
-        rooms: "75",
-        price: "₹1,25,000",
-        image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=600",
-        description: "A premium wedding hall with elegant interiors and amenities.",
-        tags: ["AC Hall", "Parking", "Dining", "Power Backup"],
-        extraTags: "+3 more",
-        featured: true,
-    },
-    {
-        name: "Meenakshi Mahal",
-        rating: "4.4",
-        reviews: "189",
-        location: "Alagar Kovil Road, Madurai",
-        capacity: "300 - 750",
-        rooms: "45",
-        price: "₹85,000",
-        image: "https://images.unsplash.com/photo-1544078751-58fee2d8a03b?auto=format&fit=crop&q=80&w=600",
-        description: "Spacious and beautifully designed hall for grand celebrations.",
-        tags: ["AC Hall", "Parking", "Rooms", "Dining"],
-        extraTags: "+2 more",
-        featured: false,
-    },
-    {
-        name: "Sri Murugan Mahal",
-        rating: "4.3",
-        reviews: "142",
-        location: "Tirupparankundram, Madurai",
-        capacity: "200 - 500",
-        rooms: "25",
-        price: "₹65,000",
-        image: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=600",
-        description: "Perfect for intimate weddings and traditional ceremonies.",
-        tags: ["AC Hall", "Parking", "Dining", "Power Backup"],
-        extraTags: "+2 more",
-        featured: false,
-    },
-];
+const formatAmount = (amount: number | string) => {
+    return `₹${Number(amount).toLocaleString("en-IN")}`;
+};
 
 export default function CategoryServiceSearch() {
+    const BACKEND_BASE_URL = apiConfig.baseUrl;
+
+    const btnClass = commonUtils.btnClass;
+    const inputClass = commonUtils.inputClass;
+    const buttonClassWhite = commonUtils.buttonClassWhite;
+
+    const [pageNumber, setPageNumber] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalRecords, setTotalRecords] = useState(0);
+
+    const [searchFields, setSearchFields] = useState<any>(initialSearch);
+    const [searchServiceData, setSearchServiceData] = useState<any>([]);
+
+    const [categories, setCategories] = useState<any[]>([]);
+    const [facilities, setFacilities] = useState<any[]>([]);
+
+    const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
+    const [categoryId, setCategoryId] = useState(1);
+    const [categoryName, setCategoryName] = useState("");
+    const [cityId, setCityId] = useState("");
+    const [localityId, setLocalityId] = useState("");
+    const [priceRange, setPriceRange] = useState(50000);
+    const [minPriceRange, setMinPriceRange] = useState(0);
+    const [maxPriceRange, setMaxPriceRange] = useState(50000);
+    const [selectedPrice, setSelectedPrice] = useState("");
+    const [minCapacity, setMinCapacity] = useState("0");
+    const [maxCapacity, setMaxCapacity] = useState("50");
+    const [selectedCapacity, setSelectedCapacity] = useState("");
+    const [facilityIds, setFacilityIds] = useState<number[]>([]);
+    const [searchInput, setSearchInput] = useState("");
+
+    useEffect(() => {
+        loadCategories();
+        loadFacility();
+    }, []);
+
+    useEffect(() => {
+        fetchServiceData();
+    }, [pageNumber]);
+
+    const loadCategories = async () => {
+        const result = await commonService.getCategories();
+        setCategories(result?.data || []);
+        setCategoryName(result?.data?.find((cat: any) => cat.id === categoryId)?.name || "");
+    };
+
+    const loadFacility = async () => {
+        const result = await commonService.getFacilities({ category_id: categoryId });
+        setFacilities(result?.data || []);
+    };
+
+    const fetchServiceData = async () => {
+        try {
+            const payload = {
+                ...searchFields,
+                page: pageNumber,
+            };
+
+            const response = await mainService.categoryServiceSearch(payload);
+            const responData = response.data;
+            setSearchServiceData(responData.rows || []);
+            setTotalPages(responData?.totalPages ?? 0);
+            setTotalRecords(responData?.total ?? 0);
+        } catch (error) {
+            console.error("Search Error:", error);
+        }
+    };
+
+    const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setCategoryId(Number(event.target.value));
+        setCategoryName(categories.find((cat) => cat.id === Number(event.target.value))?.name || "");
+        updateField("category_id", event.target.value);
+    };
+
+    const handleLocalityChange = (locality: LocalityOption | null) => {
+        setSelectedLocality(locality);
+
+        setSearchFields((prev: any) => ({
+            ...prev,
+            locality_id: locality ? String(locality.value) : "",
+            state_id: locality ? String(locality.stateId) : "",
+            city_id: locality ? String(locality.cityId) : "",
+        }));
+    };
+
+    const handlePriceRange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPriceRange(Number(event.target.value));
+        updateField("price_range", event.target.value);
+        updateField("min_price_range", "0");
+        updateField("max_price_range", event.target.value);
+    };
+
+    const handlePriceChange = (minPrice: any, maxPrice: any) => {
+        setSelectedPrice(`${minPrice}-${maxPrice}`);
+
+        setMinPriceRange(minPrice);
+        setMaxPriceRange(maxPrice);
+        setPriceRange(Number(maxPrice));
+
+        updateField("price_range", maxPrice);
+        updateField("min_price_range", minPrice);
+        updateField("max_price_range", maxPrice);
+    };
+
+    const handleFacilityChange = (facilityId: number) => {
+        setFacilityIds((prev) => {
+            const updatedFacilityIds = prev.includes(facilityId)
+                ? prev.filter((id) => id !== facilityId)
+                : [...prev, facilityId];
+
+            updateField("facility_ids", updatedFacilityIds.join(","));
+
+            return updatedFacilityIds;
+        });
+    };
+
+
+    const handleCapacityChange = (minCapacity: any, maxCapacity: any) => {
+        setSelectedCapacity(`${minCapacity}-${maxCapacity}`);
+        setMinCapacity(String(minCapacity));
+        setMaxCapacity(String(maxCapacity));
+
+        updateField("min_capacity", minCapacity);
+        updateField("max_capacity", maxCapacity);
+    };
+
+    const updateField = (field: any, value: string) => {
+        setSearchFields((prev: any) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
+
+    async function handleSubmit(event: any) {
+        event.preventDefault();
+        fetchServiceData();
+    }
+
+    async function handleReset(event: any) {
+        event.preventDefault();
+        setSearchFields(initialSearch);
+        setCategoryId(1);
+        setSelectedLocality(null);
+        setPriceRange(50000);
+        setMinPriceRange(0);
+        setMaxPriceRange(50000);
+        setSelectedPrice("");
+        setMinCapacity("0");
+        setMaxCapacity("50");
+        setSelectedCapacity("");
+        setFacilityIds([]);
+        setSearchInput("");
+    }
+
     return (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4">
             <div className="hidden md:flex bg-white p-2 rounded-2xl shadow-sm border border-gray-200 items-center justify-between mb-4">
                 <div className="flex items-center divide-x divide-gray-200 flex-1">
                     <div className="flex items-center px-4 py-2 space-x-2 text-xs font-semibold text-gray-700 w-1/4 cursor-pointer justify-between">
-                        <div className="flex items-center space-x-2">
-                            <FaBuilding className="w-4 h-4 text-gray-500" />
-                            <span>Wedding Halls</span>
-                        </div>
-                        <FiChevronDown className="w-4 h-4 text-gray-400" />
+                        <select
+                            id="categoryId"
+                            value={categoryId}
+                            onChange={handleCategoryChange}
+                            className="w-full bg-transparent border-none focus:outline-none"
+                        >
+                            <option value="">Select Category</option>
+                            {categories.map((item) => (
+                                <option key={`category-${item.id}`} value={item.id}>
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="flex items-center px-4 py-2 space-x-2 text-xs font-semibold text-gray-700 w-1/4 cursor-pointer justify-between">
@@ -91,17 +239,9 @@ export default function CategoryServiceSearch() {
                     </div>
                 </div>
 
-                <button type="button" className="bg-pink-700 hover:bg-pink-800 text-white px-8 py-2.5 rounded-xl text-xs font-semibold transition">
+                <button onClick={handleSubmit} type="button" className={btnClass}>
                     Search
                 </button>
-            </div>
-
-            <div className="text-xs text-gray-500 mb-4 hidden md:flex items-center space-x-2">
-                <a href="#" className="hover:underline">Home</a>
-                <span>&gt;</span>
-                <a href="#" className="hover:underline">Wedding Halls</a>
-                <span>&gt;</span>
-                <span className="text-gray-800 font-medium">Madurai</span>
             </div>
 
             <div className="md:hidden space-y-3 mb-4">
@@ -146,78 +286,155 @@ export default function CategoryServiceSearch() {
                 <aside className="hidden md:block md:col-span-3 bg-white p-5 rounded-2xl border border-gray-200 h-fit space-y-6">
                     <div className="flex justify-between items-center pb-3 border-b border-gray-100">
                         <h2 className="font-bold text-xs uppercase tracking-wider text-gray-800">Filters</h2>
-                        <button type="button" className="text-xs text-pink-700 font-semibold hover:underline">Clear All</button>
+                        <button onClick={handleReset} type="button" className="text-xs text-primary font-semibold hover:text-primary-dark cursor-pointer">Clear All</button>
                     </div>
 
                     <div className="space-y-3">
                         <label className="text-xs font-bold text-gray-800 block">Location</label>
                         <div className="relative">
-                            <FiSearch className="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-400" />
-                            <input type="text" defaultValue="Madurai, Tamil Nadu" className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-700 focus:outline-none" />
-                        </div>
-                        <div className="space-y-2 text-xs font-medium text-gray-600">
-                            {locationOptions.map((location, index) => (
-                                <label
-                                    key={location}
-                                    className={`flex items-center space-x-2 cursor-pointer ${index === 0 ? "text-pink-700 font-semibold" : ""}`}
-                                >
-                                    <input type="radio" name="loc" defaultChecked={index === 0} className="accent-pink-700" />
-                                    <span>{location}</span>
-                                </label>
-                            ))}
-                            <button type="button" className="text-pink-700 text-xs font-bold hover:underline block">+ View More</button>
+                            <LocalitySelect
+                                instanceId="main-locality-search"
+                                value={selectedLocality}
+                                onChange={handleLocalityChange}
+                            />
                         </div>
                     </div>
 
                     <div className="space-y-3 border-t border-gray-100 pt-4">
                         <label className="text-xs font-bold text-gray-800 block">Price Range</label>
-                        <input type="range" className="w-full accent-pink-700" min="0" max="500000" />
+                        <div className="text-[10px] text-gray-500 font-semibold text-center m-0 p-0">
+                            ₹{priceRange.toLocaleString()}
+                        </div>
+                        <input
+                            type="range"
+                            min="0"
+                            max="500000"
+                            className="w-full accent-primary"
+                            value={priceRange}
+                            onChange={handlePriceRange}
+                        />
                         <div className="flex justify-between text-[10px] text-gray-500 font-semibold">
                             <span>₹0</span>
                             <span>₹5,00,000+</span>
                         </div>
                         <div className="flex flex-wrap gap-1.5 pt-1">
-                            <span className="px-2 py-1 bg-gray-100 border rounded text-[10px] text-gray-600">₹0 - ₹50K</span>
-                            <span className="px-2 py-1 bg-gray-100 border rounded text-[10px] text-gray-600">₹50K - ₹1L</span>
-                            <span className="px-2 py-1 bg-gray-100 border rounded text-[10px] text-gray-600">₹1L - ₹2L</span>
-                            <span className="px-2 py-1 bg-gray-100 border rounded text-[10px] text-gray-600">₹2L+</span>
+                            <span
+                                onClick={() => handlePriceChange("0", "50000")}
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPrice === "0-50000"
+                                    ? "border-pink-600 bg-primary text-white"
+                                    : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
+                                    }`}
+                            >₹0 - ₹50K</span>
+                            <span
+                                onClick={() => handlePriceChange("50000", "100000")}
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPrice === "50000-100000"
+                                    ? "border-pink-600 bg-primary text-white"
+                                    : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
+                                    }`}
+                            >₹50K - ₹1L</span>
+                            <span
+                                onClick={() => handlePriceChange("100000", "200000")}
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPrice === "100000-200000"
+                                    ? "border-pink-600 bg-primary text-white"
+                                    : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
+                                    }`}
+                            >₹1L - ₹2L</span>
+                            <span
+                                onClick={() => handlePriceChange("200000", "200000")}
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPrice === "200000-200000"
+                                    ? "border-pink-600 bg-primary text-white"
+                                    : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
+                                    }`}
+                            >₹2L+</span>
                         </div>
                     </div>
 
                     <div className="space-y-3 border-t border-gray-100 pt-4">
                         <label className="text-xs font-bold text-gray-800 block">Capacity (Guests)</label>
                         <div className="flex items-center space-x-2">
-                            <select className="w-1/2 text-xs border border-gray-200 rounded-lg p-1.5 text-gray-500" defaultValue="Min">
-                                <option>Min</option>
+                            <select
+                                className="w-1/2 text-xs border border-gray-200 rounded-lg p-1.5 text-gray-500"
+                                value={minCapacity}
+                                onChange={(e) => {
+                                    setMinCapacity(e.target.value);
+                                    updateField("min_capacity", e.target.value);
+                                }}
+                            >
+                                <option value={""}>Min</option>
+                                {capacities.map((item: any) => (
+                                    <option key={`capacity-min-${item.min}`} value={item.min}>{item.min}</option>
+                                ))}
                             </select>
-                            <select className="w-1/2 text-xs border border-gray-200 rounded-lg p-1.5 text-gray-500" defaultValue="Max">
-                                <option>Max</option>
+                            <select
+                                className="w-1/2 text-xs border border-gray-200 rounded-lg p-1.5 text-gray-500"
+                                value={maxCapacity}
+                                onChange={(e) => {
+                                    setMaxCapacity(e.target.value);
+                                    updateField("max_capacity", e.target.value);
+                                }}
+                            >
+                                <option value={""}>Max</option>
+                                {capacities.map((item: any) => (
+                                    <option key={`capacity-max-${item.max}`} value={item.max}>{item.max}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="flex flex-wrap gap-1.5 pt-1">
-                            <span className="px-2 py-1 bg-gray-100 border rounded text-[10px] text-gray-600">0 - 100</span>
-                            <span className="px-2 py-1 bg-gray-100 border rounded text-[10px] text-gray-600">100 - 300</span>
-                            <span className="px-2 py-1 bg-gray-100 border rounded text-[10px] text-gray-600">300 - 500</span>
-                            <span className="px-2 py-1 bg-gray-100 border rounded text-[10px] text-gray-600">500+</span>
+                            <span
+                                onClick={() => handleCapacityChange("0", "100")}
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacity === "0-100"
+                                    ? "border-pink-600 bg-primary text-white"
+                                    : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
+                                    }`}
+                            >0 - 100</span>
+                            <span
+                                onClick={() => handleCapacityChange("100", "300")}
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacity === "100-300"
+                                    ? "border-pink-600 bg-primary text-white"
+                                    : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
+                                    }`}
+                            >100 - 300</span>
+                            <span
+                                onClick={() => handleCapacityChange("300", "500")}
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacity === "300-500"
+                                    ? "border-pink-600 bg-primary text-white"
+                                    : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
+                                    }`}
+                            >300 - 500</span>
+                            <span
+                                onClick={() => handleCapacityChange("500", "500")}
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacity === "500-500"
+                                    ? "border-pink-600 bg-primary text-white"
+                                    : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
+                                    }`}
+                            >500+</span>
                         </div>
                     </div>
 
                     <div className="space-y-2 border-t border-gray-100 pt-4 text-xs font-medium text-gray-600">
                         <label className="text-xs font-bold text-gray-800 block mb-2">Amenities</label>
-                        {amenityOptions.map((amenity) => (
-                            <label key={amenity.label} className="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" defaultChecked={amenity.checked} className="accent-pink-700 rounded" />
-                                <span>{amenity.label}</span>
+                        {facilities.map((amenity) => (
+                            <label
+                                key={`amenity-${amenity.id}`}
+                                className="flex items-center space-x-2 cursor-pointer"
+                            >
+                                <input
+                                    type="checkbox"
+                                    value={amenity.id}
+                                    checked={facilityIds.includes(amenity.id)}
+                                    onChange={() => handleFacilityChange(amenity.id)}
+                                    className="rounded accent-primary"
+                                />
+                                <span>{amenity.name}</span>
                             </label>
                         ))}
-                        <button type="button" className="text-pink-700 text-xs font-bold hover:underline block pt-1">+ View More</button>
                     </div>
 
                     <div className="space-y-2 border-t border-gray-100 pt-4">
-                        <button type="button" className="w-full bg-pink-700 text-white font-semibold py-2 rounded-xl text-xs hover:bg-pink-800 transition">
+                        <button onClick={handleSubmit} type="button" className={`${btnClass} w-full text-xs font-bold`}>
                             Apply Filters
                         </button>
-                        <button type="button" className="w-full bg-white border border-gray-200 text-gray-700 font-semibold py-2 rounded-xl text-xs hover:bg-gray-50 transition">
+                        <button onClick={handleReset} type="button" className={`${buttonClassWhite} w-full text-xs font-bold`}>
                             Reset
                         </button>
                     </div>
@@ -225,67 +442,79 @@ export default function CategoryServiceSearch() {
 
                 <main className="col-span-1 md:col-span-5 space-y-4">
                     <div className="hidden md:flex justify-between items-center">
-                        <span className="text-sm font-bold text-gray-800">128 Wedding Halls found in Madurai</span>
-                        <div className="flex items-center space-x-1 text-xs">
+                        <span className="text-sm font-bold text-gray-800">{totalRecords} {categoryName} found</span>
+                        {/* <div className="flex items-center space-x-1 text-xs">
                             <span className="text-gray-500">Sort by:</span>
                             <select className="font-bold text-gray-800 bg-transparent border-none focus:outline-none" defaultValue="Popular">
                                 <option>Popular</option>
                             </select>
-                        </div>
+                        </div> */}
                     </div>
 
-                    {venues.map((venue) => (
-                        <div key={venue.name} className="bg-white rounded-2xl p-3 border border-gray-200 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 relative shadow-sm">
-                            <div className="sm:w-2/5 h-40 sm:h-auto rounded-xl overflow-hidden relative">
-                                <img src={venue.image} className="w-full h-full object-cover" alt={venue.name} />
-                                {venue.featured ? (
-                                    <span className="absolute top-2 left-2 bg-pink-700 text-white text-[9px] uppercase font-bold px-2 py-0.5 rounded">Popular</span>
-                                ) : null}
+                    {searchServiceData.map((serviceData: any) => (
+                        <div key={`service-record-${serviceData.id}`} className="bg-white rounded-2xl p-3 border border-gray-200 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 relative shadow-sm">
+                            <div className="sm:w-2/5 h-40 sm:h-40 rounded-xl overflow-hidden relative group">
+                                <img
+                                    src={serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : ''}
+                                    className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:opacity-90"
+                                    alt={serviceData.service_name}
+                                />
+                                <span className="absolute top-2 left-2 bg-pink-700 text-white text-[9px] uppercase font-bold px-2 py-0.5 rounded">Popular</span>
                             </div>
                             <div className="sm:w-3/5 space-y-2 flex flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start">
-                                        <h3 className="font-bold text-sm text-gray-800">{venue.name}</h3>
+                                        <h3 className="font-bold text-sm text-gray-800">{serviceData.service_name}</h3>
                                         <div className="flex items-center text-xs font-semibold text-amber-600">
+                                            <button type="button" className="cursor-pointer mr-2 p-1 text-gray-400 hover:text-pink-700">
+                                                <FiHeart className="w-4 h-4" />
+                                            </button>
                                             <FiStar className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
-                                            <span>{venue.rating}</span> <span className="text-gray-400 text-[10px] ml-0.5">({venue.reviews})</span>
+                                            <span>4.5</span> <span className="text-gray-400 text-[10px] ml-0.5">(100)</span>
                                         </div>
                                     </div>
                                     <p className="text-[11px] text-gray-500 flex items-center mt-0.5">
-                                        <FiMapPin className="w-3 h-3 mr-1 text-pink-700" /> {venue.location}
+                                        <FiMapPin className="w-3 h-3 mr-1 text-pink-700" /> {serviceData?.locality?.name}, {serviceData?.city?.name}
                                     </p>
 
                                     <div className="flex items-center space-x-3 text-[10px] text-gray-600 mt-2 font-medium">
-                                        <div><span className="font-bold text-gray-800 block text-xs">{venue.capacity}</span> Seating Capacity</div>
-                                        <div><span className="font-bold text-gray-800 block text-xs">{venue.rooms}</span> Rooms</div>
-                                        <div className="flex items-center text-gray-500"><FiWind className="w-3 h-3 mr-1" /> AC Hall</div>
+                                        <div><span className="font-bold text-gray-800 block text-xs">{serviceData.capacity}</span> Seating Capacity</div>
+                                        <div><span className="font-bold text-gray-800 block text-xs">{serviceData.number_of_rooms}</span> Rooms</div>
+                                        <div className="flex items-center text-gray-500"><FiWind className="w-3 h-3 mr-1" /> {serviceData?.ac_available ? 'AC Hall' : 'Non-AC Hall'}</div>
                                     </div>
 
-                                    <p className="text-[10px] text-gray-500 mt-2 line-clamp-2">{venue.description}</p>
+                                    <p className="text-[10px] text-gray-500 mt-2 line-clamp-2">{serviceData.service_description}</p>
 
                                     <div className="flex flex-wrap gap-1 mt-2 text-[9px] text-gray-500">
-                                        {venue.tags.map((tag) => (
-                                            <span key={tag} className="bg-gray-100 px-1.5 py-0.5 rounded">{tag}</span>
+                                        {facilities.slice(0, 5).map((tag) => (
+                                            <span key={`facility-tag-${tag.id}`} className="bg-gray-100 px-1.5 py-0.5 rounded">{tag.name}</span>
                                         ))}
-                                        <span className="text-pink-700 font-semibold">{venue.extraTags}</span>
+                                        {/* <span className="text-pink-700 font-semibold">More</span> */}
                                     </div>
                                 </div>
 
                                 <div className="flex justify-between items-center border-t border-gray-100 pt-2">
                                     <div>
                                         <span className="text-[9px] text-gray-400 block">Starting from</span>
-                                        <span className="font-bold text-sm text-gray-900">{venue.price}</span>
+                                        <span className="font-bold text-sm text-gray-900">{formatAmount(serviceData.final_amount)}</span>
                                     </div>
-                                    <button type="button" className="bg-pink-700 text-white text-xs px-3 py-1.5 rounded-lg font-semibold hover:bg-pink-800">
+                                    <button type="button" className={btnClass}>
                                         View Details
                                     </button>
                                 </div>
                             </div>
-                            <button type="button" className="absolute top-2 right-2 p-1 text-gray-400 hover:text-pink-700">
-                                <FiHeart className="w-4 h-4" />
-                            </button>
                         </div>
                     ))}
+
+                    <div>
+                        <TablePagination
+                            size={3}
+                            page={pageNumber}
+                            totalPages={totalPages}
+                            totalRecords={totalRecords}
+                            onPageChange={setPageNumber}
+                        />
+                    </div>
                 </main>
 
                 <aside className="col-span-1 md:col-span-4 relative min-h-[500px] md:min-h-full rounded-2xl overflow-hidden border border-gray-200">
