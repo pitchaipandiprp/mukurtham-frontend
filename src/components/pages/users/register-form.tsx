@@ -201,7 +201,7 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
                             Already have an account? Login
                         </button>
                     ) : (
-                        <Link href="/login" className="cursor-pointer hover:text-primary hover:text-primary-dark mb-5 text-center text-sm font-medium text-primary transition">
+                        <Link href="/login" className="cursor-pointer outline-none focus:outline-none hover:text-primary hover:text-primary-dark hover:font-semibold mb-5 text-center text-sm font-medium text-primary transition">
                             Already have an account? Login
                         </Link>
                     )}

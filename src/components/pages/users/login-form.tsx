@@ -195,7 +195,7 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
                             Create an account
                         </button>
                     ) : (
-                        <Link href="/register" className="cursor-pointer hover:text-primary hover:text-primary-dark mb-6 text-center text-sm font-medium text-primary transition">
+                        <Link href="/register" className="cursor-pointer outline-none focus:outline-none hover:text-primary hover:text-primary-dark hover:font-semibold mb-6 text-center text-sm font-medium text-primary transition">
                             Create an account
                         </Link>
                     )}

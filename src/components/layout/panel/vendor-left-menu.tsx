@@ -189,7 +189,7 @@ export default function VendorLeftMenu({
                                                 goToPage(sub.href); // Navigate to the subpage
                                             }}
                                             className={`w-full cursor-pointer flex items-center justify-between m-0 px-3 py-3 text-xs font-semibold transition-all border-b border-b-slate-200 ${isActive
-                                                ? 'bg-primary/20 text-primary font-bold'
+                                                ? 'bg-primary/10 text-primary font-bold'
                                                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                                 }`}
                                         >
