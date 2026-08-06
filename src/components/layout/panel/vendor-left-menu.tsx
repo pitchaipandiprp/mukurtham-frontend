@@ -41,8 +41,8 @@ const navItems: NavItem[] = [
         title: 'Services',
         icon: ShoppingBag,
         subItems: [
-            { title: 'Service List', href: '/panel/individual-service-list' },
-            { title: 'Add Service', href: '/panel/add-individual-service' },
+            { title: 'Service List', href: '/panel/category-service-list' },
+            { title: 'Add Service', href: '/panel/create-category-service' },
             { title: 'Package List', href: '/panel/package-list' },
             { title: 'Add Package', href: '/panel/add-package' },
         ],

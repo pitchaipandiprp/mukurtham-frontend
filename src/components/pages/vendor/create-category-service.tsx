@@ -11,7 +11,7 @@ import commonService from "@/services/api/common.service";
 import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
 import { apiConfig } from "@/environments/api";
 
-type IndividualServiceForm = {
+type CategoryServiceForm = {
     category_id: string;
     state_id: string;
     city_id: string;
@@ -33,7 +33,7 @@ type IndividualServiceForm = {
     status: string;
 };
 
-const initialForm: IndividualServiceForm = {
+const initialForm: CategoryServiceForm = {
     category_id: "",
     state_id: "",
     city_id: "",
@@ -56,8 +56,8 @@ const initialForm: IndividualServiceForm = {
 };
 
 
-export default function AddIndividualService() {
-    const [form, setForm] = useState<IndividualServiceForm>(initialForm);
+export default function CreateCategoryService() {
+    const [form, setForm] = useState<CategoryServiceForm>(initialForm);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
@@ -71,7 +71,7 @@ export default function AddIndividualService() {
     useEffect(() => {
         loadCategories();
         if (categoryServiceId) {
-            loadIndividualService();
+            loadCategoryService();
         }
     }, [categoryServiceId]);
 
@@ -91,7 +91,7 @@ export default function AddIndividualService() {
         }));
     };
 
-    const updateField = (field: keyof IndividualServiceForm, value: string) => {
+    const updateField = (field: keyof CategoryServiceForm, value: string) => {
         setForm((prev) => ({
             ...prev,
             [field]: value,
@@ -128,7 +128,7 @@ export default function AddIndividualService() {
         setBannerPreview(URL.createObjectURL(file));
     };
 
-    const loadIndividualService = async () => {
+    const loadCategoryService = async () => {
         setLoadingDetails(true);
         setError("");
 
@@ -139,7 +139,7 @@ export default function AddIndividualService() {
                 return;
             }
 
-            const result = await vendorService.getIndividualService({ id: Number(categoryServiceId) });
+            const result = await vendorService.getCategoryService({ id: Number(categoryServiceId) });
 
             if (!result?.success) {
                 return;
@@ -182,7 +182,7 @@ export default function AddIndividualService() {
             setBannerPreview(serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : null);
 
         } catch (caughtError) {
-            console.error("Failed to load individual service:", caughtError);
+            console.error("Failed to load category service:", caughtError);
         } finally {
             setLoadingDetails(false);
         }
@@ -268,14 +268,14 @@ export default function AddIndividualService() {
         }
 
         try {
-            const result = await vendorService.createIndividualService(formData);
+            const result = await vendorService.createCategoryService(formData);
 
             if (result?.success) {
                 setForm(initialForm);
                 await sweetalert.success(result.message);
             }
         } catch (caughtError) {
-            console.error("Create individual service failed:", caughtError);
+            console.error("Create category service failed:", caughtError);
         } finally {
             setLoading(false);
         }
@@ -288,8 +288,8 @@ export default function AddIndividualService() {
     return (
         <div className="d-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">Add Individual Service</b>
-                <Link href="/panel/individual-service-list" className={buttonClass}> Service Lists</Link>
+                <b className="text-2xl text-slate-600 tracking-tight">Category Service</b>
+                <Link href="/panel/category-service-list" className={buttonClass}> Service Lists</Link>
             </div>
 
             <div className="min-h-full px-4 py-4 rounded-xl border border-primary/10 bg-white shadow-sm">

@@ -1,24 +1,24 @@
 import { apiService } from "@/services/api/api.service";
 
-const createIndividualService = async (formData: FormData) => {
-    return await apiService.post<any>("/vendors/create-individual-service", formData);
+const createCategoryService = async (formData: FormData) => {
+    return await apiService.post<any>("/vendors/create-category-service", formData);
 };
 
-const deleteIndividualService = async (payload: any) => {
-    return await apiService.post<any>("/vendors/delete-individual-service", payload);
+const deleteCategoryService = async (payload: any) => {
+    return await apiService.post<any>("/vendors/delete-category-service", payload);
 };
 
-const getIndividualService = async (payload: any) => {
-    return await apiService.post<any>("/vendors/get-individual-service", payload);
+const getCategoryService = async (payload: any) => {
+    return await apiService.post<any>("/vendors/get-category-service", payload);
 };
 
-const individualServiceList = async (payload: any) => {
-    return await apiService.post<any>("/vendors/individual-service-list", payload);
+const categoryServiceList = async (payload: any) => {
+    return await apiService.post<any>("/vendors/category-service-list", payload);
 };
 
 export const vendorService = {
-    createIndividualService,
-    getIndividualService,
-    individualServiceList,
-    deleteIndividualService,
+    createCategoryService,
+    getCategoryService,
+    categoryServiceList,
+    deleteCategoryService,
 };

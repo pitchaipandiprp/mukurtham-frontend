@@ -26,7 +26,7 @@ const formatAmount = (amount: number | null) => {
     }).format(amount);
 };
 
-export default function IndividualServiceList() {
+export default function CategoryServiceList() {
 
     //Data Table Code Start
     const [rows, setRows] = useState<any[]>([]);
@@ -58,7 +58,7 @@ export default function IndividualServiceList() {
         try {
             setLoading(true);
 
-            const response = await vendorService.individualServiceList({
+            const response = await vendorService.categoryServiceList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
@@ -82,7 +82,7 @@ export default function IndividualServiceList() {
         }
 
         try {
-            const result = await vendorService.deleteIndividualService({ id: row.id });
+            const result = await vendorService.deleteCategoryService({ id: row.id });
             if (result?.success) {
                 sweetalert.success(result.message);
                 fetchServiceData();
@@ -143,7 +143,7 @@ export default function IndividualServiceList() {
                 cell: ({ row }) => {
                     return (
                         <>
-                            <Link href={`/panel/add-individual-service?id=${row.original.id}`}>
+                            <Link href={`/panel/create-category-service?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -187,7 +187,7 @@ export default function IndividualServiceList() {
                         onChange={setSearchInput}
                         placeholder="Search Service..."
                     />
-                    <Link href="/panel/add-individual-service" className={buttonClass}> Add Service </Link>
+                    <Link href="/panel/create-category-service" className={buttonClass}> Add Service </Link>
                 </div>
 
 
