@@ -77,7 +77,7 @@ export function HomePage() {
                                 className="w-full text-sm text-gray-700 focus:outline-none"
                             />
                         </div>
-                        <button className="w-full rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-white transition hover:bg-secondary-light md:w-auto cursor-pointer">
+                        <button className="w-full rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-white transition hover:bg-primary-dark md:w-auto cursor-pointer">
                             Search
                         </button>
                     </div>
@@ -292,7 +292,7 @@ export function HomePage() {
                     </p>
                 </div>
                 <div className="z-10 mt-6 md:mt-0">
-                    <button className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-secondary-light cursor-pointer">
+                    <button className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-primary-dark cursor-pointer">
                         Try Wedding Planner
                     </button>
                 </div>

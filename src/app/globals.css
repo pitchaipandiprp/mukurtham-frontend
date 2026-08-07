@@ -20,11 +20,14 @@
 }
 
 @theme {
-  /* --color-primary: #A2004B; */
-  --color-primary: #9D174D;
+  /* --color-primary: #A2004B;
   --color-primary-light: #C2185B;
   --color-primary-dark: #7A0038;
+  --color-secondary-light: #c64d84; */
 
+  --color-primary: #BE185D;
+  --color-primary-light: #DB2777;
+  --color-primary-dark: #9D174D;
   --color-secondary-light: #c64d84;
 }
 

@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`h-full antialiased ${poppins.variable}`}>
-      <body className="min-h-full bg-gray-100 text-gray-800 antialiased">
+      <body className="suppressHydrationWarning min-h-full bg-gray-100 text-gray-800 antialiased">
         <div className="flex min-h-screen flex-col">
           <AppHeader />
           <main className="flex-1">
