@@ -42,7 +42,7 @@ const capacities = [
     { min: 500, max: 1000, label: "500 - 1000" },
     { min: 1000, max: 2000, label: "1000 - 2000" },
     { min: 2000, max: 3000, label: "2000 - 3000" },
-    { min: 3000, max: "5000+", label: "5000+" },
+    { min: 3000, max: 3000, label: "3000+" },
 ];
 
 const formatAmount = (amount: number | string) => {
@@ -202,6 +202,9 @@ export default function CategoryServiceSearch() {
 
     async function handleSubmit(event: any) {
         event.preventDefault();
+
+        setPageNumber(1);
+        updateField("page", "1");
         fetchServiceData();
     }
 
@@ -412,9 +415,15 @@ export default function CategoryServiceSearch() {
                                 }}
                             >
                                 <option value={""}>Max</option>
-                                {capacities.map((item: any) => (
-                                    <option key={`capacity-max-${item.max}`} value={item.max}>{item.max}</option>
-                                ))}
+                                {capacities.map((item: any, index: number) => {
+                                    if (index === capacities.length - 1) return null;
+
+                                    return (
+                                        <option key={`capacity-max-${item.max}`} value={item.max}>
+                                            {item.max}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
                         <div className="flex flex-wrap gap-1.5 pt-1">
@@ -490,10 +499,10 @@ export default function CategoryServiceSearch() {
                     </div>
 
                     {searchServiceData.map((serviceData: any) => (
-                        <div key={`service-record-${serviceData.id}`} className="bg-white rounded-2xl p-3 border border-gray-200 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 relative shadow-sm">
+                        <div key={`service-records-${serviceData.id}`} className="bg-white rounded-2xl p-3 border border-gray-200 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 relative shadow-sm">
                             <div className="sm:w-2/5 h-40 sm:h-40 rounded-xl overflow-hidden relative group">
                                 <img
-                                    src={serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : ''}
+                                    src={serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : `${BACKEND_BASE_URL}/storage/uploads/sample.jpg`}
                                     className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:opacity-90"
                                     alt={serviceData.service_name}
                                 />

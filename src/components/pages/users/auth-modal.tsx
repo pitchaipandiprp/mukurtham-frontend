@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { LoginForm } from "@/components/pages/users/login-form";
 import { RegisterForm } from "@/components/pages/users/register-form";
+import { FiX } from "react-icons/fi";
 
 type AuthView = "login" | "register";
 
@@ -56,10 +57,11 @@ export function AuthModal({ isOpen, onClose, defaultView = "login" }: AuthModalP
                     <button
                         type="button"
                         onClick={onClose}
-                        className="absolute cursor-pointer right-1 top-7 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-primary-dark shadow-lg text-white transition hover:bg-secondary-light hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                        aria-label="Close authentication modal"
+                        // className="absolute cursor-pointer right-1 top-7 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-primary-dark shadow-lg text-white transition hover:bg-secondary-light hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                        // aria-label="Close authentication modal"
+                        className="absolute right-2 top-7 z-20 flex h-8 w-8 items-center justify-center text-xl rounded-full bg-primary-dark text-white cursor-pointer hover:bg-primary-light"
                     >
-                        &times;
+                        <FiX className="w-5 h-5" />
                     </button>
 
                     {activeView === "login" ? (

@@ -22,6 +22,7 @@ type CategoryServiceForm = {
     service_banner_image: File | null;
     capacity: string;
     number_of_rooms: string;
+    facility_ids: string;
     car_parking: string;
     ac_available: string;
     latitude: string;
@@ -42,10 +43,11 @@ const initialForm: CategoryServiceForm = {
     service_description: "",
     service_address: "",
     service_banner_image: null,
-    capacity: "",
+    capacity: "0",
+    number_of_rooms: "0",
+    facility_ids: "",
     car_parking: "",
     ac_available: "",
-    number_of_rooms: "0",
     latitude: "",
     longitude: "",
     pricing_type: "",
@@ -64,6 +66,10 @@ export default function CreateCategoryService() {
     const [categories, setCategories] = useState<any[]>([]);
     const [bannerPreview, setBannerPreview] = useState<string | null>(null);
     const [loadingDetails, setLoadingDetails] = useState(false);
+
+    const [facilities, setFacilities] = useState<any[]>([]);
+    const [facilityIds, setFacilityIds] = useState<number[]>([]);
+
     const searchParams = useSearchParams();
     const categoryServiceId = searchParams.get("id");
     const isEditMode = Boolean(categoryServiceId);
@@ -75,9 +81,18 @@ export default function CreateCategoryService() {
         }
     }, [categoryServiceId]);
 
+    useEffect(() => {
+        loadFacility();
+    }, [form.category_id]);
+
     const loadCategories = async () => {
         const result = await commonService.getCategories();
         setCategories(result?.data || []);
+    };
+
+    const loadFacility = async () => {
+        const result = await commonService.getFacilities({ category_id: form.category_id });
+        setFacilities(result?.data || []);
     };
 
     const handleLocalityChange = (locality: LocalityOption | null) => {
@@ -90,6 +105,19 @@ export default function CreateCategoryService() {
             city_id: locality ? String(locality.cityId) : "",
         }));
     };
+
+    const handleFacilityChange = (facilityId: number) => {
+        setFacilityIds((prev) => {
+            const updatedFacilityIds = prev.includes(facilityId)
+                ? prev.filter((id) => id !== facilityId)
+                : [...prev, facilityId];
+
+            updateField("facility_ids", updatedFacilityIds.join(","));
+
+            return updatedFacilityIds;
+        });
+    };
+
 
     const updateField = (field: keyof CategoryServiceForm, value: string) => {
         setForm((prev) => ({
@@ -159,6 +187,7 @@ export default function CreateCategoryService() {
                 service_banner_image: serviceData.service_banner_image ?? "",
                 capacity: String(serviceData.capacity ?? ""),
                 number_of_rooms: String(serviceData.number_of_rooms ?? 0),
+                facility_ids: serviceData.facility_ids ?? "",
                 car_parking: serviceData.car_parking ?? "",
                 ac_available: serviceData.ac_available ?? "",
                 latitude: serviceData.latitude ?? "",
@@ -178,6 +207,12 @@ export default function CreateCategoryService() {
                 stateName: serviceData?.state?.name,
                 cityName: serviceData?.city?.name,
             });
+
+            setFacilityIds(
+                serviceData.facility_ids
+                    ? serviceData.facility_ids.split(",").map(Number)
+                    : []
+            );
 
             setBannerPreview(serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : null);
 
@@ -248,6 +283,7 @@ export default function CreateCategoryService() {
             "number_of_rooms",
             form.number_of_rooms
         );
+        formData.append("facility_ids", form.facility_ids);
         formData.append("car_parking", form.car_parking);
         formData.append("ac_available", form.ac_available);
 
@@ -380,7 +416,7 @@ export default function CreateCategoryService() {
                         </div>
 
 
-                        <div className="md:col-span-4">
+                        {/* <div className="md:col-span-4">
                             <label htmlFor="carParking" className="mb-2 block text-sm font-medium text-gray-700">
                                 Car Parking
                             </label>
@@ -394,9 +430,9 @@ export default function CreateCategoryService() {
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
                             </select>
-                        </div>
+                        </div> */}
 
-                        <div className="md:col-span-4">
+                        {/* <div className="md:col-span-4">
                             <label htmlFor="acAvailable" className="mb-2 block text-sm font-medium text-gray-700">
                                 AC Available
                             </label>
@@ -410,11 +446,37 @@ export default function CreateCategoryService() {
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
                             </select>
+                        </div> */}
+
+                        <div className="md:col-span-12 mt-4">
+                            <h2 className="text-lg font-semibold text-primary">
+                                Amenities
+                            </h2>
+                        </div>
+
+                        <div className="md:col-span-6">
+                            <div className="flex flex-wrap gap-5 mb-4">
+                                {facilities.map((amenity) => (
+                                    <label
+                                        key={`amenity-${amenity.id}`}
+                                        className="flex items-center space-x-2 cursor-pointer"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            value={amenity.id}
+                                            checked={facilityIds.includes(amenity.id)}
+                                            onChange={() => handleFacilityChange(amenity.id)}
+                                            className="rounded accent-primary"
+                                        />
+                                        <span>{amenity.name}</span>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="md:col-span-12 mt-4">
                             <h2 className="text-lg font-semibold text-primary">
-                                Payment Information
+                                Payment
                             </h2>
                         </div>
 
@@ -480,7 +542,7 @@ export default function CreateCategoryService() {
 
                         <div className="md:col-span-12 mt-4">
                             <h2 className="text-lg font-semibold text-primary">
-                                Address Information
+                                Address
                             </h2>
                         </div>
 
