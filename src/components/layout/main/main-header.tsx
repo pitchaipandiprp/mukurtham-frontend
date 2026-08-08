@@ -6,6 +6,7 @@ import { useLogout } from "@/hooks/useLogout";
 import { useState } from "react";
 import { FiMenu, FiX, FiBell, FiChevronDown, FiHeart, FiMapPin, FiMessageCircle, FiSearch, } from "react-icons/fi";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
     { label: "Home", href: "/" },
@@ -16,15 +17,44 @@ const navLinks = [
     { label: "Contact", href: "/contact-us" },];
 
 export function MainHeader() {
+    const router = useRouter();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { isAuthenticated } = useAuthUser();
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { logout } = useLogout();
 
+    const [headerSearchInput, setHeaderSearchInput] = useState("");
+    const [headerSearchCity, setHeaderSearchCity] = useState("");
+
 
     function goToLogin() {
         setIsAuthModalOpen(true);
     }
+
+    const handleTextSearchChange = () => {
+        navigateToServiceSearch(headerSearchInput, headerSearchCity);
+    };
+
+    const handleCitySearchChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const city = event.target.value;
+
+        setHeaderSearchCity(city);
+        navigateToServiceSearch(headerSearchInput, city);
+    };
+
+    const navigateToServiceSearch = (search: string, city: string) => {
+        const params = new URLSearchParams();
+
+        if (search.trim()) {
+            params.set("search", search.trim());
+        }
+
+        if (city) {
+            params.set("city", city);
+        }
+
+        router.push(`/service-search?${params.toString()}`);
+    };
 
     return (
         <>
@@ -43,8 +73,15 @@ export function MainHeader() {
 
                         <div className="hidden items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-600 md:flex">
                             <FiMapPin className="text-primary" />
-                            <span>Chennai</span>
-                            <FiChevronDown className="text-[10px]" />
+                            <select
+                                id="header-search-city"
+                                value={headerSearchCity}
+                                onChange={handleCitySearchChange}
+                                className="w-full bg-transparent border-none focus:outline-none cursor-pointer text-xs text-gray-600"
+                            >
+                                <option value="chennai">Chennai</option>
+                                <option value="madurai">Madurai</option>
+                            </select>
                         </div>
                     </div>
 
@@ -52,10 +89,20 @@ export function MainHeader() {
                     <div className="relative hidden max-w-md flex-1 lg:flex">
                         <input
                             type="text"
+                            id="header-search-input"
                             placeholder="Search vendors, services..."
                             className="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pl-4 pr-10 text-xs focus:bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 focus:shadow-md transition-all duration-300 ease-in-out"
+                            value={headerSearchInput}
+                            onChange={(e) => setHeaderSearchInput(e.target.value)}
                         />
-                        <FiSearch className="absolute right-3 top-2.5 text-xs text-primary" />
+                        <button
+                            type="button"
+                            onClick={handleTextSearchChange}
+                            className="absolute right-3 top-2.5 text-primary cursor-pointer hover:text-primary-dark transition-colors duration-200"
+                            aria-label="Search"
+                        >
+                            <FiSearch className="text-xs" />
+                        </button>
                     </div>
 
                     {/* Desktop Navigation */}

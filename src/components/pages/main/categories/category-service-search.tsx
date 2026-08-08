@@ -3,6 +3,7 @@
 import { FiChevronsDown, FiCalendar, FiChevronDown, FiCrosshair, FiHeart, FiLock, FiMapPin, FiMinus, FiPlus, FiSearch, FiSliders, FiStar, FiUsers, FiWind, } from "react-icons/fi";
 import { FaBuilding } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { common as commonUtils } from "@/utils/common";
 import commonService from "@/services/api/common.service";
 import mainService from "@/services/api/main.service";
@@ -19,14 +20,13 @@ const initialSearch = {
     city_id: "",
     locality_id: "",
     search_date: "",
-    price_range: "",
-    min_price_range: "",
-    max_price_range: "",
+    price_range: "50000",
+    min_price_range: "0",
+    max_price_range: "50000",
     min_capacity: "",
     max_capacity: "",
     facility_ids: "",
-    category_name: "",
-    location_name: "",
+    city_name: "",
     page: 1,
     limit: 3,
 };
@@ -48,39 +48,38 @@ const capacities = [
 const formatAmount = (amount: number | string) => {
     return `₹${Number(amount).toLocaleString("en-IN")}`;
 };
+const PAGE_SIZE = 3;
 
 export default function CategoryServiceSearch() {
+    const router = useRouter();
+
     const BACKEND_BASE_URL = apiConfig.baseUrl;
 
     const btnClass = commonUtils.btnClass;
-    const inputClass = commonUtils.inputClass;
     const buttonClassWhite = commonUtils.buttonClassWhite;
 
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
 
-    const [searchFields, setSearchFields] = useState<any>(initialSearch);
-    const [searchServiceData, setSearchServiceData] = useState<any>([]);
+    const [categoryList, setCategoryList] = useState<any[]>([]);
+    const [facilityList, setFacilityList] = useState<any[]>([]);
 
-    const [categories, setCategories] = useState<any[]>([]);
-    const [facilities, setFacilities] = useState<any[]>([]);
-
-    const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
     const [categoryId, setCategoryId] = useState(1);
     const [categoryName, setCategoryName] = useState("");
-    const [cityId, setCityId] = useState("");
-    const [localityId, setLocalityId] = useState("");
-    const [priceRange, setPriceRange] = useState(50000);
-    const [minPriceRange, setMinPriceRange] = useState(0);
-    const [maxPriceRange, setMaxPriceRange] = useState(50000);
-    const [selectedPrice, setSelectedPrice] = useState("");
-    const [minCapacity, setMinCapacity] = useState<any>(0);
-    const [maxCapacity, setMaxCapacity] = useState<any>(50);
-    const [selectedCapacity, setSelectedCapacity] = useState("");
-    const [facilityIds, setFacilityIds] = useState<number[]>([]);
+
+    const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
+    const [selectedFacilityIds, setSelectedFacilityIds] = useState<number[]>([]);
+    const [selectedPriceRange, setSelectedPriceRange] = useState("");
+    const [selectedCapacityRange, setSelectedCapacityRange] = useState("");
+
+    const [searchFields, setSearchFields] = useState<any>(initialSearch);
+    const [searchServiceData, setSearchServiceData] = useState<any>([]);
     const [searchDate, setSearchDate] = useState<Date | null>(null);
-    const [searchInput, setSearchInput] = useState("");
+
+    const searchParams = useSearchParams();
+    const searchQuery = searchParams.get("search") ?? "";
+    const cityQuery = searchParams.get("city") ?? "";
 
     useEffect(() => {
         loadCategories();
@@ -88,28 +87,42 @@ export default function CategoryServiceSearch() {
     }, []);
 
     useEffect(() => {
-        fetchServiceData();
+        fetchServiceData(searchFields);
     }, [pageNumber]);
+
+    useEffect(() => {
+        if (!searchQuery && !cityQuery) return;
+
+        setPageNumber(1);
+        const updatedFields = {
+            ...searchFields,
+            search_text: searchQuery,
+            city_name: cityQuery,
+        };
+        setSearchFields(updatedFields);
+        fetchServiceData(updatedFields);
+    }, [searchQuery, cityQuery]);
 
     const loadCategories = async () => {
         const result = await commonService.getCategories();
-        setCategories(result?.data || []);
+        setCategoryList(result?.data || []);
         setCategoryName(result?.data?.find((cat: any) => cat.id === categoryId)?.name || "");
     };
 
     const loadFacility = async () => {
         const result = await commonService.getFacilities({ category_id: categoryId });
-        setFacilities(result?.data || []);
+        setFacilityList(result?.data || []);
     };
 
-    const fetchServiceData = async () => {
+    const fetchServiceData = async (fields: any = searchFields) => {
         try {
-            const payload = {
-                ...searchFields,
+            const updatedFields = {
+                ...fields,
                 page: pageNumber,
+                limit: PAGE_SIZE,
             };
 
-            const response = await mainService.categoryServiceSearch(payload);
+            const response = await mainService.categoryServiceSearch(updatedFields);
             const responData = response.data;
             setSearchServiceData(responData.rows || []);
             setTotalPages(responData?.totalPages ?? 0);
@@ -121,34 +134,26 @@ export default function CategoryServiceSearch() {
 
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setCategoryId(Number(event.target.value));
-        setCategoryName(categories.find((cat) => cat.id === Number(event.target.value))?.name || "");
+        // setCategoryName(categoryList.find((cat) => cat.id === Number(event.target.value))?.name || "");
         updateField("category_id", event.target.value);
     };
 
     const handleLocalityChange = (locality: LocalityOption | null) => {
         setSelectedLocality(locality);
 
-        setSearchFields((prev: any) => ({
-            ...prev,
-            locality_id: locality ? String(locality.value) : "",
-            state_id: locality ? String(locality.stateId) : "",
-            city_id: locality ? String(locality.cityId) : "",
-        }));
+        updateField("state_id", String(locality?.stateId));
+        updateField("city_id", String(locality?.cityId));
+        updateField("locality_id", String(locality?.value));
     };
 
     const handlePriceRange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPriceRange(Number(event.target.value));
         updateField("price_range", event.target.value);
         updateField("min_price_range", "0");
         updateField("max_price_range", event.target.value);
     };
 
     const handlePriceChange = (minPrice: any, maxPrice: any) => {
-        setSelectedPrice(`${minPrice}-${maxPrice}`);
-
-        setMinPriceRange(minPrice);
-        setMaxPriceRange(maxPrice);
-        setPriceRange(Number(maxPrice));
+        setSelectedPriceRange(`${minPrice}-${maxPrice}`);
 
         updateField("price_range", maxPrice);
         updateField("min_price_range", minPrice);
@@ -156,7 +161,7 @@ export default function CategoryServiceSearch() {
     };
 
     const handleFacilityChange = (facilityId: number) => {
-        setFacilityIds((prev) => {
+        setSelectedFacilityIds((prev) => {
             const updatedFacilityIds = prev.includes(facilityId)
                 ? prev.filter((id) => id !== facilityId)
                 : [...prev, facilityId];
@@ -169,9 +174,7 @@ export default function CategoryServiceSearch() {
 
 
     const handleCapacityChange = (minCapacity: any, maxCapacity: any) => {
-        setSelectedCapacity(`${minCapacity}-${maxCapacity}`);
-        setMinCapacity(minCapacity);
-        setMaxCapacity(maxCapacity);
+        setSelectedCapacityRange(`${minCapacity}-${maxCapacity}`);
 
         updateField("min_capacity", String(minCapacity));
         updateField("max_capacity", String(maxCapacity));
@@ -186,9 +189,6 @@ export default function CategoryServiceSearch() {
 
         if (!selected) return;
 
-        setMinCapacity(selected.min);
-        setMaxCapacity(selected.max);
-
         updateField("min_capacity", String(selected.min));
         updateField("max_capacity", String(selected.max));
     };
@@ -200,12 +200,13 @@ export default function CategoryServiceSearch() {
         }));
     };
 
-    async function handleSubmit(event: any) {
+    const handleSubmit = async (event: any) => {
         event.preventDefault();
-
-        setPageNumber(1);
-        updateField("page", "1");
-        fetchServiceData();
+        if (pageNumber !== 1) {
+            setPageNumber(1);
+            return;
+        }
+        fetchServiceData(searchFields);
     }
 
     async function handleReset(event: any) {
@@ -213,15 +214,12 @@ export default function CategoryServiceSearch() {
         setSearchFields(initialSearch);
         setCategoryId(1);
         setSelectedLocality(null);
-        setPriceRange(50000);
-        setMinPriceRange(0);
-        setMaxPriceRange(50000);
-        setSelectedPrice("");
-        setMinCapacity(0);
-        setMaxCapacity(50);
-        setSelectedCapacity("");
-        setFacilityIds([]);
-        setSearchInput("");
+        setSelectedFacilityIds([]);
+        setSelectedPriceRange("");
+        setSelectedCapacityRange("");
+
+        fetchServiceData(initialSearch);
+        router.push(`/service-search`);
     }
 
     return (
@@ -237,7 +235,7 @@ export default function CategoryServiceSearch() {
                             className="w-full bg-transparent border-none focus:outline-none"
                         >
                             <option value="">Select Category</option>
-                            {categories.map((item) => (
+                            {categoryList.map((item) => (
                                 <option key={`category-${item.id}`} value={item.id}>
                                     {item.name}
                                 </option>
@@ -267,7 +265,7 @@ export default function CategoryServiceSearch() {
 
                             <select
                                 className="flex-1 border-none outline-none bg-transparent"
-                                value={minCapacity}
+                                value={searchFields.min_capacity}
                                 onChange={handleGuestCount}
                             >
                                 {capacities.map((item: any) => (
@@ -288,27 +286,58 @@ export default function CategoryServiceSearch() {
             <div className="md:hidden space-y-3 mb-4">
                 <div className="bg-white p-3 rounded-xl border border-gray-200 flex justify-between items-center text-xs font-semibold text-gray-700">
                     <div className="flex items-center space-x-2">
-                        <FaBuilding className="w-4 h-4 text-pink-700" />
-                        <span>Wedding Halls</span>
+                        <FaBuilding className="w-4 h-4 text-primary" />
+                        <select
+                            id="categoryId"
+                            value={categoryId}
+                            onChange={handleCategoryChange}
+                            className="w-full bg-transparent border-none focus:outline-none"
+                        >
+                            <option value="">Select Category</option>
+                            {categoryList.map((item) => (
+                                <option key={`category-${item.id}`} value={item.id}>
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                    <FiChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="bg-white p-2.5 rounded-xl border border-gray-200 flex items-center space-x-2 text-gray-700 font-medium">
                         <FiCalendar className="w-4 h-4 text-gray-400" />
-                        <span>24 May 2025</span>
+                        <DatePicker
+                            selected={searchDate}
+                            onChange={(date: any) => setSearchDate(date)}
+                            minDate={new Date()}
+                            dateFormat="dd/MM/yyyy"
+                            placeholderText="Select Date"
+                            showPopperArrow={false}
+                            className="w-full outline-none"
+                        />
                     </div>
                     <div className="bg-white p-2.5 rounded-xl border border-gray-200 flex items-center justify-between text-gray-400">
                         <div className="flex items-center space-x-2">
                             <FiUsers className="w-4 h-4" />
-                            <span>Guest Count</span>
+                            <select
+                                className="flex-1 border-none outline-none bg-transparent"
+                                value={searchFields.min_capacity}
+                                onChange={handleGuestCount}
+                            >
+                                {capacities.map((item: any) => (
+                                    <option key={`guest-capacity-min-${item.min}`} value={item.min}>
+                                        {item.label}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
-                        <FiChevronDown className="w-3.5 h-3.5" />
                     </div>
                 </div>
-                <button type="button" className="w-full bg-pink-700 text-white py-2.5 rounded-xl font-semibold text-xs">Search</button>
+                <div className="flex justify-center items-center gap-2">
+                    <button onClick={handleSubmit} type="button" className={`${btnClass}`}>Search</button>
+                    <button onClick={handleReset} type="button" className={`${buttonClassWhite}`}>Reset</button>
+                </div>
 
-                <div className="flex justify-between items-center pt-2">
+                {/* <div className="flex justify-between items-center pt-2">
                     <span className="text-xs font-bold text-gray-800">128 Halls in Madurai</span>
                     <div className="flex space-x-2">
                         <button type="button" className="bg-white border border-gray-200 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1">
@@ -320,7 +349,7 @@ export default function CategoryServiceSearch() {
                             <span>Sort</span>
                         </button>
                     </div>
-                </div>
+                </div> */}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -344,14 +373,14 @@ export default function CategoryServiceSearch() {
                     <div className="space-y-3 border-t border-gray-100 pt-4">
                         <label className="text-xs font-bold text-gray-800 block">Price Range</label>
                         <div className="text-[10px] text-gray-500 font-semibold text-center m-0 p-0">
-                            ₹{priceRange.toLocaleString()}
+                            {formatAmount(searchFields.price_range)}
                         </div>
                         <input
                             type="range"
                             min="0"
                             max="500000"
                             className="w-full accent-primary"
-                            value={priceRange}
+                            value={searchFields.price_range}
                             onChange={handlePriceRange}
                         />
                         <div className="flex justify-between text-[10px] text-gray-500 font-semibold">
@@ -361,28 +390,28 @@ export default function CategoryServiceSearch() {
                         <div className="flex flex-wrap gap-1.5 pt-1">
                             <span
                                 onClick={() => handlePriceChange("0", "50000")}
-                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPrice === "0-50000"
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPriceRange === "0-50000"
                                     ? "border-pink-600 bg-primary text-white"
                                     : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
                                     }`}
                             >₹0 - ₹50K</span>
                             <span
                                 onClick={() => handlePriceChange("50000", "100000")}
-                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPrice === "50000-100000"
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPriceRange === "50000-100000"
                                     ? "border-pink-600 bg-primary text-white"
                                     : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
                                     }`}
                             >₹50K - ₹1L</span>
                             <span
                                 onClick={() => handlePriceChange("100000", "200000")}
-                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPrice === "100000-200000"
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPriceRange === "100000-200000"
                                     ? "border-pink-600 bg-primary text-white"
                                     : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
                                     }`}
                             >₹1L - ₹2L</span>
                             <span
                                 onClick={() => handlePriceChange("200000", "200000")}
-                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPrice === "200000-200000"
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedPriceRange === "200000-200000"
                                     ? "border-pink-600 bg-primary text-white"
                                     : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
                                     }`}
@@ -395,9 +424,8 @@ export default function CategoryServiceSearch() {
                         <div className="flex items-center space-x-2">
                             <select
                                 className="w-1/2 text-xs border border-gray-200 rounded-lg p-1.5 text-gray-500"
-                                value={minCapacity}
+                                value={searchFields.min_capacity}
                                 onChange={(e) => {
-                                    setMinCapacity(e.target.value);
                                     updateField("min_capacity", e.target.value);
                                 }}
                             >
@@ -408,9 +436,8 @@ export default function CategoryServiceSearch() {
                             </select>
                             <select
                                 className="w-1/2 text-xs border border-gray-200 rounded-lg p-1.5 text-gray-500"
-                                value={maxCapacity}
+                                value={searchFields.max_capacity}
                                 onChange={(e) => {
-                                    setMaxCapacity(e.target.value);
                                     updateField("max_capacity", e.target.value);
                                 }}
                             >
@@ -429,28 +456,28 @@ export default function CategoryServiceSearch() {
                         <div className="flex flex-wrap gap-1.5 pt-1">
                             <span
                                 onClick={() => handleCapacityChange("0", "100")}
-                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacity === "0-100"
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacityRange === "0-100"
                                     ? "border-pink-600 bg-primary text-white"
                                     : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
                                     }`}
                             >0 - 100</span>
                             <span
                                 onClick={() => handleCapacityChange("100", "300")}
-                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacity === "100-300"
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacityRange === "100-300"
                                     ? "border-pink-600 bg-primary text-white"
                                     : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
                                     }`}
                             >100 - 300</span>
                             <span
                                 onClick={() => handleCapacityChange("300", "500")}
-                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacity === "300-500"
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacityRange === "300-500"
                                     ? "border-pink-600 bg-primary text-white"
                                     : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
                                     }`}
                             >300 - 500</span>
                             <span
                                 onClick={() => handleCapacityChange("500", "500")}
-                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacity === "500-500"
+                                className={`cursor-pointer rounded border px-2 py-1 text-[10px] ${selectedCapacityRange === "500-500"
                                     ? "border-pink-600 bg-primary text-white"
                                     : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-pink-50"
                                     }`}
@@ -460,7 +487,7 @@ export default function CategoryServiceSearch() {
 
                     <div className="space-y-2 border-t border-gray-100 pt-4 text-xs font-medium text-gray-600">
                         <label className="text-xs font-bold text-gray-800 block mb-2">Amenities</label>
-                        {facilities.map((amenity) => (
+                        {facilityList.map((amenity) => (
                             <label
                                 key={`amenity-${amenity.id}`}
                                 className="flex items-center space-x-2 cursor-pointer"
@@ -468,7 +495,7 @@ export default function CategoryServiceSearch() {
                                 <input
                                     type="checkbox"
                                     value={amenity.id}
-                                    checked={facilityIds.includes(amenity.id)}
+                                    checked={selectedFacilityIds.includes(amenity.id)}
                                     onChange={() => handleFacilityChange(amenity.id)}
                                     className="rounded accent-primary"
                                 />
@@ -533,7 +560,7 @@ export default function CategoryServiceSearch() {
                                     <p className="text-[10px] text-gray-500 mt-2 line-clamp-2">{serviceData.service_description}</p>
 
                                     <div className="flex flex-wrap gap-1 mt-2 text-[9px] text-gray-500">
-                                        {facilities.slice(0, 5).map((tag) => (
+                                        {facilityList.slice(0, 5).map((tag) => (
                                             <span key={`facility-tag-${tag.id}`} className="bg-gray-100 px-1.5 py-0.5 rounded">{tag.name}</span>
                                         ))}
                                         {/* <span className="text-pink-700 font-semibold">More</span> */}

@@ -65,7 +65,6 @@ export default function CreateCategoryService() {
     const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
     const [categories, setCategories] = useState<any[]>([]);
     const [bannerPreview, setBannerPreview] = useState<string | null>(null);
-    const [loadingDetails, setLoadingDetails] = useState(false);
 
     const [facilities, setFacilities] = useState<any[]>([]);
     const [facilityIds, setFacilityIds] = useState<number[]>([]);
@@ -157,13 +156,11 @@ export default function CreateCategoryService() {
     };
 
     const loadCategoryService = async () => {
-        setLoadingDetails(true);
         setError("");
 
         try {
             if (!categoryServiceId) {
                 setError("Invalid service ID");
-                setLoadingDetails(false);
                 return;
             }
 
@@ -219,7 +216,6 @@ export default function CreateCategoryService() {
         } catch (caughtError) {
             console.error("Failed to load category service:", caughtError);
         } finally {
-            setLoadingDetails(false);
         }
     };
 
