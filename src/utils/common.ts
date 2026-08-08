@@ -11,6 +11,17 @@ const buttonClassOrange = 'rounded-lg bg-orange-100 px-3 py-2 text-sm font-semib
 const buttonClassGreen = 'rounded-lg bg-green-100 px-3 py-2 text-sm font-semibold text-green-600 transition-all duration-300 hover:text-white hover:bg-green-600 hover:shadow-lg hover:shadow-primary/30 cursor-pointer';
 const buttonClassWhite = 'cursor-pointer bg-white rounded-lg px-3 py-2 border border-gray-200 text-xs font-semibold text-gray-800 transition hover:text-primary hover:bg-primary/10 transition-colors';
 
+const formatAmount = (amount: number | null) => {
+    if (amount === null || Number.isNaN(amount)) {
+        return "-";
+    }
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+    }).format(amount);
+};
+
 export const common = {
     inputClass,
     inputClassSearch,
@@ -22,4 +33,5 @@ export const common = {
     buttonClassOrange,
     buttonClassGreen,
     buttonClassWhite,
+    formatAmount
 };

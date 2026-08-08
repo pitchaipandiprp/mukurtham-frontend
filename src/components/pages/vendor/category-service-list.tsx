@@ -15,24 +15,14 @@ import { sweetalert } from "@/utils/sweetalert";
 
 
 const PAGE_SIZE = 10;
-const formatAmount = (amount: number | null) => {
-    if (amount === null || Number.isNaN(amount)) {
-        return "-";
-    }
-    return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0,
-    }).format(amount);
-};
 
 export default function CategoryServiceList() {
 
     //Data Table Code Start
-    const [rows, setRows] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [rows, setRows] = useState<any[]>([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -117,7 +107,7 @@ export default function CategoryServiceList() {
             {
                 accessorKey: "final_amount",
                 header: "Final Amount",
-                cell: ({ row }) => formatAmount(row.original.final_amount),
+                cell: ({ row }) => commonUtils.formatAmount(row.original.final_amount),
             },
             {
                 accessorKey: "status",

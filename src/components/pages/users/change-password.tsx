@@ -3,8 +3,13 @@
 import { FormEvent, useState } from "react";
 import { userService } from "@/services/api/users.service";
 import { sweetalert } from "@/utils/sweetalert";
+import { common as commonUtils } from "@/utils/common";
 
 export function ChangePassword() {
+    const inputClass = commonUtils.inputClass;
+    const buttonClass = commonUtils.buttonClass;
+    const buttonClassSubmit = commonUtils.buttonClassSubmit;
+
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -58,9 +63,10 @@ export function ChangePassword() {
 
     return (
         <div className="d-block">
-            <div className="mb-6">
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Change Password</h1>
+            <div className="mb-6 ml-1 flex items-center justify-between">
+                <b className="text-2xl text-slate-600 tracking-tight">Change Password</b>
             </div>
+
             <div className="min-h-full px-4 py-12 rounded-lg border border-primary/10 bg-white shadow-sm">
                 <div className="max-w-xl justify-center mx-auto">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -72,7 +78,7 @@ export function ChangePassword() {
                                 id="currentPassword"
                                 type="password"
                                 placeholder="Enter your current password"
-                                className="w-full rounded-lg border border-gray-400 px-4 py-3 text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 focus:shadow-md transition-all duration-300 ease-in-out"
+                                className={inputClass}
                                 value={currentPassword}
                                 onChange={(event) => setCurrentPassword(event.target.value)}
                             />
@@ -86,7 +92,7 @@ export function ChangePassword() {
                                 id="newPassword"
                                 type="password"
                                 placeholder="Enter your new password"
-                                className="w-full rounded-lg border border-gray-400 px-4 py-3 text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 focus:shadow-md transition-all duration-300 ease-in-out"
+                                className={inputClass}
                                 value={newPassword}
                                 onChange={(event) => setNewPassword(event.target.value)}
                             />
@@ -100,7 +106,7 @@ export function ChangePassword() {
                                 id="confirmPassword"
                                 type="password"
                                 placeholder="Confirm your new password"
-                                className="w-full rounded-lg border border-gray-400 px-4 py-3 text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 focus:shadow-md transition-all duration-300 ease-in-out"
+                                className={inputClass}
                                 value={confirmPassword}
                                 onChange={(event) => setConfirmPassword(event.target.value)}
                             />
@@ -113,7 +119,7 @@ export function ChangePassword() {
                         )}
                         <button
                             type="submit"
-                            className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-primary/20 hover:bg-primary-dark disabled:bg-secondary-light cursor-pointer"
+                            className={buttonClassSubmit}
                             disabled={loading}
                         >
                             Change Password

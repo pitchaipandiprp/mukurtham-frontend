@@ -12,7 +12,7 @@ import PanelHeader from '@/components/layout/panel/panel-header';
 import MobileBottomNav from '@/components/layout/main/mobile-bottom-nav';
 
 
-export default function UserDashboardLayout({
+export default function PanelLayout({
     children,
 }: { children: React.ReactNode }) {
     useAuthRedirect();

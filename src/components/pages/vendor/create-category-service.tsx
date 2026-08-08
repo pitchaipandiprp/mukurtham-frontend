@@ -63,11 +63,11 @@ export default function CreateCategoryService() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
-    const [categories, setCategories] = useState<any[]>([]);
+    const [categoryList, setCategoryList] = useState<any[]>([]);
     const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
-    const [facilities, setFacilities] = useState<any[]>([]);
-    const [facilityIds, setFacilityIds] = useState<number[]>([]);
+    const [facilityList, setFacilityList] = useState<any[]>([]);
+    const [selectedFacilityIds, setSelectedFacilityIds] = useState<number[]>([]);
 
     const searchParams = useSearchParams();
     const categoryServiceId = searchParams.get("id");
@@ -86,12 +86,12 @@ export default function CreateCategoryService() {
 
     const loadCategories = async () => {
         const result = await commonService.getCategories();
-        setCategories(result?.data || []);
+        setCategoryList(result?.data || []);
     };
 
     const loadFacility = async () => {
         const result = await commonService.getFacilities({ category_id: form.category_id });
-        setFacilities(result?.data || []);
+        setFacilityList(result?.data || []);
     };
 
     const handleLocalityChange = (locality: LocalityOption | null) => {
@@ -106,7 +106,7 @@ export default function CreateCategoryService() {
     };
 
     const handleFacilityChange = (facilityId: number) => {
-        setFacilityIds((prev) => {
+        setSelectedFacilityIds((prev) => {
             const updatedFacilityIds = prev.includes(facilityId)
                 ? prev.filter((id) => id !== facilityId)
                 : [...prev, facilityId];
@@ -198,14 +198,14 @@ export default function CreateCategoryService() {
 
             setSelectedLocality({
                 value: Number(serviceData.locality_id),
-                label: String(serviceData?.locality?.name),
+                label: String(serviceData?.locality?.name + (serviceData?.city?.name ? `, ${serviceData.city.name}` : "") + (serviceData?.state?.name ? `, ${serviceData.state.name}` : "")),
                 stateId: Number(serviceData.state_id),
                 cityId: Number(serviceData.city_id),
-                stateName: serviceData?.state?.name,
-                cityName: serviceData?.city?.name,
+                stateName: String(serviceData?.state?.name),
+                cityName: String(serviceData?.city?.name),
             });
 
-            setFacilityIds(
+            setSelectedFacilityIds(
                 serviceData.facility_ids
                     ? serviceData.facility_ids.split(",").map(Number)
                     : []
@@ -359,7 +359,7 @@ export default function CreateCategoryService() {
                                 className={inputClass}
                             >
                                 <option value="">Select category</option>
-                                {categories.map((item) => (
+                                {categoryList.map((item) => (
                                     <option key={item.id} value={item.id}>
                                         {item.name}
                                     </option>
@@ -452,7 +452,7 @@ export default function CreateCategoryService() {
 
                         <div className="md:col-span-6">
                             <div className="flex flex-wrap gap-5 mb-4">
-                                {facilities.map((amenity) => (
+                                {facilityList.map((amenity) => (
                                     <label
                                         key={`amenity-${amenity.id}`}
                                         className="flex items-center space-x-2 cursor-pointer"
@@ -460,7 +460,7 @@ export default function CreateCategoryService() {
                                         <input
                                             type="checkbox"
                                             value={amenity.id}
-                                            checked={facilityIds.includes(amenity.id)}
+                                            checked={selectedFacilityIds.includes(amenity.id)}
                                             onChange={() => handleFacilityChange(amenity.id)}
                                             className="rounded accent-primary"
                                         />

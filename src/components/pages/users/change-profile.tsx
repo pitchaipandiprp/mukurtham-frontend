@@ -3,8 +3,13 @@
 import { FormEvent, useEffect, useState } from "react";
 import { userService } from "@/services/api/users.service";
 import { sweetalert } from "@/utils/sweetalert";
+import { common as commonUtils } from "@/utils/common";
 
 export function ChangeProfile() {
+    const inputClass = commonUtils.inputClass;
+    const buttonClass = commonUtils.buttonClass;
+    const buttonClassSubmit = commonUtils.buttonClassSubmit;
+
     const [name, setName] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -53,9 +58,10 @@ export function ChangeProfile() {
 
     return (
         <div className="d-block">
-            <div className="mb-6">
-                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Update Profile</h1>
+            <div className="mb-6 ml-1 flex items-center justify-between">
+                <b className="text-2xl text-slate-600 tracking-tight">Change Password</b>
             </div>
+
             <div className="min-h-full px-4 py-12 rounded-lg border border-primary/10 bg-white shadow-sm">
                 <div className="max-w-xl justify-center mx-auto">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -67,7 +73,7 @@ export function ChangeProfile() {
                                 id="name"
                                 type="text"
                                 placeholder="Enter your name"
-                                className="w-full rounded-lg border border-gray-400 px-4 py-3 text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 focus:shadow-md transition-all duration-300 ease-in-out"
+                                className={inputClass}
                                 value={name}
                                 onChange={(event) => setName(event.target.value)}
                             />
@@ -82,7 +88,7 @@ export function ChangeProfile() {
                         )}
                         <button
                             type="submit"
-                            className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-primary/20 hover:bg-primary-dark disabled:bg-secondary-light cursor-pointer"
+                            className={buttonClassSubmit}
                             disabled={loading}
                         >
                             Update Profile
