@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { AuthModal } from "@/components/pages/users/auth-modal";
 import { useLogout } from "@/hooks/useLogout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiMenu, FiX, FiBell, FiChevronDown, FiHeart, FiMapPin, FiMessageCircle, FiSearch, } from "react-icons/fi";
 import { useAuthUser } from "@/hooks/useAuthUser";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import commonService from "@/services/api/common.service";
 
 const navLinks = [
     { label: "Home", href: "/" },
@@ -23,15 +24,35 @@ export function MainHeader() {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { logout } = useLogout();
 
+    const [cityList, setCityList] = useState<any[]>([]);
+
     const [headerSearchInput, setHeaderSearchInput] = useState("");
     const [headerSearchCity, setHeaderSearchCity] = useState("");
 
+    const searchParams = useSearchParams();
+    const searchQuery = searchParams.get("search") ?? "";
+    const cityQuery = searchParams.get("city") ?? "";
+
+    useEffect(() => {
+        loadCity();
+    }, []);
+
+    useEffect(() => {
+        if (!searchQuery && !cityQuery) return;
+        setHeaderSearchInput(searchQuery);
+        setHeaderSearchCity(cityQuery);
+    }, [searchQuery, cityQuery]);
 
     function goToLogin() {
         setIsAuthModalOpen(true);
     }
 
-    const handleTextSearchChange = () => {
+    const loadCity = async () => {
+        const result = await commonService.getCities({ is_popular: 1 });
+        setCityList(result?.data || []);
+    };
+
+    const handleSearchSubmit = () => {
         navigateToServiceSearch(headerSearchInput, headerSearchCity);
     };
 
@@ -79,8 +100,11 @@ export function MainHeader() {
                                 onChange={handleCitySearchChange}
                                 className="w-full bg-transparent border-none focus:outline-none cursor-pointer text-xs text-gray-600"
                             >
-                                <option value="chennai">Chennai</option>
-                                <option value="madurai">Madurai</option>
+                                {cityList.map((city) => (
+                                    <option key={city.id} value={city.name}>
+                                        {city.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -97,7 +121,7 @@ export function MainHeader() {
                         />
                         <button
                             type="button"
-                            onClick={handleTextSearchChange}
+                            onClick={handleSearchSubmit}
                             className="absolute right-3 top-2.5 text-primary cursor-pointer hover:text-primary-dark transition-colors duration-200"
                             aria-label="Search"
                         >

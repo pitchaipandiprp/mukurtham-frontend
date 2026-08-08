@@ -4,12 +4,11 @@ import { FaBuilding, FaCamera, FaUtensils, FaPaintBrush, FaSpa, FaCar, FaMusic, 
 import { FiMapPin, FiSearch, FiCheckCircle, FiTag, FiCreditCard } from "react-icons/fi";
 import commonService from "@/services/api/common.service";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import * as FaIcons from "react-icons/fa";
 import type { IconType } from "react-icons";
 
 export function HomePage() {
-
-    const [categoryList, setCategoryList] = useState<any[]>([]);
 
     const categoryColors = [
         "bg-rose-100/60 text-rose-600",
@@ -22,17 +21,60 @@ export function HomePage() {
         "bg-red-100/60 text-red-600",
     ];
 
+    const router = useRouter();
+
+    const [categoryList, setCategoryList] = useState<any[]>([]);
+    const [cityList, setCityList] = useState<any[]>([]);
+
+    const [homeSearchInput, setHomeSearchInput] = useState("");
+    const [homeSearchCity, setHomeSearchCity] = useState("");
+
     useEffect(() => {
-        async function loadCategories() {
-            try {
-                const categories = await commonService.getCategories();
-                setCategoryList(categories?.data);
-            } catch (error) {
-                console.error("Failed to load categories:", error);
-            }
-        }
         loadCategories();
+        loadCity();
     }, []);
+
+    async function loadCategories() {
+        try {
+            const categories = await commonService.getCategories();
+            setCategoryList(categories?.data);
+        } catch (error) {
+            console.error("Failed to load categories:", error);
+        }
+    }
+
+    const loadCity = async () => {
+        const result = await commonService.getCities({ is_popular: 1 });
+        setCityList(result?.data || []);
+    };
+
+    const handleSearchSubmit = () => {
+        navigateToServiceSearch(homeSearchInput, homeSearchCity);
+    };
+
+    const navigateToServiceSearch = (search: string, city: string) => {
+        const params = new URLSearchParams();
+
+        if (search.trim()) {
+            params.set("search", search.trim());
+        }
+
+        if (city) {
+            params.set("city", city);
+        }
+
+        router.push(`/service-search?${params.toString()}`);
+    };
+
+    const goToCategorySearch = (category: string) => {
+        const params = new URLSearchParams();
+
+        if (category.trim()) {
+            params.set("category", category.trim());
+        }
+
+        router.push(`/service-search?${params.toString()}`);
+    };
 
     return (
         <main className="mx-auto max-w-screen-2xl space-y-12 px-4 py-6 sm:px-6 lg:px-8">
@@ -62,12 +104,18 @@ export function HomePage() {
                     <div className="flex flex-col items-center space-y-2 rounded-2xl border border-gray-100 bg-white p-2.5 shadow-lg md:flex-row md:space-x-2 md:space-y-0">
                         <div className="flex w-full items-center border-b border-gray-200 px-3 py-2 md:w-1/3 md:border-b-0 md:border-r">
                             <FiMapPin aria-hidden="true" className="mr-2 h-4 w-4 text-primary" />
-                            <input
-                                type="text"
-                                defaultValue="Chennai"
+                            <select
+                                id="header-search-city"
+                                value={homeSearchCity}
+                                onChange={(e) => setHomeSearchCity(e.target.value)}
                                 className="w-full text-sm font-semibold text-gray-700 focus:outline-none"
-                                placeholder="Location"
-                            />
+                            >
+                                {cityList.map((city) => (
+                                    <option key={city.id} value={city.name}>
+                                        {city.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div className="flex w-full items-center px-3 py-2 md:w-2/3">
                             <FiSearch aria-hidden="true" className="mr-2 h-4 w-4 text-primary" />
@@ -75,9 +123,14 @@ export function HomePage() {
                                 type="text"
                                 placeholder="Search for venues, vendors..."
                                 className="w-full text-sm text-gray-700 focus:outline-none"
+                                value={homeSearchInput}
+                                onChange={(e) => setHomeSearchInput(e.target.value)}
                             />
                         </div>
-                        <button className="w-full rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-white transition hover:bg-primary-dark md:w-auto cursor-pointer">
+                        <button
+                            className="w-full rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-white transition hover:bg-primary-dark md:w-auto cursor-pointer"
+                            onClick={handleSearchSubmit}
+                        >
                             Search
                         </button>
                     </div>
@@ -115,8 +168,10 @@ export function HomePage() {
 
                             return (
                                 <div
-                                    key={category.id}
-                                    className="group flex cursor-pointer flex-col items-center space-y-2">
+                                    key={`home-category-${category.id}`}
+                                    className="group flex cursor-pointer flex-col items-center space-y-2"
+                                    onClick={() => goToCategorySearch(category.name)}
+                                >
                                     <div className={`flex h-16 w-16 items-center justify-center rounded-2xl transition group-hover:bg-primary group-hover:text-white ${colorClass}`}>
                                         {Icon && (
                                             <Icon

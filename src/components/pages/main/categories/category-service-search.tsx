@@ -45,9 +45,7 @@ const capacities = [
     { min: 3000, max: 3000, label: "3000+" },
 ];
 
-const formatAmount = (amount: number | string) => {
-    return `₹${Number(amount).toLocaleString("en-IN")}`;
-};
+
 const PAGE_SIZE = 3;
 
 export default function CategoryServiceSearch() {
@@ -65,9 +63,7 @@ export default function CategoryServiceSearch() {
     const [categoryList, setCategoryList] = useState<any[]>([]);
     const [facilityList, setFacilityList] = useState<any[]>([]);
 
-    const [categoryId, setCategoryId] = useState(1);
-    const [categoryName, setCategoryName] = useState("");
-
+    const [categoryId, setCategoryId] = useState<any>("");
     const [selectedLocality, setSelectedLocality] = useState<LocalityOption | null>(null);
     const [selectedFacilityIds, setSelectedFacilityIds] = useState<number[]>([]);
     const [selectedPriceRange, setSelectedPriceRange] = useState("");
@@ -80,6 +76,7 @@ export default function CategoryServiceSearch() {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get("search") ?? "";
     const cityQuery = searchParams.get("city") ?? "";
+    const categoryQuery = searchParams.get("category") ?? "";
 
     useEffect(() => {
         loadCategories();
@@ -103,10 +100,43 @@ export default function CategoryServiceSearch() {
         fetchServiceData(updatedFields);
     }, [searchQuery, cityQuery]);
 
+    useEffect(() => {
+        if (!categoryQuery) return;
+
+        const initializeCategory = async () => {
+            const catId = await loadCategories();
+
+            setPageNumber(1);
+
+            const updatedFields = {
+                ...searchFields,
+                category_id: String(catId),
+            };
+
+            setSearchFields(updatedFields);
+            fetchServiceData(updatedFields);
+        };
+
+        initializeCategory();
+    }, [categoryQuery]);
+
+
     const loadCategories = async () => {
         const result = await commonService.getCategories();
-        setCategoryList(result?.data || []);
-        setCategoryName(result?.data?.find((cat: any) => cat.id === categoryId)?.name || "");
+
+        const categories = result?.data || [];
+
+        setCategoryList(categories);
+
+        const catId =
+            categories.find(
+                (cat: any) =>
+                    cat.name.toLowerCase() === categoryQuery?.toLowerCase()
+            )?.id ?? 1;
+
+        setCategoryId(catId);
+
+        return catId;
     };
 
     const loadFacility = async () => {
@@ -116,7 +146,6 @@ export default function CategoryServiceSearch() {
 
     const fetchServiceData = async (fields: any = searchFields) => {
         try {
-
             const response = await mainService.categoryServiceSearch(fields);
             const responData = response.data;
             setSearchServiceData(responData.rows || []);
@@ -129,7 +158,6 @@ export default function CategoryServiceSearch() {
 
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setCategoryId(Number(event.target.value));
-        // setCategoryName(categoryList.find((cat) => cat.id === Number(event.target.value))?.name || "");
         updateField("category_id", event.target.value);
     };
 
@@ -494,7 +522,7 @@ export default function CategoryServiceSearch() {
 
                 <main className="col-span-1 md:col-span-5 space-y-4">
                     <div className="hidden md:flex justify-between items-center">
-                        <span className="text-sm font-bold text-gray-800">{totalRecords} {categoryName} found</span>
+                        <span className="text-sm font-bold text-gray-800">{totalRecords} Records Found</span>
                         {/* <div className="flex items-center space-x-1 text-xs">
                             <span className="text-gray-500">Sort by:</span>
                             <select className="font-bold text-gray-800 bg-transparent border-none focus:outline-none" defaultValue="Popular">
@@ -548,7 +576,7 @@ export default function CategoryServiceSearch() {
                                 <div className="flex justify-between items-center border-t border-gray-100 pt-2">
                                     <div>
                                         <span className="text-[9px] text-gray-400 block">Starting from</span>
-                                        <span className="font-bold text-sm text-gray-900">{formatAmount(serviceData.final_amount)}</span>
+                                        <span className="font-bold text-sm text-gray-900">{commonUtils.formatAmount(serviceData.final_amount)}</span>
                                     </div>
                                     <button type="button" className={btnClass}>
                                         View Details
