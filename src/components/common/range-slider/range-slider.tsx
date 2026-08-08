@@ -6,6 +6,7 @@ interface RangeSliderProps {
     minValue: number;
     maxValue: number;
     step?: number;
+    amountPrefix?: string;
     onChange: (minValue: number, maxValue: number) => void;
 }
 
@@ -15,6 +16,7 @@ export default function RangeSlider({
     minValue,
     maxValue,
     step = 1000,
+    amountPrefix = "",
     onChange,
 }: RangeSliderProps) {
     const minPercent = ((minValue - min) / (max - min)) * 100;
@@ -45,11 +47,11 @@ export default function RangeSlider({
             {/* Values */}
             <div className="mb-3 flex justify-between text-sm text-gray-600">
                 <span>
-                    ₹{minValue.toLocaleString("en-IN")}
+                    {amountPrefix}{minValue.toLocaleString("en-IN")}
                 </span>
 
                 <span>
-                    ₹{maxValue.toLocaleString("en-IN")}
+                    {amountPrefix}{maxValue.toLocaleString("en-IN")}
                 </span>
             </div>
 

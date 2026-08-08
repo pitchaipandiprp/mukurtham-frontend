@@ -412,6 +412,7 @@ export default function CategoryServiceSearch() {
                             minValue={Number(searchFields.min_price_range)}
                             maxValue={Number(searchFields.max_price_range)}
                             step={1000}
+                            amountPrefix="₹"
                             onChange={handlePriceRangeChange}
                         />
 
