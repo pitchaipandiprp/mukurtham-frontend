@@ -10,6 +10,7 @@ import mainService from "@/services/api/main.service";
 import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
 import { apiConfig } from "@/environments/api";
 import TablePagination from "@/components/common/datatable/pagination";
+import RangeSlider from "@/components/common/range-slider/range-slider";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -20,11 +21,10 @@ const initialSearch = {
     city_id: "",
     locality_id: "",
     search_date: "",
-    price_range: "50000",
     min_price_range: "0",
-    max_price_range: "50000",
-    min_capacity: "",
-    max_capacity: "",
+    max_price_range: "500000",
+    min_capacity: "0",
+    max_capacity: "5000",
     facility_ids: "",
     city_name: "",
     page: 1,
@@ -88,7 +88,7 @@ export default function CategoryServiceSearch() {
 
     useEffect(() => {
         fetchServiceData(searchFields);
-    }, [pageNumber]);
+    }, []);
 
     useEffect(() => {
         if (!searchQuery && !cityQuery) return;
@@ -116,13 +116,8 @@ export default function CategoryServiceSearch() {
 
     const fetchServiceData = async (fields: any = searchFields) => {
         try {
-            const updatedFields = {
-                ...fields,
-                page: pageNumber,
-                limit: PAGE_SIZE,
-            };
 
-            const response = await mainService.categoryServiceSearch(updatedFields);
+            const response = await mainService.categoryServiceSearch(fields);
             const responData = response.data;
             setSearchServiceData(responData.rows || []);
             setTotalPages(responData?.totalPages ?? 0);
@@ -146,18 +141,26 @@ export default function CategoryServiceSearch() {
         updateField("locality_id", String(locality?.value));
     };
 
-    const handlePriceRange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        updateField("price_range", event.target.value);
-        updateField("min_price_range", "0");
-        updateField("max_price_range", event.target.value);
+    const handlePriceRangeChange = (minValue: number, maxValue: number) => {
+        updateField("min_price_range", String(minValue));
+        updateField("max_price_range", String(maxValue));
     };
-
     const handlePriceChange = (minPrice: any, maxPrice: any) => {
         setSelectedPriceRange(`${minPrice}-${maxPrice}`);
 
-        updateField("price_range", maxPrice);
         updateField("min_price_range", minPrice);
         updateField("max_price_range", maxPrice);
+    };
+
+    const handleCapacityRangeChange = (minValue: number, maxValue: number) => {
+        updateField("min_capacity", String(minValue));
+        updateField("max_capacity", String(maxValue));
+    };
+    const handleCapacityChange = (minCapacity: any, maxCapacity: any) => {
+        setSelectedCapacityRange(`${minCapacity}-${maxCapacity}`);
+
+        updateField("min_capacity", String(minCapacity));
+        updateField("max_capacity", String(maxCapacity));
     };
 
     const handleFacilityChange = (facilityId: number) => {
@@ -170,14 +173,6 @@ export default function CategoryServiceSearch() {
 
             return updatedFacilityIds;
         });
-    };
-
-
-    const handleCapacityChange = (minCapacity: any, maxCapacity: any) => {
-        setSelectedCapacityRange(`${minCapacity}-${maxCapacity}`);
-
-        updateField("min_capacity", String(minCapacity));
-        updateField("max_capacity", String(maxCapacity));
     };
 
     const handleGuestCount = (
@@ -200,13 +195,23 @@ export default function CategoryServiceSearch() {
         }));
     };
 
+    const handlePageinationChange = (page: number) => {
+        setPageNumber(page);
+
+        fetchServiceData({
+            ...searchFields,
+            page: String(page),
+        });
+    };
+
     const handleSubmit = async (event: any) => {
         event.preventDefault();
-        if (pageNumber !== 1) {
-            setPageNumber(1);
-            return;
-        }
-        fetchServiceData(searchFields);
+        setPageNumber(1);
+
+        fetchServiceData({
+            ...searchFields,
+            page: "1",
+        });
     }
 
     async function handleReset(event: any) {
@@ -372,21 +377,16 @@ export default function CategoryServiceSearch() {
 
                     <div className="space-y-3 border-t border-gray-100 pt-4">
                         <label className="text-xs font-bold text-gray-800 block">Price Range</label>
-                        <div className="text-[10px] text-gray-500 font-semibold text-center m-0 p-0">
-                            {formatAmount(searchFields.price_range)}
-                        </div>
-                        <input
-                            type="range"
-                            min="0"
-                            max="500000"
-                            className="w-full accent-primary"
-                            value={searchFields.price_range}
-                            onChange={handlePriceRange}
+
+                        <RangeSlider
+                            min={0}
+                            max={500000}
+                            minValue={Number(searchFields.min_price_range)}
+                            maxValue={Number(searchFields.max_price_range)}
+                            step={1000}
+                            onChange={handlePriceRangeChange}
                         />
-                        <div className="flex justify-between text-[10px] text-gray-500 font-semibold">
-                            <span>₹0</span>
-                            <span>₹5,00,000+</span>
-                        </div>
+
                         <div className="flex flex-wrap gap-1.5 pt-1">
                             <span
                                 onClick={() => handlePriceChange("0", "50000")}
@@ -422,36 +422,14 @@ export default function CategoryServiceSearch() {
                     <div className="space-y-3 border-t border-gray-100 pt-4">
                         <label className="text-xs font-bold text-gray-800 block">Capacity (Guests)</label>
                         <div className="flex items-center space-x-2">
-                            <select
-                                className="w-1/2 text-xs border border-gray-200 rounded-lg p-1.5 text-gray-500"
-                                value={searchFields.min_capacity}
-                                onChange={(e) => {
-                                    updateField("min_capacity", e.target.value);
-                                }}
-                            >
-                                <option value={""}>Min</option>
-                                {capacities.map((item: any) => (
-                                    <option key={`capacity-min-${item.min}`} value={item.min}>{item.min}</option>
-                                ))}
-                            </select>
-                            <select
-                                className="w-1/2 text-xs border border-gray-200 rounded-lg p-1.5 text-gray-500"
-                                value={searchFields.max_capacity}
-                                onChange={(e) => {
-                                    updateField("max_capacity", e.target.value);
-                                }}
-                            >
-                                <option value={""}>Max</option>
-                                {capacities.map((item: any, index: number) => {
-                                    if (index === capacities.length - 1) return null;
-
-                                    return (
-                                        <option key={`capacity-max-${item.max}`} value={item.max}>
-                                            {item.max}
-                                        </option>
-                                    );
-                                })}
-                            </select>
+                            <RangeSlider
+                                min={0}
+                                max={5000}
+                                minValue={Number(searchFields.min_capacity)}
+                                maxValue={Number(searchFields.max_capacity)}
+                                step={100}
+                                onChange={handleCapacityRangeChange}
+                            />
                         </div>
                         <div className="flex flex-wrap gap-1.5 pt-1">
                             <span
@@ -586,7 +564,7 @@ export default function CategoryServiceSearch() {
                             page={pageNumber}
                             totalPages={totalPages}
                             totalRecords={totalRecords}
-                            onPageChange={setPageNumber}
+                            onPageChange={handlePageinationChange}
                         />
                     </div>
                 </main>
