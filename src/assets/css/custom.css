@@ -1,3 +1,8 @@
+#nprogress .spinner,
+#nprogress .spinner-icon {
+    display: none !important;
+}
+
 .swal2-popup {
     width: 350px !important;
     padding: 1rem !important;

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import NextTopLoader from "nextjs-toploader";
 import AppHeader from "@/components/layout/app-header";
 import AppFooter from "@/components/layout/app-footer";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import "../assets/css/custom.css";
 import MobileBottomNav from "@/components/layout/main/mobile-bottom-nav";
-import GlobalLoader from "@/components/common/loader/global-loader";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,13 +27,14 @@ export default function RootLayout({
     <html lang="en" className={`h-full antialiased ${poppins.variable}`}>
       <body className="suppressHydrationWarning min-h-full bg-gray-100 text-gray-800 antialiased">
         <div className="flex min-h-screen flex-col">
+          <NextTopLoader
+            color="var(--color-primary)"
+            height={2}
+            showSpinner={false}
+          />
           <AppHeader />
           <main className="flex-1">
-
-            <GlobalLoader />
-
             {children}
-
           </main>
           <AppFooter />
           <MobileBottomNav />
