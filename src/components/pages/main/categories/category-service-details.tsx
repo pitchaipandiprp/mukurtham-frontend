@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FiCheck, FiCheckCircle, FiX } from "react-icons/fi";
 import { common as commonUtils } from "@/utils/common";
-import { vendorService } from "@/services/api/vendor.service";
+import mainService from "@/services/api/main.service";
 import { apiConfig } from "@/environments/api";
 import PopupModal from "@/components/common/popup/popup-modal";
 
@@ -25,7 +25,7 @@ import {
 
 const tabs = [
     "Overview",
-    "Services",
+    // "Services",
     "Photos & Videos",
     "Availability",
     "Reviews",
@@ -47,6 +47,7 @@ export function CategoryServiceDetailsPage() {
     const [showPopup, setShowPopup] = useState(false);
     const [popupTitle, setPopupTitle] = useState("");
     const [popupContent, setPopupContent] = useState("");
+    const [isTabOpen, setIsTabOpen] = useState("");
 
     const router = useRouter();
     const BACKEND_BASE_URL = apiConfig.baseUrl;
@@ -59,6 +60,10 @@ export function CategoryServiceDetailsPage() {
 
 
     useEffect(() => {
+        setIsTabOpen("Overview")
+    }, []);
+
+    useEffect(() => {
         if (categoryServiceId) {
             loadCategoryService();
         }
@@ -69,7 +74,7 @@ export function CategoryServiceDetailsPage() {
             if (!categoryServiceId) {
                 return;
             }
-            const result = await vendorService.getCategoryService({ id: Number(categoryServiceId) });
+            const result = await mainService.getCategoryService({ id: Number(categoryServiceId) });
 
             if (!result?.success) {
                 return;
@@ -174,7 +179,8 @@ export function CategoryServiceDetailsPage() {
                         <button
                             key={tab}
                             type="button"
-                            className={index === 0 ? "whitespace-nowrap border-b-2 border-primary py-3.5 font-semibold text-primary" : "whitespace-nowrap py-3.5 hover:text-primary"}
+                            className={isTabOpen === tab ? "border-b-2 border-primary font-semibold" : "" + "cursor-pointer whitespace-nowrap py-3.5 hover:text-primary"}
+                            onClick={() => setIsTabOpen(tab)}
                         >
                             {tab}
                         </button>
@@ -182,112 +188,107 @@ export function CategoryServiceDetailsPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="space-y-6 lg:col-span-2">
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                            <div>
-                                <h3 className="mb-2 text-sm font-bold text-gray-900">About Us</h3>
-                                <p className="text-xs leading-relaxed text-gray-600 line-clamp-3">
-                                    {serviceRecord?.service_description || "No description available."}
-                                </p>
-                                <button
-                                    type="button"
-                                    className="mt-1 text-xs font-medium text-primary hover:underline cursor-pointer"
-                                    onClick={() => {
-                                        setShowPopup(true);
-                                        setPopupTitle("About Us");
-                                        setPopupContent(serviceRecord?.service_description || "No description available.");
-                                    }}
-                                >
-                                    Read more
-                                </button>
-                            </div>
-
-                            <div className="mt-6 space-y-2.5 border-t border-gray-200 pt-4 text-xs text-gray-600">
-                                <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
-                                <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div>
-                                <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div>
-                                <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> +91 98765 43210</div>
-                                <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> royal.decor@gmail.com</div>
-                            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="space-y-6">
+                    <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                        <div>
+                            <h3 className="mb-2 text-sm font-bold text-gray-900">About Us</h3>
+                            <p className="text-xs leading-relaxed text-gray-600 line-clamp-3">
+                                {serviceRecord?.service_description || "No description available."}
+                            </p>
+                            <button
+                                type="button"
+                                className="mt-1 text-xs font-medium text-primary hover:underline cursor-pointer"
+                                onClick={() => {
+                                    setShowPopup(true);
+                                    setPopupTitle("About Us");
+                                    setPopupContent(serviceRecord?.service_description || "No description available.");
+                                }}
+                            >
+                                Read more
+                            </button>
                         </div>
 
-                        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                            <h3 className="mb-3 text-sm font-bold text-gray-900">Availability Calendar</h3>
-                            <div className="mb-4 flex items-center gap-3 text-[10px] text-gray-500">
-                                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Available</span>
-                                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" /> Partially Booked</span>
-                                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary" /> Booked</span>
-                            </div>
-                            <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500">
-                                {Array.from({ length: 35 }).map((_, i) => (
-                                    <span
-                                        key={`day-${i}`}
-                                        className={i % 9 === 0 ? "py-1 font-semibold text-primary" : "py-1"}
-                                    >
-                                        {(i % 30) + 1}
-                                    </span>
-                                ))}
-                            </div>
-                            <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
-                                View Full Calendar
-                            </button>
+                        <div className="mt-6 space-y-2.5 border-t border-gray-200 pt-4 text-xs text-gray-600">
+                            <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
+                            <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div>
+                            <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div>
+                            <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> +91 98765 43210</div>
+                            <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> royal.decor@gmail.com</div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                                <div>
-                                    <h4 className="mb-3 text-xs font-bold text-gray-900">Verified & Trusted</h4>
-                                    <div className="space-y-1.5 text-xs text-gray-600">
-                                        <div>Business Verified</div>
-                                        <div>GST Verified</div>
-                                        <div>PAN Verified</div>
-                                        <div>Bank Verified</div>
-                                    </div>
-                                </div>
-                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
-                                    <FiShield />
-                                </div>
-                            </div>
-
-                            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                                <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
-                                <ul className="space-y-2 text-xs text-gray-600">
-                                    <li>Specialized in Wedding & Reception</li>
-                                    <li>Customized Theme Decor</li>
-                                    <li>Own Material & Team</li>
-                                    <li>On-time Delivery</li>
-                                    <li>Pan India Service</li>
-                                    <li>Free Consultation</li>
-                                </ul>
+                    <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                        <div>
+                            <h4 className="mb-3 text-xs font-bold text-gray-900">Verified & Trusted</h4>
+                            <div className="space-y-1.5 text-xs text-gray-600">
+                                <div>Business Verified</div>
+                                <div>GST Verified</div>
+                                <div>PAN Verified</div>
+                                <div>Bank Verified</div>
                             </div>
                         </div>
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
+                            <FiShield />
+                        </div>
+                    </div>
 
-                        <div className="flex flex-col justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                            <div>
-                                <h4 className="mb-4 text-xs font-bold text-gray-900">Packages</h4>
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                        <div className="text-xs font-semibold text-gray-800">Silver Package</div>
-                                        <div className="text-right text-xs font-bold text-gray-900">Rs 75,000</div>
-                                    </div>
-                                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                        <div className="text-xs font-semibold text-gray-800">Gold Package</div>
-                                        <div className="text-right text-xs font-bold text-gray-900">Rs 1,25,000</div>
-                                    </div>
-                                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                        <div className="text-xs font-semibold text-gray-800">Platinum Package</div>
-                                        <div className="text-right text-xs font-bold text-gray-900">Rs 2,25,000</div>
-                                    </div>
+                    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                        <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
+                        <ul className="space-y-2 text-xs text-gray-600">
+                            <li>Specialized in Wedding & Reception</li>
+                            <li>Customized Theme Decor</li>
+                            <li>Own Material & Team</li>
+                            <li>On-time Delivery</li>
+                            <li>Pan India Service</li>
+                            <li>Free Consultation</li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="space-y-6">
+                    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                        <h3 className="mb-3 text-sm font-bold text-gray-900">Availability Calendar</h3>
+                        <div className="mb-4 flex items-center gap-3 text-[10px] text-gray-500">
+                            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Available</span>
+                            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" /> Partially Booked</span>
+                            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary" /> Booked</span>
+                        </div>
+                        <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500">
+                            {Array.from({ length: 35 }).map((_, i) => (
+                                <span
+                                    key={`day-${i}`}
+                                    className={i % 9 === 0 ? "py-1 font-semibold text-primary" : "py-1"}
+                                >
+                                    {(i % 30) + 1}
+                                </span>
+                            ))}
+                        </div>
+                        <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
+                            View Full Calendar
+                        </button>
+                    </div>
+
+                    <div className="flex flex-col justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                        <div>
+                            <h4 className="mb-4 text-xs font-bold text-gray-900">Packages</h4>
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    <div className="text-xs font-semibold text-gray-800">Silver Package</div>
+                                    <div className="text-right text-xs font-bold text-gray-900">Rs 75,000</div>
+                                </div>
+                                <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    <div className="text-xs font-semibold text-gray-800">Gold Package</div>
+                                    <div className="text-right text-xs font-bold text-gray-900">Rs 1,25,000</div>
+                                </div>
+                                <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                    <div className="text-xs font-semibold text-gray-800">Platinum Package</div>
+                                    <div className="text-right text-xs font-bold text-gray-900">Rs 2,25,000</div>
                                 </div>
                             </div>
-                            <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
-                                View All Packages
-                            </button>
                         </div>
+                        <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
+                            View All Packages
+                        </button>
                     </div>
 
                     <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -309,7 +310,6 @@ export function CategoryServiceDetailsPage() {
                         </div>
                     </div>
                 </div>
-
                 <div className="space-y-6">
                     <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                         <h3 className="mb-4 text-sm font-bold text-gray-900">Timeline</h3>
@@ -393,6 +393,7 @@ export function CategoryServiceDetailsPage() {
                     </div>
                 </div>
             </div>
+
 
 
             <PopupModal

@@ -5,8 +5,14 @@ const categoryServiceSearch = async (payload: any) => {
     return await apiService.post<any>("/category-service-search", payload);
 }
 
+const getCategoryService = async (payload: any) => {
+    return await apiService.post<any>("/get-category-service", payload);
+};
+
+
 const mainService = {
     categoryServiceSearch,
+    getCategoryService,
 };
 
 export default mainService;
