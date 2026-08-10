@@ -1,5 +1,5 @@
-import { VendorDeialsPage } from "@/components/pages/vendor/vendor-details";
+import { CategoryServiceDetailsPage } from "@/components/pages/main/categories/category-service-details";
 
-export default function CategoriesPage() {
-    return <VendorDeialsPage />;
+export default function ServiceDetailsPage() {
+    return <CategoryServiceDetailsPage />;
 }

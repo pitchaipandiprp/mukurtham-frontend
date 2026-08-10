@@ -4,6 +4,7 @@ import { FiChevronsDown, FiCalendar, FiChevronDown, FiCrosshair, FiHeart, FiLock
 import { FaBuilding } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { common as commonUtils } from "@/utils/common";
 import commonService from "@/services/api/common.service";
 import mainService from "@/services/api/main.service";
@@ -580,7 +581,9 @@ export default function CategoryServiceSearch() {
                                         <span className="font-bold text-sm text-gray-900">{commonUtils.formatAmount(serviceData.final_amount)}</span>
                                     </div>
                                     <button type="button" className={btnClass}>
-                                        View Details
+                                        <Link href={`/service-details?id=${serviceData.id}`}>
+                                            View Details
+                                        </Link>
                                     </button>
                                 </div>
                             </div>

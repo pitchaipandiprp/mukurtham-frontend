@@ -1,3 +1,14 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { FiCheck, FiCheckCircle, FiX } from "react-icons/fi";
+import { common as commonUtils } from "@/utils/common";
+import { vendorService } from "@/services/api/vendor.service";
+import { apiConfig } from "@/environments/api";
+import PopupModal from "@/components/common/popup/popup-modal";
+
 import {
     FiArrowUpRight,
     FiClock,
@@ -31,15 +42,52 @@ const galleryImages = [
     "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=300&q=80",
 ];
 
-export function VendorDeialsPage() {
+export function CategoryServiceDetailsPage() {
+    const [serviceRecord, setServiceRecord] = useState<any>(null);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupTitle, setPopupTitle] = useState("");
+    const [popupContent, setPopupContent] = useState("");
+
+    const router = useRouter();
+    const BACKEND_BASE_URL = apiConfig.baseUrl;
+
+    const btnClass = commonUtils.btnClass;
+    const buttonClassWhite = commonUtils.buttonClassWhite;
+
+    const searchParams = useSearchParams();
+    const categoryServiceId = searchParams.get("id");
+
+
+    useEffect(() => {
+        if (categoryServiceId) {
+            loadCategoryService();
+        }
+    }, [categoryServiceId]);
+
+    const loadCategoryService = async () => {
+        try {
+            if (!categoryServiceId) {
+                return;
+            }
+            const result = await vendorService.getCategoryService({ id: Number(categoryServiceId) });
+
+            if (!result?.success) {
+                return;
+            }
+            setServiceRecord(result.data);
+        } catch (caughtError) {
+            console.error("Failed to load category service:", caughtError);
+        }
+    };
+
     return (
         <main className="mx-auto max-w-screen-2xl space-y-12 px-4 py-6 sm:px-6 lg:px-8">
             <div className="relative mb-6 overflow-hidden rounded-xl bg-white shadow-sm">
-                <div className="relative h-64 w-full sm:h-80">
+                <div className="relative w-full h-40 md:h-80">
                     <img
-                        src="https://i.pinimg.com/736x/9c/4f/3c/9c4f3c27cde0c02ac522d20e6d9a878c.jpg"
-                        alt="Cover"
-                        className="h-64 w-full object-cover"
+                        src={serviceRecord?.service_banner_image ? `${BACKEND_BASE_URL}/${serviceRecord.service_banner_image}` : undefined}
+                        alt=""
+                        className="h-20 md:h-64 w-full object-cover transition-transform duration-700 ease-out hover:scale-110"
                     />
                     <div className="absolute right-4 top-4 flex gap-2">
                         <button type="button" className="rounded-full bg-white/80 p-2 text-xs text-gray-700 backdrop-blur hover:bg-white" aria-label="Share">
@@ -55,18 +103,23 @@ export function VendorDeialsPage() {
                 </div>
 
                 <div className="relative flex flex-col items-start justify-between gap-4 p-6 pt-0 md:flex-row md:items-end">
-                    <div className="-mt-16 flex items-end gap-6 sm:-mt-20">
-                        <div className="flex h-32 w-32 flex-col items-center justify-center rounded-2xl border-4 border-white bg-primary p-3 text-center text-amber-300 shadow-lg sm:h-36 sm:w-36">
+                    <div className="md:flex items-end gap-6 -mt-16 md:-mt-32">
+                        <div className="hidden md:flex h-32 w-32 flex-col items-center justify-center rounded-2xl border-4 border-white bg-primary p-3 text-center text-amber-300 shadow-lg sm:h-36 sm:w-36">
                             <span className="mb-1 text-2xl">♛</span>
-                            <span className="font-serif text-xl font-bold leading-tight tracking-widest text-white">ROYAL</span>
-                            <span className="text-[9px] uppercase tracking-widest text-amber-200">Decorators</span>
+                            <span className="font-serif text-xl font-bold leading-tight tracking-widest text-white">{serviceRecord?.service_name?.trim().split(/\s+/)[0]}</span>
+                            <span className="text-[9px] uppercase tracking-widest text-amber-200">{serviceRecord?.service_name?.trim().split(/\s+/).slice(1).join(" ")}</span>
                         </div>
                         <div className="mb-2">
                             <div className="flex items-center gap-2">
-                                <h1 className="text-2xl font-bold text-gray-900">Royal Decorators</h1>
-                                <span className="text-sm text-blue-500">●</span>
+                                <h1 className="text-2xl font-bold text-gray-900">
+                                    {serviceRecord?.service_name}
+                                    <span className="inline-flex ml-2 h-4 w-4 items-center justify-center rounded-full bg-blue-500">
+                                        <FiCheck className="h-3 w-3 text-white" />
+                                    </span>
+                                </h1>
+                                <span className="text-sm text-blue-500"></span>
                             </div>
-                            <p className="mt-0.5 text-xs text-gray-500">Decoration • 8 Years Experience • Chennai</p>
+                            <p className="mt-0.5 text-xs text-gray-500">Decoration • 8 Years Experience • {serviceRecord?.city?.name}</p>
                             <div className="mt-2 flex items-center gap-2 text-xs">
                                 <span className="font-bold text-gray-800">4.8</span>
                                 <div className="flex gap-0.5 text-xs text-amber-400">
@@ -135,17 +188,24 @@ export function VendorDeialsPage() {
                         <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                             <div>
                                 <h3 className="mb-2 text-sm font-bold text-gray-900">About Us</h3>
-                                <p className="text-xs leading-relaxed text-gray-600">
-                                    We create unforgettable moments with stunning decorations tailored to your dreams.
-                                    From intimate gatherings to grand celebrations, we bring elegance and creativity to every event.
+                                <p className="text-xs leading-relaxed text-gray-600 line-clamp-3">
+                                    {serviceRecord?.service_description || "No description available."}
                                 </p>
-                                <button type="button" className="mt-1 text-xs font-medium text-primary hover:underline">
+                                <button
+                                    type="button"
+                                    className="mt-1 text-xs font-medium text-primary hover:underline cursor-pointer"
+                                    onClick={() => {
+                                        setShowPopup(true);
+                                        setPopupTitle("About Us");
+                                        setPopupContent(serviceRecord?.service_description || "No description available.");
+                                    }}
+                                >
                                     Read more
                                 </button>
                             </div>
 
                             <div className="mt-6 space-y-2.5 border-t border-gray-200 pt-4 text-xs text-gray-600">
-                                <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> Chennai, Tamil Nadu</div>
+                                <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
                                 <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div>
                                 <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div>
                                 <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> +91 98765 43210</div>
@@ -333,6 +393,18 @@ export function VendorDeialsPage() {
                     </div>
                 </div>
             </div>
+
+
+            <PopupModal
+                show={showPopup}
+                title={popupTitle}
+                onClose={() => setShowPopup(false)}
+                width="3xl"
+                position="top"
+                blurBackground={false}
+            >
+                {popupContent}
+            </PopupModal>
         </main>
     );
 }
