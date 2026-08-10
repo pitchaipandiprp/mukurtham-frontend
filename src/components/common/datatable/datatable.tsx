@@ -4,7 +4,7 @@ import {
     flexRender,
     Table,
 } from "@tanstack/react-table";
-import Loading from "./loading";
+import Loading from "@/components/common/loading/loading";
 import EmptyState from "./emptystate";
 
 interface DataTableProps<TData> {

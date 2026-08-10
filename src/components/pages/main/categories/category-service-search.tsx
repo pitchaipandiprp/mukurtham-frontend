@@ -14,6 +14,7 @@ import TablePagination from "@/components/common/datatable/pagination";
 import RangeSlider from "@/components/common/range-slider/range-slider";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Loading from "@/components/common/loading/loading";
 
 const initialSearch = {
     search_text: "",
@@ -57,6 +58,7 @@ export default function CategoryServiceSearch() {
     const btnClass = commonUtils.btnClass;
     const buttonClassWhite = commonUtils.buttonClassWhite;
 
+    const [loading, setLoading] = useState(false);
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -147,6 +149,7 @@ export default function CategoryServiceSearch() {
 
     const fetchServiceData = async (fields: any = searchFields) => {
         try {
+            setLoading(true);
             const response = await mainService.categoryServiceSearch(fields);
             const responData = response.data;
             setSearchServiceData(responData.rows || []);
@@ -154,6 +157,8 @@ export default function CategoryServiceSearch() {
             setTotalRecords(responData?.total ?? 0);
         } catch (error) {
             console.error("Search Error:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -523,14 +528,11 @@ export default function CategoryServiceSearch() {
                 </aside>
 
                 <main className="col-span-1 md:col-span-5 space-y-4">
+                    {loading && (
+                        <Loading message="Loading services..." />
+                    )}
                     <div className="hidden md:flex justify-between items-center">
                         <span className="text-sm font-bold text-gray-800">{totalRecords} Records Found</span>
-                        {/* <div className="flex items-center space-x-1 text-xs">
-                            <span className="text-gray-500">Sort by:</span>
-                            <select className="font-bold text-gray-800 bg-transparent border-none focus:outline-none" defaultValue="Popular">
-                                <option>Popular</option>
-                            </select>
-                        </div> */}
                     </div>
 
                     {searchServiceData.map((serviceData: any) => (
