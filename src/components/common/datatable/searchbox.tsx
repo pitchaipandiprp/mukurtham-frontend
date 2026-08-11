@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { common as commonUtils } from "@/utils/common";
+import { constants } from "@/utils/constants";
 
 interface TableSearchProps {
     value: string;
@@ -18,7 +18,7 @@ export default function TableSearch({
 }: TableSearchProps) {
 
 
-    const inputClassSearch = commonUtils.inputClassSearch;
+    const inputClassSearch = constants.inputClassSearch;
 
     return (
         <div className={`relative w-full max-w-sm mb-2 ${className}`}>

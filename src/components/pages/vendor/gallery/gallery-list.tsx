@@ -9,7 +9,7 @@ import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
 import TablePagination from "@/components/common/datatable/pagination";
-import { common as commonUtils } from "@/utils/common";
+import { constants } from "@/utils/constants";
 import { sweetalert } from "@/utils/sweetalert";
 import { apiConfig } from "@/environments/api";
 
@@ -27,11 +27,11 @@ export default function GalleryList() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
-    const buttonClass = commonUtils.buttonClass;
-    const buttonClassBlue = commonUtils.buttonClassBlue;
-    const buttonClassRed = commonUtils.buttonClassRed;
-    const buttonClassGreen = commonUtils.buttonClassGreen;
-    const buttonClassOrange = commonUtils.buttonClassOrange;
+    const buttonClass = constants.buttonClass;
+    const buttonClassBlue = constants.buttonClassBlue;
+    const buttonClassRed = constants.buttonClassRed;
+    const buttonClassGreen = constants.buttonClassGreen;
+    const buttonClassOrange = constants.buttonClassOrange;
 
     const occasionTypeLabels: Record<string, string> = {
         "mandap": "Mandap",

@@ -3,12 +3,11 @@
 import { FormEvent, useState } from "react";
 import { userService } from "@/services/api/users.service";
 import { sweetalert } from "@/utils/sweetalert";
-import { common as commonUtils } from "@/utils/common";
+import { constants } from "@/utils/constants";
 
 export function ChangePassword() {
-    const inputClass = commonUtils.inputClass;
-    const buttonClass = commonUtils.buttonClass;
-    const buttonClassSubmit = commonUtils.buttonClassSubmit;
+    const inputClass = constants.inputClass;
+    const buttonClassSubmit = constants.buttonClassSubmit;
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FiCheck, FiCheckCircle, FiX } from "react-icons/fi";
-import { common as commonUtils } from "@/utils/common";
+import { constants } from "@/utils/constants";
 import mainService from "@/services/api/main.service";
 import { apiConfig } from "@/environments/api";
 import PopupModal from "@/components/common/popup/popup-modal";
@@ -52,8 +52,8 @@ export function CategoryServiceDetailsPage() {
     const router = useRouter();
     const BACKEND_BASE_URL = apiConfig.baseUrl;
 
-    const btnClass = commonUtils.btnClass;
-    const buttonClassWhite = commonUtils.buttonClassWhite;
+    const btnClass = constants.btnClass;
+    const buttonClassWhite = constants.buttonClassWhite;
 
     const searchParams = useSearchParams();
     const categoryServiceId = searchParams.get("id");

@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sweetalert } from "@/utils/sweetalert";
-import { common as commonUtils } from "@/utils/common";
+import { constants } from "@/utils/constants";
 import { vendorService } from "@/services/api/vendor.service";
 import commonService from "@/services/api/common.service";
 import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
@@ -313,9 +313,9 @@ export default function CreateCategoryService() {
         }
     }
 
-    const inputClass = commonUtils.inputClass;
-    const buttonClass = commonUtils.buttonClass;
-    const buttonClassSubmit = commonUtils.buttonClassSubmit;
+    const inputClass = constants.inputClass;
+    const buttonClass = constants.buttonClass;
+    const buttonClassSubmit = constants.buttonClassSubmit;
 
     return (
         <div className="d-block">

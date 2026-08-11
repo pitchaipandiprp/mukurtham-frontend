@@ -5,6 +5,7 @@ import { FaBuilding } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import commonService from "@/services/api/common.service";
 import mainService from "@/services/api/main.service";
@@ -56,8 +57,8 @@ export default function CategoryServiceSearch() {
 
     const BACKEND_BASE_URL = apiConfig.baseUrl;
 
-    const btnClass = commonUtils.btnClass;
-    const buttonClassWhite = commonUtils.buttonClassWhite;
+    const btnClass = constants.btnClass;
+    const buttonClassWhite = constants.buttonClassWhite;
 
     const [loading, setLoading] = useState(false);
     const [pageNumber, setPageNumber] = useState(1);

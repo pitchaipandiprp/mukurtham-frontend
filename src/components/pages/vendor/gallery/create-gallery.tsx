@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sweetalert } from "@/utils/sweetalert";
-import { common as commonUtils } from "@/utils/common";
+import { constants } from "@/utils/constants";
 import { vendorService } from "@/services/api/vendor.service";
 import { apiConfig } from "@/environments/api";
 
@@ -37,9 +37,9 @@ export default function CreateGallery() {
     const searchParams = useSearchParams();
     const galleryId = searchParams.get("id");
     const isEditMode = Boolean(galleryId);
-    const inputClass = commonUtils.inputClass;
-    const buttonClass = commonUtils.buttonClass;
-    const buttonClassSubmit = commonUtils.buttonClassSubmit;
+    const inputClass = constants.inputClass;
+    const buttonClass = constants.buttonClass;
+    const buttonClassSubmit = constants.buttonClassSubmit;
 
     const occasionTypeLabels: Record<string, string> = {
         "mandap": "Mandap",
