@@ -596,7 +596,7 @@ export default function CategoryServiceSearch() {
                                 <div key={`service-records-${serviceData.id}`} className="bg-white rounded-2xl p-3 border border-gray-200 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 relative shadow-sm">
                                     <div className="sm:w-2/5 h-40 sm:h-40 rounded-xl overflow-hidden relative group">
                                         <img
-                                            src={serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : `${BACKEND_BASE_URL}/storage/uploads/sample.jpg`}
+                                            src={serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : `${BACKEND_BASE_URL}/storage/uploads/services/sample.jpg`}
                                             className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:opacity-90"
                                             alt={serviceData.service_name}
                                         />

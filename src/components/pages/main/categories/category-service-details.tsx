@@ -211,8 +211,8 @@ export function CategoryServiceDetailsPage() {
 
                         <div className="mt-6 space-y-2.5 border-t border-gray-200 pt-4 text-xs text-gray-600">
                             <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
-                            <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div>
-                            <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div>
+                            {/* <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div> */}
+                            {/* <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div> */}
                             <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> +91 98765 43210</div>
                             <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> royal.decor@gmail.com</div>
                         </div>

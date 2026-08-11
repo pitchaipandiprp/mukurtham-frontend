@@ -2,30 +2,28 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { userService } from "@/services/api/users.service";
+import { vendorService } from "@/services/api/vendor.service";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2, CheckCircle2, XCircle, Eye, Copy, MoreVertical, } from "lucide-react";
+import { Pencil, Trash2, CheckCircle2, XCircle, } from "lucide-react";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
 import TablePagination from "@/components/common/datatable/pagination";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
+import { apiConfig } from "@/environments/api";
 
 
 
 const PAGE_SIZE = 10;
 
-export default function UserList({
-    roleId = 0,
-    roleTitle = "User",
-}) {
+export default function GalleryList() {
 
     //Data Table Code Start
-    const [rows, setRows] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [rows, setRows] = useState<any[]>([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -34,6 +32,14 @@ export default function UserList({
     const buttonClassRed = commonUtils.buttonClassRed;
     const buttonClassGreen = commonUtils.buttonClassGreen;
     const buttonClassOrange = commonUtils.buttonClassOrange;
+
+    const occasionTypeLabels: Record<string, string> = {
+        "mandap": "Mandap",
+        "wedding": "Wedding",
+        "stage-decoration": "Stage Decoration",
+        "reception": "Reception",
+        "events": "Events",
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -45,19 +51,18 @@ export default function UserList({
     }, [searchInput]);
 
     useEffect(() => {
-        fetchUserData();
+        fetchGalleryData();
     }, [page, searchTerm]);
 
+    const fetchGalleryData = async () => {
 
-    const fetchUserData = async () => {
         try {
             setLoading(true);
 
-            const response = await userService.userList({
+            const response = await vendorService.galleryList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
-                role_id: roleId,
             });
 
             const responData = response.data;
@@ -89,10 +94,10 @@ export default function UserList({
         }
 
         try {
-            const result = await userService.updateStatus({ id: row.id, status });
+            const result = await vendorService.updateGalleryStatus({ id: row.id, status });
             if (result?.success) {
-                sweetalert.success('Updated successfully');
-                fetchUserData();
+                sweetalert.success(result.message);
+                fetchGalleryData();
             }
         } catch (error) {
             console.error("Delete failed:", error);
@@ -102,19 +107,28 @@ export default function UserList({
     const columns = useMemo<ColumnDef<any>[]>(() => {
         return [
             {
-                accessorKey: "name",
-                header: "Name",
-                cell: ({ getValue }) => getValue<any>() ?? "-",
+                accessorKey: "category_service_id",
+                header: "Category Service",
+                cell: ({ row }) => row.original.category_service?.service_name ?? "-",
             },
             {
-                accessorKey: "email",
-                header: "Email ID",
-                cell: ({ getValue }) => getValue<any>() ?? "-",
+                accessorKey: "occasion_type",
+                header: "Occasion Type",
+                cell: ({ row }) => occasionTypeLabels[row.original.occasion_type] ?? '-',
             },
             {
-                id: "mobile",
-                header: "Mobile",
-                cell: ({ row }) => row.original.mobile ?? "-",
+                accessorKey: "image_video",
+                header: "Image/Video",
+                cell: ({ row }) => {
+                    const BACKEND_BASE_URL = apiConfig.baseUrl;
+                    return row.original.gallery_image ? (
+                        <img src={row.original.gallery_image ? `${BACKEND_BASE_URL}/${row.original.gallery_image}` : undefined} alt="Gallery" className="h-10 w-10 object-cover" />
+                    ) : row.original.gallery_video ? (
+                        <video src={row.original.gallery_video} className="h-10 w-10 object-cover" controls />
+                    ) : (
+                        "-"
+                    );
+                },
             },
             {
                 accessorKey: "status",
@@ -161,7 +175,7 @@ export default function UserList({
                                 </button>
                             )}
 
-                            <Link href={`/panel/edit-user?id=${row.original.id}`}>
+                            <Link href={`/panel/create-gallery?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -195,7 +209,7 @@ export default function UserList({
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">{roleTitle} Lists</b>
+                <b className="text-2xl text-slate-600 tracking-tight">Gallery Lists</b>
             </div>
 
             <section className="space-y-5">
@@ -203,16 +217,16 @@ export default function UserList({
                     <TableSearch
                         value={searchInput}
                         onChange={setSearchInput}
-                        placeholder="Search User..."
+                        placeholder="Search Gallery..."
                     />
-                    <Link href="/panel/add-user" className={buttonClass}> Add {roleTitle} </Link>
+                    <Link href="/panel/create-gallery" className={buttonClass}> Add Gallery </Link>
                 </div>
 
 
                 <DataTable
                     table={table}
                     loading={loading}
-                    emptyMessage="No Users Found"
+                    emptyMessage="No Records Found"
                 />
 
                 <TablePagination

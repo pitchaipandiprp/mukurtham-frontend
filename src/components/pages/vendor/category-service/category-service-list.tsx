@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { vendorService } from "@/services/api/vendor.service";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2, Eye, Copy, MoreVertical, } from "lucide-react";
+import { Pencil, Trash2, Eye, Copy, MoreVertical, CheckCircle2, XCircle, } from "lucide-react";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
@@ -29,6 +29,8 @@ export default function CategoryServiceList() {
     const buttonClass = commonUtils.buttonClass;
     const buttonClassBlue = commonUtils.buttonClassBlue;
     const buttonClassRed = commonUtils.buttonClassRed;
+    const buttonClassGreen = commonUtils.buttonClassGreen;
+    const buttonClassOrange = commonUtils.buttonClassOrange;
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -65,14 +67,25 @@ export default function CategoryServiceList() {
         }
     };
 
-    const handleDelete = async (row: any) => {
-        const swalConfirm = await sweetalert.confirm("Are you sure you want to delete?", "Delete Confirmation");
+    const handleStatusUpdate = async (row: any, status: string) => {
+        let msg = "Are you sure you want to delete?";
+        let title = "Delete Confirmation";
+
+        if (status === 'approve') {
+            msg = "Are you sure you want to approve?";
+            title = "Approve Confirmation";
+        } else if (status === 'disapprove') {
+            msg = "Are you sure you want to disapprove?";
+            title = "Disapprove Confirmation";
+        }
+
+        const swalConfirm = await sweetalert.confirm(msg, title);
         if (!swalConfirm.isConfirmed) {
             return;
         }
 
         try {
-            const result = await vendorService.deleteCategoryService({ id: row.id });
+            const result = await vendorService.updateCategoryServiceStatus({ id: row.id, status });
             if (result?.success) {
                 sweetalert.success(result.message);
                 fetchServiceData();
@@ -131,8 +144,29 @@ export default function CategoryServiceList() {
                 accessorKey: "action",
                 header: "Action",
                 cell: ({ row }) => {
+                    const isApproved = Number(row.original.status) === 1;
                     return (
                         <>
+                            {isApproved ? (
+                                <button
+                                    type="button"
+                                    onClick={() => handleStatusUpdate(row.original, 'disapprove')}
+                                    title="Disapprove"
+                                    className={`mr-4 ${buttonClassOrange}`}
+                                >
+                                    <XCircle className="h-4 w-4" />
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => handleStatusUpdate(row.original, 'approve')}
+                                    title="Approve"
+                                    className={`mr-4 ${buttonClassGreen}`}
+                                >
+                                    <CheckCircle2 className="h-5 w-5" />
+                                </button>
+                            )}
+
                             <Link href={`/panel/create-category-service?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
@@ -145,7 +179,7 @@ export default function CategoryServiceList() {
                             <button
                                 className={buttonClassRed}
                                 title="Delete"
-                                onClick={() => handleDelete(row.original)}
+                                onClick={() => handleStatusUpdate(row.original, 'delete')}
                             >
                                 <Trash2 className="h-4 w-4" />
                             </button>
