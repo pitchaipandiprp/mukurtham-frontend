@@ -38,6 +38,10 @@ const galleryList = async (payload: any) => {
     return await apiService.post<any>("/vendors/gallery-list", payload);
 };
 
+const galleryRecords = async (payload: any) => {
+    return await apiService.post<any>("/vendors/gallery-records", payload);
+};
+
 export const vendorService = {
     createCategoryService,
     getCategoryService,
@@ -48,4 +52,5 @@ export const vendorService = {
     updateGalleryStatus,
     getGallery,
     galleryList,
+    galleryRecords,
 };

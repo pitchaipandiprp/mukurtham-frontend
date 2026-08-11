@@ -27,6 +27,13 @@ const initialForm: GalleryForm = {
     status: "0",
 };
 
+const occasionTypeLabels = [
+    { key: "mandap", label: "Mandap" },
+    { key: "wedding", label: "Wedding" },
+    { key: "stage-decoration", label: "Stage Decoration" },
+    { key: "reception", label: "Reception" },
+    { key: "events", label: "Events" },
+];
 
 export default function CreateGallery() {
     const router = useRouter();
@@ -42,13 +49,6 @@ export default function CreateGallery() {
     const buttonClass = constants.buttonClass;
     const buttonClassSubmit = constants.buttonClassSubmit;
 
-    const occasionTypeLabels: Record<string, string> = {
-        "mandap": "Mandap",
-        "wedding": "Wedding",
-        "stage-decoration": "Stage Decoration",
-        "reception": "Reception",
-        "events": "Events",
-    };
 
     useEffect(() => {
         loadCategoryServiceRecords();
@@ -275,7 +275,7 @@ export default function CreateGallery() {
                             >
                                 <option value="">Select Occasion Type</option>
 
-                                {Object.entries(occasionTypeLabels).map(([key, label]) => (
+                                {occasionTypeLabels.map(({ key, label }) => (
                                     <option key={`occasion-type-${key}`} value={key}>
                                         {label}
                                     </option>

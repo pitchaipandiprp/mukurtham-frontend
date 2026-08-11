@@ -24,14 +24,13 @@ import {
 } from "react-icons/fi";
 
 const tabs = [
-    "Overview",
-    // "Services",
-    "Photos & Videos",
-    "Availability",
-    "Reviews",
-    "Timeline",
-    "Packages",
-    "Offers",
+    { key: "overview", label: "Overview" },
+    { key: "photos-videos", label: "Photos & Videos" },
+    { key: "availability", label: "Availability" },
+    { key: "reviews", label: "Reviews" },
+    { key: "timeline", label: "Timeline" },
+    { key: "packages", label: "Packages" },
+    { key: "offers", label: "Offers" },
 ];
 
 const galleryImages = [
@@ -42,12 +41,24 @@ const galleryImages = [
     "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=300&q=80",
 ];
 
+const occasionTypeLabels = [
+    { key: "mandap", label: "Mandap" },
+    { key: "wedding", label: "Wedding" },
+    { key: "stage-decoration", label: "Stage Decoration" },
+    { key: "reception", label: "Reception" },
+    { key: "events", label: "Events" },
+];
+
+
 export function CategoryServiceDetailsPage() {
     const [serviceRecord, setServiceRecord] = useState<any>(null);
     const [showPopup, setShowPopup] = useState(false);
     const [popupTitle, setPopupTitle] = useState("");
     const [popupContent, setPopupContent] = useState("");
     const [isTabOpen, setIsTabOpen] = useState("");
+    const [isOccasionTabOpen, setIsOccasionTabOpen] = useState("all");
+    const [galleryRecords, setGalleryRecords] = useState<any[]>([]);
+    const [galleryFilterRecords, setGalleryFilterRecords] = useState<any[]>([]);
 
     const router = useRouter();
     const BACKEND_BASE_URL = apiConfig.baseUrl;
@@ -60,12 +71,13 @@ export function CategoryServiceDetailsPage() {
 
 
     useEffect(() => {
-        setIsTabOpen("Overview")
+        setIsTabOpen("overview")
     }, []);
 
     useEffect(() => {
         if (categoryServiceId) {
             loadCategoryService();
+            loadGalleryRecords();
         }
     }, [categoryServiceId]);
 
@@ -83,6 +95,39 @@ export function CategoryServiceDetailsPage() {
         } catch (caughtError) {
             console.error("Failed to load category service:", caughtError);
         }
+    };
+
+    const loadGalleryRecords = async () => {
+        try {
+            if (!categoryServiceId) {
+                return;
+            }
+            const result = await mainService.galleryRecords({ category_service_id: Number(categoryServiceId) });
+
+            if (!result?.success) {
+                return;
+            }
+
+            setGalleryRecords(result.data);
+            setGalleryFilterRecords(result.data);
+        } catch (caughtError) {
+            console.error("Failed to load gallery records:", caughtError);
+        }
+    };
+
+    const occasionTabChange = (key: string) => {
+        setIsOccasionTabOpen(key);
+
+        if (key === "all") {
+            setGalleryFilterRecords(galleryRecords);
+            return;
+        }
+
+        const filteredRecords = galleryRecords.filter(
+            (image) => image.occasion_type === key
+        );
+
+        setGalleryFilterRecords(filteredRecords);
     };
 
     return (
@@ -175,14 +220,14 @@ export function CategoryServiceDetailsPage() {
                 </div>
 
                 <div className="flex gap-8 overflow-x-auto border-t border-gray-200 px-6 text-xs font-medium text-gray-500">
-                    {tabs.map((tab, index) => (
+                    {tabs.map(({ key, label }) => (
                         <button
-                            key={tab}
+                            key={`is-tab-${key}`}
                             type="button"
-                            className={isTabOpen === tab ? "border-b-2 border-primary font-semibold" : "" + "cursor-pointer whitespace-nowrap py-3.5 hover:text-primary"}
-                            onClick={() => setIsTabOpen(tab)}
+                            className={(isTabOpen === key ? "border-b-2 border-primary font-semibold" : "") + " cursor-pointer whitespace-nowrap py-3.5 hover:text-primary"}
+                            onClick={() => setIsTabOpen(key)}
                         >
-                            {tab}
+                            {label}
                         </button>
                     ))}
                 </div>
@@ -191,25 +236,7 @@ export function CategoryServiceDetailsPage() {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 <aside className="md:col-span-3 space-y-6">
                     <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                        <div>
-                            <h3 className="mb-2 text-sm font-bold text-gray-900">About Us</h3>
-                            <p className="text-xs leading-relaxed text-gray-600 line-clamp-3">
-                                {serviceRecord?.service_description || "No description available."}
-                            </p>
-                            <button
-                                type="button"
-                                className="mt-1 text-xs font-medium text-primary hover:underline cursor-pointer"
-                                onClick={() => {
-                                    setShowPopup(true);
-                                    setPopupTitle("About Us");
-                                    setPopupContent(serviceRecord?.service_description || "No description available.");
-                                }}
-                            >
-                                Read more
-                            </button>
-                        </div>
-
-                        <div className="mt-6 space-y-2.5 border-t border-gray-200 pt-4 text-xs text-gray-600">
+                        <div className="space-y-2.5 text-xs text-gray-600">
                             <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
                             {/* <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div> */}
                             {/* <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div> */}
@@ -246,69 +273,118 @@ export function CategoryServiceDetailsPage() {
                     </div>
                 </aside>
                 <main className="md:col-span-6 space-y-6">
-                    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                        <h3 className="mb-3 text-sm font-bold text-gray-900">Availability Calendar</h3>
-                        <div className="mb-4 flex items-center gap-3 text-[10px] text-gray-500">
-                            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Available</span>
-                            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" /> Partially Booked</span>
-                            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary" /> Booked</span>
-                        </div>
-                        <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500">
-                            {Array.from({ length: 35 }).map((_, i) => (
-                                <span
-                                    key={`day-${i}`}
-                                    className={i % 9 === 0 ? "py-1 font-semibold text-primary" : "py-1"}
+                    {isTabOpen === "overview" && (
+                        <>
+                            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                                <h3 className="mb-3 text-sm font-bold text-gray-900">About Us</h3>
+                                <p className="text-xs leading-relaxed text-gray-600 line-clamp-3">
+                                    {serviceRecord?.service_description || "No description available."}
+                                </p>
+                                <button
+                                    type="button"
+                                    className="mt-1 text-xs font-medium text-primary hover:underline cursor-pointer"
+                                    onClick={() => {
+                                        setShowPopup(true);
+                                        setPopupTitle("About Us");
+                                        setPopupContent(serviceRecord?.service_description || "No description available.");
+                                    }}
                                 >
-                                    {(i % 30) + 1}
-                                </span>
-                            ))}
-                        </div>
-                        <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
-                            View Full Calendar
-                        </button>
-                    </div>
+                                    Read more
+                                </button>
+                            </div>
+                        </>
+                    )}
 
-                    <div className="flex flex-col justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                        <div>
-                            <h4 className="mb-4 text-xs font-bold text-gray-900">Packages</h4>
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                    <div className="text-xs font-semibold text-gray-800">Silver Package</div>
-                                    <div className="text-right text-xs font-bold text-gray-900">Rs 75,000</div>
+                    {isTabOpen === "photos-videos" && (
+                        <>
+                            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                                <div className="mb-4 flex items-center justify-between">
+                                    <h3 className="text-sm font-bold text-gray-900">Photos</h3>
+                                    <button type="button" className="text-xs font-medium text-primary hover:underline">View All</button>
                                 </div>
-                                <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                    <div className="text-xs font-semibold text-gray-800">Gold Package</div>
-                                    <div className="text-right text-xs font-bold text-gray-900">Rs 1,25,000</div>
+                                <div className="mb-4 flex gap-2 overflow-x-auto text-xs">
+                                    <button
+                                        type="button"
+                                        className={`rounded-full px-3 py-1 cursor-pointer ${isOccasionTabOpen === 'all' ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'}`}
+                                        onClick={() => occasionTabChange('all')}
+                                    >
+                                        All
+                                    </button>
+                                    {occasionTypeLabels.map(({ key, label }) => (
+                                        <button
+                                            key={key}
+                                            type="button"
+                                            className={`rounded-full px-3 py-1 cursor-pointer ${isOccasionTabOpen === key ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'}`}
+                                            onClick={() => occasionTabChange(key)}
+                                        >{label}</button>
+                                    ))}
                                 </div>
-                                <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                    <div className="text-xs font-semibold text-gray-800">Platinum Package</div>
-                                    <div className="text-right text-xs font-bold text-gray-900">Rs 2,25,000</div>
+                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                                    {galleryFilterRecords.map((image, index) => (
+                                        <img
+                                            key={`gallery-image-${index}`}
+                                            src={image?.gallery_image ? `${BACKEND_BASE_URL}/${image.gallery_image}` : undefined}
+                                            className="h-24 w-full rounded-lg object-cover transition-transform duration-700 ease-out hover:scale-110"
+                                            alt="Gallery"
+                                        />
+                                    ))}
                                 </div>
                             </div>
-                        </div>
-                        <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
-                            View All Packages
-                        </button>
-                    </div>
+                        </>
+                    )}
 
-                    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                        <div className="mb-4 flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-gray-900">Photos & Videos</h3>
-                            <button type="button" className="text-xs font-medium text-primary hover:underline">View All</button>
-                        </div>
-                        <div className="mb-4 flex gap-2 overflow-x-auto text-xs">
-                            <button type="button" className="rounded-full bg-primary px-3 py-1 text-white">All</button>
-                            <button type="button" className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">Stage Decor</button>
-                            <button type="button" className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">Mandap</button>
-                            <button type="button" className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">Reception</button>
-                            <button type="button" className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">Events</button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-                            {galleryImages.map((image, index) => (
-                                <img key={image} src={image} alt={`Gallery ${index + 1}`} className="h-24 w-full rounded-lg object-cover" />
-                            ))}
-                        </div>
-                    </div>
+                    {isTabOpen === "availability" && (
+                        <>
+                            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                                <h3 className="mb-3 text-sm font-bold text-gray-900">Availability Calendar</h3>
+                                <div className="mb-4 flex items-center gap-3 text-[10px] text-gray-500">
+                                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Available</span>
+                                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" /> Partially Booked</span>
+                                    <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary" /> Booked</span>
+                                </div>
+                                <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500">
+                                    {Array.from({ length: 35 }).map((_, i) => (
+                                        <span
+                                            key={`day-${i}`}
+                                            className={i % 9 === 0 ? "py-1 font-semibold text-primary" : "py-1"}
+                                        >
+                                            {(i % 30) + 1}
+                                        </span>
+                                    ))}
+                                </div>
+                                <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
+                                    View Full Calendar
+                                </button>
+                            </div>
+                        </>
+                    )}
+
+                    {isTabOpen === "packages" && (
+                        <>
+                            <div className="flex flex-col justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                                <div>
+                                    <h4 className="mb-4 text-xs font-bold text-gray-900">Packages</h4>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                            <div className="text-xs font-semibold text-gray-800">Silver Package</div>
+                                            <div className="text-right text-xs font-bold text-gray-900">Rs 75,000</div>
+                                        </div>
+                                        <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                            <div className="text-xs font-semibold text-gray-800">Gold Package</div>
+                                            <div className="text-right text-xs font-bold text-gray-900">Rs 1,25,000</div>
+                                        </div>
+                                        <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                            <div className="text-xs font-semibold text-gray-800">Platinum Package</div>
+                                            <div className="text-right text-xs font-bold text-gray-900">Rs 2,25,000</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
+                                    View All Packages
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </main>
                 <aside className="md:col-span-3 space-y-6">
                     <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">

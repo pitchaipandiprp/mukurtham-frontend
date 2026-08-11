@@ -9,10 +9,14 @@ const getCategoryService = async (payload: any) => {
     return await apiService.post<any>("/get-category-service", payload);
 };
 
+const galleryRecords = async (payload: any) => {
+    return await apiService.post<any>("/gallery-records", payload);
+};
 
 const mainService = {
     categoryServiceSearch,
     getCategoryService,
+    galleryRecords,
 };
 
 export default mainService;

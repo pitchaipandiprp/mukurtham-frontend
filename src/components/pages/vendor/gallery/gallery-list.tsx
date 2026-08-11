@@ -17,6 +17,15 @@ import { apiConfig } from "@/environments/api";
 
 const PAGE_SIZE = 10;
 
+const occasionTypeLabels = [
+    { key: "mandap", label: "Mandap" },
+    { key: "wedding", label: "Wedding" },
+    { key: "stage-decoration", label: "Stage Decoration" },
+    { key: "reception", label: "Reception" },
+    { key: "events", label: "Events" },
+];
+
+
 export default function GalleryList() {
 
     //Data Table Code Start
@@ -32,14 +41,6 @@ export default function GalleryList() {
     const buttonClassRed = constants.buttonClassRed;
     const buttonClassGreen = constants.buttonClassGreen;
     const buttonClassOrange = constants.buttonClassOrange;
-
-    const occasionTypeLabels: Record<string, string> = {
-        "mandap": "Mandap",
-        "wedding": "Wedding",
-        "stage-decoration": "Stage Decoration",
-        "reception": "Reception",
-        "events": "Events",
-    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -114,7 +115,7 @@ export default function GalleryList() {
             {
                 accessorKey: "occasion_type",
                 header: "Occasion Type",
-                cell: ({ row }) => occasionTypeLabels[row.original.occasion_type] ?? '-',
+                cell: ({ row }) => occasionTypeLabels.find(item => item.key === row.original.occasion_type)?.label ?? '-',
             },
             {
                 accessorKey: "image_video",
