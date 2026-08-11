@@ -2,7 +2,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
@@ -60,6 +60,7 @@ const initialForm: CategoryServiceForm = {
 
 
 export default function CreateCategoryService() {
+    const router = useRouter();
     const [form, setForm] = useState<CategoryServiceForm>(initialForm);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -169,6 +170,13 @@ export default function CreateCategoryService() {
 
             if (!result?.success) {
                 return;
+            }
+
+            if (!result.data || result.data.length === 0) {
+                const swalConfirm = await sweetalert.warning("Something went wrong");
+                if (swalConfirm.isConfirmed) {
+                    router.push("/panel/category-service-list");
+                }
             }
 
             const serviceData = result.data;
