@@ -15,6 +15,7 @@ import RangeSlider from "@/components/common/range-slider/range-slider";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Loading from "@/components/common/loading/loading";
+import LocationPicker from "@/components/common/map/openstreetmap/location-picker";
 
 const initialSearch = {
     search_text: "",
@@ -75,6 +76,10 @@ export default function CategoryServiceSearch() {
     const [searchFields, setSearchFields] = useState<any>(initialSearch);
     const [searchServiceData, setSearchServiceData] = useState<any>([]);
     const [searchDate, setSearchDate] = useState<Date | null>(null);
+
+    const [mapLocations, setMapLocations] = useState<any>([]);
+    const [selectedLatitude, setSelectedLatitude] = useState<any>([]);
+    const [selectedLongitude, setSelectedLongitude] = useState<any>([]);
 
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get("search") ?? "";
@@ -155,6 +160,29 @@ export default function CategoryServiceSearch() {
             setSearchServiceData(responData.rows || []);
             setTotalPages(responData?.totalPages ?? 0);
             setTotalRecords(responData?.total ?? 0);
+
+            const locations = (responData.rows || [])
+                .filter(
+                    (item: any) =>
+                        item.latitude != null &&
+                        item.longitude != null
+                )
+                .map((item: any) => ({
+                    id: item.id,
+                    name: item.name,
+                    latitude: Number(item.latitude),
+                    longitude: Number(item.longitude),
+                }));
+
+            setMapLocations(locations);
+
+            if (locations.length > 0) {
+                setSelectedLatitude(locations[0].latitude);
+                setSelectedLongitude(locations[0].longitude);
+            } else {
+                setSelectedLatitude(9.9252);
+                setSelectedLongitude(78.1198);
+            }
         } catch (error) {
             console.error("Search Error:", error);
         } finally {
@@ -163,70 +191,82 @@ export default function CategoryServiceSearch() {
     };
 
     const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setCategoryId(Number(event.target.value));
-        updateField("category_id", event.target.value);
+        const categoryId = event.target.value;
+
+        setCategoryId(Number(categoryId));
+
+        updateFieldsAndSubmit({
+            category_id: categoryId,
+        });
     };
 
     const handleLocalityChange = (locality: LocalityOption | null) => {
         setSelectedLocality(locality);
 
-        updateField("state_id", String(locality?.stateId));
-        updateField("city_id", String(locality?.cityId));
-        updateField("locality_id", String(locality?.value));
+        updateFieldsAndSubmit({
+            state_id: String(locality?.stateId ?? ""),
+            city_id: String(locality?.cityId ?? ""),
+            locality_id: String(locality?.value ?? ""),
+        });
     };
 
     const handlePriceRangeChange = (minValue: number, maxValue: number) => {
-        updateField("min_price_range", String(minValue));
-        updateField("max_price_range", String(maxValue));
+        updateFieldsAndSubmit({
+            min_price_range: String(minValue),
+            max_price_range: String(maxValue),
+        });
     };
+
     const handlePriceChange = (minPrice: any, maxPrice: any) => {
         setSelectedPriceRange(`${minPrice}-${maxPrice}`);
 
-        updateField("min_price_range", minPrice);
-        updateField("max_price_range", maxPrice);
+        updateFieldsAndSubmit({
+            min_price_range: String(minPrice),
+            max_price_range: String(maxPrice),
+        });
     };
 
     const handleCapacityRangeChange = (minValue: number, maxValue: number) => {
-        updateField("min_capacity", String(minValue));
-        updateField("max_capacity", String(maxValue));
+        updateFieldsAndSubmit({
+            min_capacity: String(minValue),
+            max_capacity: String(maxValue),
+        });
     };
+
     const handleCapacityChange = (minCapacity: any, maxCapacity: any) => {
         setSelectedCapacityRange(`${minCapacity}-${maxCapacity}`);
 
-        updateField("min_capacity", String(minCapacity));
-        updateField("max_capacity", String(maxCapacity));
+        updateFieldsAndSubmit({
+            min_capacity: String(minCapacity),
+            max_capacity: String(maxCapacity),
+        });
     };
 
     const handleFacilityChange = (facilityId: number) => {
         setSelectedFacilityIds((prev) => {
-            const updatedFacilityIds = prev.includes(facilityId)
+            const updatedIds = prev.includes(facilityId)
                 ? prev.filter((id) => id !== facilityId)
                 : [...prev, facilityId];
 
-            updateField("facility_ids", updatedFacilityIds.join(","));
+            updateFieldsAndSubmit({
+                facility_ids: updatedIds.join(","),
+            });
 
-            return updatedFacilityIds;
+            return updatedIds;
         });
     };
 
-    const handleGuestCount = (
-        e: React.ChangeEvent<HTMLSelectElement>
-    ) => {
+    const handleGuestCount = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selected = capacities.find(
-            (item) => item.min === Number(e.target.value)
+            (item) => item.min === Number(event.target.value)
         );
 
         if (!selected) return;
 
-        updateField("min_capacity", String(selected.min));
-        updateField("max_capacity", String(selected.max));
-    };
-
-    const updateField = (field: any, value: string) => {
-        setSearchFields((prev: any) => ({
-            ...prev,
-            [field]: value,
-        }));
+        updateFieldsAndSubmit({
+            min_capacity: String(selected.min),
+            max_capacity: String(selected.max),
+        });
     };
 
     const handlePageinationChange = (page: number) => {
@@ -238,18 +278,16 @@ export default function CategoryServiceSearch() {
         });
     };
 
-    const handleSubmit = async (event: any) => {
-        event.preventDefault();
+    const handleSubmit = () => {
         setPageNumber(1);
 
         fetchServiceData({
             ...searchFields,
             page: "1",
         });
-    }
+    };
 
-    async function handleReset(event: any) {
-        event.preventDefault();
+    async function handleReset() {
         setSearchFields(initialSearch);
         setCategoryId(1);
         setSelectedLocality(null);
@@ -261,17 +299,32 @@ export default function CategoryServiceSearch() {
         router.push(`/service-search`);
     }
 
+    const updateFieldsAndSubmit = (fields: Partial<any>) => {
+        setSearchFields((prev: any) => ({
+            ...prev,
+            ...fields,
+        }));
+
+        setPageNumber(1);
+
+        fetchServiceData({
+            ...searchFields,
+            ...fields,
+            page: "1",
+        });
+    };
+
     return (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4">
             <div className="hidden md:flex bg-white p-2 rounded-2xl shadow-sm border border-gray-200 items-center justify-between mb-4">
                 <div className="flex items-center divide-x divide-gray-200 flex-1">
-                    <div className="flex items-center px-4 py-2 space-x-2 text-xs font-semibold text-gray-700 w-1/4 cursor-pointer justify-between">
+                    <div className="flex items-center px-4 space-x-2 text-xs font-semibold text-gray-700 w-1/4 cursor-pointer justify-between">
                         <FaBuilding className="w-3.5 h-3.5 text-gray-400" />
                         <select
                             id="categoryId"
                             value={categoryId}
                             onChange={handleCategoryChange}
-                            className="w-full bg-transparent border-none focus:outline-none"
+                            className="w-full bg-transparent py-2 border-none focus:outline-none"
                         >
                             <option value="">Select Category</option>
                             {categoryList.map((item) => (
@@ -319,6 +372,9 @@ export default function CategoryServiceSearch() {
 
                 <button onClick={handleSubmit} type="button" className={btnClass}>
                     Search
+                </button>
+                <button onClick={handleReset} type="button" className={`${buttonClassWhite} ml-5`}>
+                    Reset
                 </button>
             </div>
 
@@ -392,7 +448,7 @@ export default function CategoryServiceSearch() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <aside className="hidden md:block md:col-span-3 bg-white p-5 rounded-2xl border border-gray-200 h-fit space-y-6">
+                <aside className="hidden md:block md:col-span-2 bg-white p-5 rounded-2xl border border-gray-200 h-fit space-y-6">
                     <div className="flex justify-between items-center pb-3 border-b border-gray-100">
                         <h2 className="font-bold text-xs uppercase tracking-wider text-gray-800">Filters</h2>
                         <button onClick={handleReset} type="button" className="text-xs text-primary font-semibold hover:text-primary-dark cursor-pointer">Clear All</button>
@@ -527,117 +583,96 @@ export default function CategoryServiceSearch() {
                     </div>
                 </aside>
 
-                <main className="col-span-1 md:col-span-5 space-y-4">
-                    {loading && (
+                <main className="col-span-1 md:col-span-6 space-y-4">
+                    {loading ? (
                         <Loading message="Loading services..." />
-                    )}
-                    <div className="hidden md:flex justify-between items-center">
-                        <span className="text-sm font-bold text-gray-800">{totalRecords} Records Found</span>
-                    </div>
-
-                    {searchServiceData.map((serviceData: any) => (
-                        <div key={`service-records-${serviceData.id}`} className="bg-white rounded-2xl p-3 border border-gray-200 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 relative shadow-sm">
-                            <div className="sm:w-2/5 h-40 sm:h-40 rounded-xl overflow-hidden relative group">
-                                <img
-                                    src={serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : `${BACKEND_BASE_URL}/storage/uploads/sample.jpg`}
-                                    className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:opacity-90"
-                                    alt={serviceData.service_name}
-                                />
-                                <span className="absolute top-2 left-2 bg-pink-700 text-white text-[9px] uppercase font-bold px-2 py-0.5 rounded">Popular</span>
+                    ) : (
+                        <>
+                            <div className="hidden md:flex justify-between items-center">
+                                <span className="text-sm font-bold text-gray-800">{totalRecords} Records Found</span>
                             </div>
-                            <div className="sm:w-3/5 space-y-2 flex flex-col justify-between">
-                                <div>
-                                    <div className="flex justify-between items-start">
-                                        <h3 className="font-bold text-sm text-gray-800">{serviceData.service_name}</h3>
-                                        <div className="flex items-center text-xs font-semibold text-amber-600">
-                                            <button type="button" className="cursor-pointer mr-2 p-1 text-gray-400 hover:text-pink-700">
-                                                <FiHeart className="w-4 h-4" />
+
+                            {searchServiceData.map((serviceData: any) => (
+                                <div key={`service-records-${serviceData.id}`} className="bg-white rounded-2xl p-3 border border-gray-200 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 relative shadow-sm">
+                                    <div className="sm:w-2/5 h-40 sm:h-40 rounded-xl overflow-hidden relative group">
+                                        <img
+                                            src={serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : `${BACKEND_BASE_URL}/storage/uploads/sample.jpg`}
+                                            className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:opacity-90"
+                                            alt={serviceData.service_name}
+                                        />
+                                        <span className="absolute top-2 left-2 bg-pink-700 text-white text-[9px] uppercase font-bold px-2 py-0.5 rounded">Popular</span>
+                                    </div>
+                                    <div className="sm:w-3/5 space-y-2 flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex justify-between items-start">
+                                                <h3 className="font-bold text-sm text-gray-800">{serviceData.service_name}</h3>
+                                                <div className="flex items-center text-xs font-semibold text-amber-600">
+                                                    <button type="button" className="cursor-pointer mr-2 p-1 text-gray-400 hover:text-pink-700">
+                                                        <FiHeart className="w-4 h-4" />
+                                                    </button>
+                                                    <FiStar className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
+                                                    <span>4.5</span> <span className="text-gray-400 text-[10px] ml-0.5">(100)</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-[11px] text-gray-500 flex items-center mt-0.5">
+                                                <FiMapPin className="w-3 h-3 mr-1 text-pink-700" /> {serviceData?.locality_name}, {serviceData?.city_name}
+                                            </p>
+
+                                            <div className="flex items-center space-x-3 text-[10px] text-gray-600 mt-2 font-medium">
+                                                <div><span className="font-bold text-gray-800 block text-xs">{serviceData.capacity}</span> Seating Capacity</div>
+                                                <div><span className="font-bold text-gray-800 block text-xs">{serviceData.number_of_rooms}</span> Rooms</div>
+                                                <div className="flex items-center text-gray-500"><FiWind className="w-3 h-3 mr-1" /> {serviceData?.ac_available ? 'AC Hall' : 'Non-AC Hall'}</div>
+                                            </div>
+
+                                            <p className="text-[10px] text-gray-500 mt-2 line-clamp-2">{serviceData.service_description}</p>
+
+                                            <div className="flex flex-wrap gap-1 mt-2 text-[9px] text-gray-500">
+                                                {facilityList.slice(0, 5).map((tag) => (
+                                                    <span key={`facility-tag-${tag.id}`} className="bg-gray-100 px-1.5 py-0.5 rounded">{tag.name}</span>
+                                                ))}
+                                                {/* <span className="text-pink-700 font-semibold">More</span> */}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-between items-center border-t border-gray-100 pt-2">
+                                            <div>
+                                                <span className="text-[9px] text-gray-400 block">Starting from</span>
+                                                <span className="font-bold text-sm text-gray-900">{commonUtils.formatAmount(serviceData.final_amount)}</span>
+                                            </div>
+                                            <button type="button" className={btnClass}>
+                                                <Link href={`/service-details?id=${serviceData.id}`}>
+                                                    View Details
+                                                </Link>
                                             </button>
-                                            <FiStar className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
-                                            <span>4.5</span> <span className="text-gray-400 text-[10px] ml-0.5">(100)</span>
                                         </div>
                                     </div>
-                                    <p className="text-[11px] text-gray-500 flex items-center mt-0.5">
-                                        <FiMapPin className="w-3 h-3 mr-1 text-pink-700" /> {serviceData?.locality?.name}, {serviceData?.city?.name}
-                                    </p>
-
-                                    <div className="flex items-center space-x-3 text-[10px] text-gray-600 mt-2 font-medium">
-                                        <div><span className="font-bold text-gray-800 block text-xs">{serviceData.capacity}</span> Seating Capacity</div>
-                                        <div><span className="font-bold text-gray-800 block text-xs">{serviceData.number_of_rooms}</span> Rooms</div>
-                                        <div className="flex items-center text-gray-500"><FiWind className="w-3 h-3 mr-1" /> {serviceData?.ac_available ? 'AC Hall' : 'Non-AC Hall'}</div>
-                                    </div>
-
-                                    <p className="text-[10px] text-gray-500 mt-2 line-clamp-2">{serviceData.service_description}</p>
-
-                                    <div className="flex flex-wrap gap-1 mt-2 text-[9px] text-gray-500">
-                                        {facilityList.slice(0, 5).map((tag) => (
-                                            <span key={`facility-tag-${tag.id}`} className="bg-gray-100 px-1.5 py-0.5 rounded">{tag.name}</span>
-                                        ))}
-                                        {/* <span className="text-pink-700 font-semibold">More</span> */}
-                                    </div>
                                 </div>
+                            ))}
 
-                                <div className="flex justify-between items-center border-t border-gray-100 pt-2">
-                                    <div>
-                                        <span className="text-[9px] text-gray-400 block">Starting from</span>
-                                        <span className="font-bold text-sm text-gray-900">{commonUtils.formatAmount(serviceData.final_amount)}</span>
-                                    </div>
-                                    <button type="button" className={btnClass}>
-                                        <Link href={`/service-details?id=${serviceData.id}`}>
-                                            View Details
-                                        </Link>
-                                    </button>
-                                </div>
+                            <div>
+                                <TablePagination
+                                    size={3}
+                                    page={pageNumber}
+                                    totalPages={totalPages}
+                                    totalRecords={totalRecords}
+                                    onPageChange={handlePageinationChange}
+                                />
                             </div>
-                        </div>
-                    ))}
-
-                    <div>
-                        <TablePagination
-                            size={3}
-                            page={pageNumber}
-                            totalPages={totalPages}
-                            totalRecords={totalRecords}
-                            onPageChange={handlePageinationChange}
-                        />
-                    </div>
+                        </>
+                    )}
                 </main>
 
-                <aside className="col-span-1 md:col-span-4 relative min-h-[500px] md:min-h-full rounded-2xl overflow-hidden border border-gray-200">
-                    <div className="absolute inset-0 bg-blue-50">
-                        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1000" className="w-full h-full object-cover opacity-60" alt="Madurai Map" />
-                    </div>
-
-                    <div className="absolute top-4 left-4 z-10 bg-white px-3 py-1.5 rounded-full shadow-md text-xs font-semibold text-gray-700 flex items-center space-x-2">
-                        <input type="checkbox" defaultChecked className="accent-pink-700 rounded" />
-                        <span>Search as I move the map</span>
-                    </div>
-
-                    <div className="absolute top-1/4 left-1/3 bg-pink-700 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white cursor-pointer hover:scale-110 transition">
-                        ₹1.25L
-                    </div>
-
-                    <div className="absolute top-1/5 right-1/4 bg-white text-gray-800 text-xs font-bold px-2 py-1 rounded-full shadow-lg border border-gray-300 cursor-pointer hover:scale-110 transition">
-                        ₹90K
-                    </div>
-
-                    <div className="absolute bottom-1/3 left-1/4 bg-white text-gray-800 text-xs font-bold px-2 py-1 rounded-full shadow-lg border border-gray-300 cursor-pointer hover:scale-110 transition">
-                        ₹65K
-                    </div>
-
-                    <div className="absolute bottom-1/4 right-1/3 bg-white text-gray-800 text-xs font-bold px-2 py-1 rounded-full shadow-lg border border-gray-300 cursor-pointer hover:scale-110 transition">
-                        ₹1.75L
-                    </div>
-
-                    <div className="absolute bottom-6 right-4 z-10 flex flex-col space-y-2">
-                        <div className="bg-white rounded-lg shadow-md border border-gray-200 divide-y divide-gray-100 flex flex-col">
-                            <button type="button" className="p-2 text-gray-600 hover:text-pink-700"><FiPlus className="w-4 h-4" /></button>
-                            <button type="button" className="p-2 text-gray-600 hover:text-pink-700"><FiMinus className="w-4 h-4" /></button>
-                        </div>
-                        <button type="button" className="bg-white p-2 rounded-lg shadow-md border border-gray-200 text-gray-600 hover:text-pink-700">
-                            <FiCrosshair className="w-4 h-4" />
-                        </button>
-                    </div>
+                <aside className="col-span-1 md:col-span-4 relative min-h-[500px] md:min-h-full overflow-hidden border border-gray-200">
+                    <LocationPicker
+                        latitude={selectedLatitude || 9.9252}
+                        longitude={selectedLongitude || 78.1198}
+                        locations={mapLocations}
+                        multipleMarkers={true}
+                        onChange={(lat, lng) => {
+                            setSelectedLatitude(lat);
+                            setSelectedLongitude(lng);
+                        }}
+                    />
                 </aside>
             </div>
         </div>

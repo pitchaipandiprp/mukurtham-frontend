@@ -10,6 +10,7 @@ import { vendorService } from "@/services/api/vendor.service";
 import commonService from "@/services/api/common.service";
 import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
 import { apiConfig } from "@/environments/api";
+import LocationPicker from "@/components/common/map/openstreetmap/location-picker";
 
 type CategoryServiceForm = {
     category_id: string;
@@ -187,8 +188,8 @@ export default function CreateCategoryService() {
                 facility_ids: serviceData.facility_ids ?? "",
                 car_parking: serviceData.car_parking ?? "",
                 ac_available: serviceData.ac_available ?? "",
-                latitude: serviceData.latitude ?? "",
-                longitude: serviceData.longitude ?? "",
+                latitude: serviceData.latitude ?? "9.9252",
+                longitude: serviceData.longitude ?? "78.1198",
                 pricing_type: serviceData.pricing_type ?? "",
                 amount: String(serviceData.amount ?? 0),
                 discount: String(serviceData.discount ?? 0),
@@ -648,6 +649,37 @@ export default function CreateCategoryService() {
                             <h2 className="text-lg font-semibold text-primary">
                                 Map Location
                             </h2>
+                        </div>
+
+                        <div className="md:col-span-6">
+                            <input
+                                id="serviceLatitude"
+                                type="text"
+                                value={form.latitude}
+                                readOnly
+                                className={inputClass}
+                                onChange={(event) => updateField("latitude", event.target.value)}
+                            />
+                        </div>
+                        <div className="md:col-span-6">
+                            <input
+                                id="serviceLongitude"
+                                type="text"
+                                value={form.longitude}
+                                readOnly
+                                className={inputClass}
+                                onChange={(event) => updateField("longitude", event.target.value)}
+                            />
+                        </div>
+                        <div className="md:col-span-12">
+                            <LocationPicker
+                                latitude={parseFloat(form.latitude)}
+                                longitude={parseFloat(form.longitude)}
+                                onChange={(lat, lng) => {
+                                    updateField("latitude", String(lat));
+                                    updateField("longitude", String(lng));
+                                }}
+                            />
                         </div>
                     </div>
 

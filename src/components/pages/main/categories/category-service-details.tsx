@@ -188,8 +188,8 @@ export function CategoryServiceDetailsPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <aside className="md:col-span-3 space-y-6">
                     <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                         <div>
                             <h3 className="mb-2 text-sm font-bold text-gray-900">About Us</h3>
@@ -244,8 +244,8 @@ export function CategoryServiceDetailsPage() {
                             <li>Free Consultation</li>
                         </ul>
                     </div>
-                </div>
-                <div className="space-y-6">
+                </aside>
+                <main className="md:col-span-6 space-y-6">
                     <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                         <h3 className="mb-3 text-sm font-bold text-gray-900">Availability Calendar</h3>
                         <div className="mb-4 flex items-center gap-3 text-[10px] text-gray-500">
@@ -309,8 +309,8 @@ export function CategoryServiceDetailsPage() {
                             ))}
                         </div>
                     </div>
-                </div>
-                <div className="space-y-6">
+                </main>
+                <aside className="md:col-span-3 space-y-6">
                     <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                         <h3 className="mb-4 text-sm font-bold text-gray-900">Timeline</h3>
 
@@ -391,7 +391,7 @@ export function CategoryServiceDetailsPage() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </aside>
             </div>
 
 
