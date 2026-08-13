@@ -641,7 +641,7 @@ export default function CategoryServiceSearch() {
                                                 <span className="font-bold text-sm text-gray-900">{commonUtils.formatAmount(serviceData.final_amount)}</span>
                                             </div>
                                             <button type="button" className={btnClass}>
-                                                <Link href={`/service-details?id=${serviceData.id}`}>
+                                                <Link href={`/service-details?serviceId=${serviceData.id}`}>
                                                     View Details
                                                 </Link>
                                             </button>

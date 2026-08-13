@@ -1,6 +1,7 @@
 "use client";
 
 import { constants } from "@/utils/constants";
+import { common as commonUtils } from "@/utils/common";
 import { FiStar, FiUser, FiThumbsUp, } from "react-icons/fi";
 import RatingStars from "./rating-stars";
 
@@ -117,7 +118,7 @@ export default function ReviewSection({
 
                 {/* Rating Breakdown */}
                 <div className="space-y-2 md:col-span-2">
-                    {[5, 4, 3, 2, 1].map((rating) => {
+                    {[...commonUtils.ratingStars].reverse().map((rating) => {
 
                         const count =
                             ratingCounts[

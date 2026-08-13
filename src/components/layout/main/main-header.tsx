@@ -12,7 +12,7 @@ import commonService from "@/services/api/common.routes";
 const navLinks = [
     { label: "Home", href: "/" },
     { label: "About", href: "/about-us" },
-    { label: "Vendors", href: "/service-details" },
+    { label: "Vendors", href: "/service-search" },
     { label: "Venues", href: "/service-search" },
     { label: "Categories", href: "/service-search" },
     { label: "Contact", href: "/contact-us" },];
