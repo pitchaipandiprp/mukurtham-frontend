@@ -14,6 +14,10 @@ import PhotoViewer from "@/components/common/image-viewer/photo-viewer";
 import ReviewSection from "@/components/common/review/review-section";
 import RatingStars from "@/components/common/review/rating-stars";
 import RecordNotFoundOverlay from "@/components/common/not-found/record-not-found-overlay";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import "@/assets/css/fullcalendar.css";
 
 const tabs = [
     { key: "overview", label: "Overview" },
@@ -33,6 +37,29 @@ const occasionTypeLabels = [
     { key: "events", label: "Events" },
 ];
 
+
+const mukurthamDates = [
+    {
+        date: "2026-08-15",
+        type: "waxing",
+        title: "Waxing",
+    },
+    {
+        date: "2026-08-18",
+        type: "waning ",
+        title: "Waning ",
+    },
+];
+
+const calendarEvents = mukurthamDates.map((item) => ({
+    title: item.title,
+    start: item.date,
+    allDay: true,
+    classNames:
+        item.type === "waxing"
+            ? ["muhurtham-waxing"]
+            : ["muhurtham-waning "],
+}));
 
 export function CategoryServiceDetailsPage() {
     const [serviceNotFound, setServiceNotFound] = useState(false);
@@ -418,24 +445,25 @@ export function CategoryServiceDetailsPage() {
                             <>
                                 <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                                     <h3 className="mb-3 text-sm font-bold text-gray-900">Availability Calendar</h3>
-                                    <div className="mb-4 flex items-center gap-3 text-[10px] text-gray-500">
-                                        <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Available</span>
-                                        <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-400" /> Partially Booked</span>
-                                        <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary" /> Booked</span>
-                                    </div>
-                                    <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500">
-                                        {Array.from({ length: 35 }).map((_, i) => (
-                                            <span
-                                                key={`day-${i}`}
-                                                className={i % 9 === 0 ? "py-1 font-semibold text-primary" : "py-1"}
-                                            >
-                                                {(i % 30) + 1}
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
-                                        View Full Calendar
-                                    </button>
+
+                                    <FullCalendar
+                                        plugins={[
+                                            dayGridPlugin,
+                                            interactionPlugin,
+                                        ]}
+                                        initialView="dayGridMonth"
+                                        // dateClick={handleDateClick}
+                                        events={calendarEvents}
+                                        height="auto"
+                                        headerToolbar={{
+                                            left: "prev,next today",
+                                            center: "title",
+                                            right: "",
+                                        }}
+                                        buttonText={{
+                                            today: "Today",
+                                        }}
+                                    />
                                 </div>
                             </>
                         )}

@@ -192,7 +192,10 @@ export default function ReviewSection({
 
                                             {review.created_at && (
                                                 <span className="text-xs text-gray-400">
-                                                    {review.created_at}
+                                                    {commonUtils.formatDateTime(
+                                                        review.created_at,
+                                                        "MMM D, YYYY hh:mm A"
+                                                    )}
                                                 </span>
                                             )}
 

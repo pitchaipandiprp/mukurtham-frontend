@@ -1,0 +1,99 @@
+/* .fc {
+    --fc-border-color: var(--color-secondary-light);
+    --fc-button-bg-color: var(--color-primary);
+    --fc-button-border-color: var(--color-primary);
+    --fc-button-hover-bg-color: var(--color-primary-dark);
+    --fc-button-hover-border-color: var(--color-primary-dark);
+    --fc-today-bg-color: rgba(0, 0, 0, 0.04);
+} */
+
+/* Calendar Title */
+.fc .fc-toolbar-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Calendar Buttons */
+.fc .fc-button {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Hover */
+.fc .fc-button:hover {
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Focus */
+.fc .fc-button:focus {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Click / Active */
+.fc .fc-button:active {
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* FullCalendar active state */
+.fc .fc-button.fc-button-active {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Active + Focus */
+.fc .fc-button.fc-button-active:focus,
+.fc .fc-button.fc-button-active:active {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Calendar Days */
+.fc .fc-daygrid-day {
+    cursor: pointer;
+}
+
+/* Day Hover */
+.fc .fc-daygrid-day:hover {
+    background: var(--color-gray-50);
+}
+
+/* Day Number */
+.fc .fc-daygrid-day-number {
+    padding: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+    background: var(--color-pink-100);
+}
+
+/* Valarpirai */
+.fc .muhurtham-waxing {
+    background-color: var(--color-pink-500) !important;
+    border-color: var(--color-pink-500) !important;
+}
+
+/* Theipirai  */
+.fc .muhurtham-waning {
+    background-color: var(--color-yellow-500) !important;
+    border-color: var(--color-yellow-500) !important;
+}
