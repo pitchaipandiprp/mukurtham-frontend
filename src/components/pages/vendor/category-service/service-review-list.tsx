@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { vendorService } from "@/services/api/vendor.service";
+import { vendorService } from "@/services/api/vendor.routes";
 import { Pencil, Trash2, CheckCircle2, XCircle, } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";

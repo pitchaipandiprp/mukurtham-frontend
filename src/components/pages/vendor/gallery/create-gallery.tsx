@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
-import { vendorService } from "@/services/api/vendor.service";
+import { vendorService } from "@/services/api/vendor.routes";
 import { apiConfig } from "@/environments/api";
 
 type GalleryForm = {

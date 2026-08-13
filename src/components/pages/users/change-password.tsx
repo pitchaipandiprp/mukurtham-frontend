@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { userService } from "@/services/api/users.service";
+import { userService } from "@/services/api/users.routes";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
 

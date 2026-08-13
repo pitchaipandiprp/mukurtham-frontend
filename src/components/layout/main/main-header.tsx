@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { FiMenu, FiX, FiBell, FiChevronDown, FiHeart, FiMapPin, FiMessageCircle, FiSearch, } from "react-icons/fi";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useRouter, useSearchParams } from "next/navigation";
-import commonService from "@/services/api/common.service";
+import commonService from "@/services/api/common.routes";
 
 const navLinks = [
     { label: "Home", href: "/" },

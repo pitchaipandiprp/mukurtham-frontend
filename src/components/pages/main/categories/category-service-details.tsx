@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FiArrowUpRight, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
 import { apiConfig } from "@/environments/api";
 import { constants } from "@/utils/constants";
-import mainService from "@/services/api/main.service";
+import mainService from "@/services/api/main.routes";
 import PopupModal from "@/components/common/popup/popup-modal";
 import ImageViewer from "@/components/common/image-viewer/image-viewer";
 import PhotoViewer from "@/components/common/image-viewer/photo-viewer";
