@@ -13,10 +13,15 @@ const galleryRecords = async (payload: any) => {
     return await apiService.post<any>("/gallery-records", payload);
 };
 
+const serviceReviewsRecords = async (payload: any) => {
+    return await apiService.post<any>("/service-review-records", payload);
+};
+
 const mainService = {
     categoryServiceSearch,
     getCategoryService,
     galleryRecords,
+    serviceReviewsRecords,
 };
 
 export default mainService;

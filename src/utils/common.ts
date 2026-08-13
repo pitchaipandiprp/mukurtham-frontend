@@ -10,6 +10,9 @@ const formatAmount = (amount: number | null) => {
     }).format(amount);
 };
 
+const ratingStars = [1, 2, 3, 4, 5];
+
 export const common = {
-    formatAmount
+    formatAmount,
+    ratingStars
 };

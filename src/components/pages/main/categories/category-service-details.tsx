@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FiCheck, FiCheckCircle, FiX } from "react-icons/fi";
+import { AnimatePresence, motion } from "framer-motion";
+import { FiArrowUpRight, FiClock, FiGlobe, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
+import { apiConfig } from "@/environments/api";
 import { constants } from "@/utils/constants";
 import mainService from "@/services/api/main.service";
-import { apiConfig } from "@/environments/api";
 import PopupModal from "@/components/common/popup/popup-modal";
 import ImageViewer from "@/components/common/image-viewer/image-viewer";
 import PhotoViewer from "@/components/common/image-viewer/photo-viewer";
-import { AnimatePresence, motion } from "framer-motion";
-import { FiArrowUpRight, FiClock, FiGlobe, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
+import ReviewSection from "@/components/common/review/review-section";
+import RatingStars from "@/components/common/review/rating-stars";
 
 const tabs = [
     { key: "overview", label: "Overview" },
@@ -45,6 +47,11 @@ export function CategoryServiceDetailsPage() {
     const [allGalleryImages, setAllGalleryImages] = useState<string[]>([]);
     const [showPhotoViewer, setShowPhotoViewer] = useState(false);
 
+    const [reviews, setReviews] = useState<any[]>([]);
+    const [totalReviews, setTotalReviews] = useState(0);
+    const [averageRating, setAverageRating] = useState(0);
+    const [ratingCounts, setRatingCounts] = useState({ 5: 0, 4: 0, 3: 0, 2: 0, 1: 0, });
+
     const router = useRouter();
     const BACKEND_BASE_URL = apiConfig.baseUrl;
 
@@ -63,6 +70,7 @@ export function CategoryServiceDetailsPage() {
         if (categoryServiceId) {
             loadCategoryService();
             loadGalleryRecords();
+            loadReviewRecords();
         }
     }, [categoryServiceId]);
 
@@ -106,6 +114,35 @@ export function CategoryServiceDetailsPage() {
 
         } catch (caughtError) {
             console.error("Failed to load gallery records:", caughtError);
+        }
+    };
+
+    const loadReviewRecords = async () => {
+        try {
+            if (!categoryServiceId) {
+                return;
+            }
+            const result = await mainService.serviceReviewsRecords({ category_service_id: Number(categoryServiceId), limit: 5 });
+
+            if (!result?.success) {
+                return;
+            }
+
+            setReviews(result.data?.rows || []);
+            setTotalReviews(result.data?.total || 0);
+            setAverageRating(Number(result.data?.averageRating || 0));
+            setRatingCounts(
+                result.data?.ratingCounts || {
+                    5: 0,
+                    4: 0,
+                    3: 0,
+                    2: 0,
+                    1: 0,
+                }
+            );
+
+        } catch (caughtError) {
+            console.error("Failed to load review records:", caughtError);
         }
     };
 
@@ -163,17 +200,13 @@ export function CategoryServiceDetailsPage() {
                                 </h1>
                                 <span className="text-sm text-blue-500"></span>
                             </div>
-                            <p className="mt-0.5 text-xs text-gray-500">Decoration • 8 Years Experience • {serviceRecord?.city?.name}</p>
+                            <p className="mt-0.5 text-xs text-gray-500">8 Years Experience • {serviceRecord?.city?.name}</p>
                             <div className="mt-2 flex items-center gap-2 text-xs">
-                                <span className="font-bold text-gray-800">4.8</span>
+                                <span className="font-bold text-gray-800">{serviceRecord?.averageRating?.toFixed(1)}</span>
                                 <div className="flex gap-0.5 text-xs text-amber-400">
-                                    <span>★</span>
-                                    <span>★</span>
-                                    <span>★</span>
-                                    <span>★</span>
-                                    <span>★</span>
+                                    <RatingStars rating={serviceRecord?.averageRating} />
                                 </div>
-                                <span className="text-gray-400">(256 Reviews)</span>
+                                <span className="text-gray-400">({serviceRecord?.totalReviews} Reviews)</span>
                             </div>
                         </div>
                     </div>
@@ -200,7 +233,7 @@ export function CategoryServiceDetailsPage() {
                         <div className="text-[11px] text-gray-500">Events Completed</div>
                     </div>
                     <div className="p-4 border-gray-200">
-                        <div className="text-sm font-bold text-gray-800">4.8</div>
+                        <div className="text-sm font-bold text-gray-800">{serviceRecord?.averageRating?.toFixed(1)}</div>
                         <div className="text-[11px] text-gray-500">Rating</div>
                     </div>
                     <div className="p-4 border-gray-200">
@@ -394,6 +427,24 @@ export function CategoryServiceDetailsPage() {
                                     View Full Calendar
                                 </button>
                             </div>
+                        </>
+                    )}
+
+                    {isTabOpen === "reviews" && (
+                        <>
+                            <ReviewSection
+                                reviews={reviews}
+                                totalReviews={totalReviews}
+                                averageRating={averageRating}
+                                ratingCounts={ratingCounts}
+                                title="Reviews & Ratings"
+                                description="Customer experiences and feedback"
+                                showWriteReview={false}
+                                showHelpful={false}
+                                onViewAll={() => {
+                                    // open review modal/page
+                                }}
+                            />
                         </>
                     )}
 

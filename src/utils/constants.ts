@@ -9,7 +9,7 @@ const buttonClassBlue = 'rounded-lg bg-blue-100 px-3 py-2 text-sm font-semibold 
 const buttonClassRed = 'rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-600 transition-all duration-300 hover:text-white hover:bg-red-600 hover:shadow-lg hover:shadow-primary/30 cursor-pointer';
 const buttonClassOrange = 'rounded-lg bg-orange-100 px-3 py-2 text-sm font-semibold text-orange-600 transition-all duration-300 hover:text-white hover:bg-orange-600 hover:shadow-lg hover:shadow-primary/30 cursor-pointer';
 const buttonClassGreen = 'rounded-lg bg-green-100 px-3 py-2 text-sm font-semibold text-green-600 transition-all duration-300 hover:text-white hover:bg-green-600 hover:shadow-lg hover:shadow-primary/30 cursor-pointer';
-const buttonClassWhite = 'cursor-pointer bg-white rounded-lg px-3 py-2 border border-gray-200 text-xs font-semibold text-gray-800 transition hover:text-primary hover:bg-primary/10 transition-colors';
+const buttonClassWhite = 'cursor-pointer bg-white rounded-lg px-3 py-2 border border-primary text-xs font-medium text-primary transition hover:bg-primary/5 transition-colors';
 
 
 export const constants = {
