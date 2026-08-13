@@ -38,6 +38,9 @@ interface ReviewSectionProps {
     showHelpful?: boolean;
     showViewAll?: boolean;
 
+    showTitle?: boolean;
+    showDescription?: boolean;
+
     onWriteReview?: () => void;
     onViewAll?: () => void;
 }
@@ -52,6 +55,8 @@ export default function ReviewSection({
 
     title = "Customer Reviews",
     description = "What our customers say about this service",
+    showTitle = true,
+    showDescription = true,
 
     showWriteReview = true,
     showHelpful = true,
@@ -67,11 +72,13 @@ export default function ReviewSection({
             <div className="flex items-center justify-between gap-4">
 
                 <div>
-                    <h2 className="text-xl font-bold text-gray-900">
-                        {title}
-                    </h2>
+                    {showTitle && (
+                        <h2 className="text-xl font-bold text-gray-900">
+                            {title}
+                        </h2>
+                    )}
 
-                    {description && (
+                    {showDescription && description && (
                         <p className="mt-1 text-sm text-gray-500">
                             {description}
                         </p>

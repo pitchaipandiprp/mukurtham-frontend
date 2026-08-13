@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { FiCheck, FiCheckCircle, FiX } from "react-icons/fi";
+import { FiCheck } from "react-icons/fi";
 import { AnimatePresence, motion } from "framer-motion";
-import { FiArrowUpRight, FiClock, FiGlobe, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
+import { FiArrowUpRight, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
 import { apiConfig } from "@/environments/api";
 import { constants } from "@/utils/constants";
 import mainService from "@/services/api/main.service";
@@ -52,11 +51,7 @@ export function CategoryServiceDetailsPage() {
     const [averageRating, setAverageRating] = useState(0);
     const [ratingCounts, setRatingCounts] = useState({ 5: 0, 4: 0, 3: 0, 2: 0, 1: 0, });
 
-    const router = useRouter();
     const BACKEND_BASE_URL = apiConfig.baseUrl;
-
-    const btnClass = constants.btnClass;
-    const buttonClassWhite = constants.buttonClassWhite;
 
     const searchParams = useSearchParams();
     const categoryServiceId = searchParams.get("id");
@@ -122,7 +117,7 @@ export function CategoryServiceDetailsPage() {
             if (!categoryServiceId) {
                 return;
             }
-            const result = await mainService.serviceReviewsRecords({ category_service_id: Number(categoryServiceId), limit: 5 });
+            const result = await mainService.serviceReviewRecords({ category_service_id: Number(categoryServiceId), limit: 5 });
 
             if (!result?.success) {
                 return;

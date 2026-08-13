@@ -42,6 +42,13 @@ const galleryRecords = async (payload: any) => {
     return await apiService.post<any>("/vendors/gallery-records", payload);
 };
 
+const serviceReviewList = async (payload: any) => {
+    return await apiService.post<any>("/vendors/service-review-list", payload);
+};
+const updateServiceReviewStatus = async (payload: any) => {
+    return await apiService.post<any>("/vendors/update-service-review-status", payload);
+};
+
 export const vendorService = {
     createCategoryService,
     getCategoryService,
@@ -53,4 +60,6 @@ export const vendorService = {
     getGallery,
     galleryList,
     galleryRecords,
+    serviceReviewList,
+    updateServiceReviewStatus
 };

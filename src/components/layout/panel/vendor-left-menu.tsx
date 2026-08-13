@@ -43,17 +43,10 @@ const navItems: NavItem[] = [
         subItems: [
             { title: 'Service List', href: '/panel/category-service-list' },
             { title: 'Add Service', href: '/panel/create-category-service' },
-            { title: 'Package List', href: '/panel/package-list' },
-            { title: 'Add Package', href: '/panel/add-package' },
-        ],
-    },
-    {
-        id: 'gallery',
-        title: 'Gallery',
-        icon: Images,
-        subItems: [
             { title: 'Gallery List', href: '/panel/gallery-list' },
             { title: 'Add Gallery', href: '/panel/create-gallery' },
+            { title: 'Package List', href: '/panel/package-list' },
+            { title: 'Add Package', href: '/panel/add-package' },
         ],
     },
     {
