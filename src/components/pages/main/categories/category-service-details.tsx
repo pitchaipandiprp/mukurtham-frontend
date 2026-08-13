@@ -8,20 +8,10 @@ import { constants } from "@/utils/constants";
 import mainService from "@/services/api/main.service";
 import { apiConfig } from "@/environments/api";
 import PopupModal from "@/components/common/popup/popup-modal";
-
-import {
-    FiArrowUpRight,
-    FiClock,
-    FiGlobe,
-    FiHeart,
-    FiMail,
-    FiMapPin,
-    FiMessageCircle,
-    FiMoreHorizontal,
-    FiPhone,
-    FiPlay,
-    FiShield,
-} from "react-icons/fi";
+import ImageViewer from "@/components/common/image-viewer/image-viewer";
+import PhotoViewer from "@/components/common/image-viewer/photo-viewer";
+import { AnimatePresence, motion } from "framer-motion";
+import { FiArrowUpRight, FiClock, FiGlobe, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
 
 const tabs = [
     { key: "overview", label: "Overview" },
@@ -31,14 +21,6 @@ const tabs = [
     { key: "timeline", label: "Timeline" },
     { key: "packages", label: "Packages" },
     { key: "offers", label: "Offers" },
-];
-
-const galleryImages = [
-    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=300&q=80",
-    "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=300&q=80",
 ];
 
 const occasionTypeLabels = [
@@ -59,6 +41,9 @@ export function CategoryServiceDetailsPage() {
     const [isOccasionTabOpen, setIsOccasionTabOpen] = useState("all");
     const [galleryRecords, setGalleryRecords] = useState<any[]>([]);
     const [galleryFilterRecords, setGalleryFilterRecords] = useState<any[]>([]);
+    const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null);
+    const [allGalleryImages, setAllGalleryImages] = useState<string[]>([]);
+    const [showPhotoViewer, setShowPhotoViewer] = useState(false);
 
     const router = useRouter();
     const BACKEND_BASE_URL = apiConfig.baseUrl;
@@ -110,6 +95,15 @@ export function CategoryServiceDetailsPage() {
 
             setGalleryRecords(result.data);
             setGalleryFilterRecords(result.data);
+
+            const allGalleryImages = result.data
+                .filter((image: any) => image?.gallery_image)
+                .map(
+                    (image: any) =>
+                        `${BACKEND_BASE_URL}/${image.gallery_image}`
+                );
+            setAllGalleryImages(allGalleryImages);
+
         } catch (caughtError) {
             console.error("Failed to load gallery records:", caughtError);
         }
@@ -234,7 +228,7 @@ export function CategoryServiceDetailsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                <aside className="md:col-span-3 space-y-6">
+                <aside className="order-2 md:order-1 md:col-span-3 space-y-6">
                     <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                         <div className="space-y-2.5 text-xs text-gray-600">
                             <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
@@ -272,7 +266,7 @@ export function CategoryServiceDetailsPage() {
                         </ul>
                     </div>
                 </aside>
-                <main className="md:col-span-6 space-y-6">
+                <main className="order-1 md:order-2 md:col-span-6 space-y-6">
                     {isTabOpen === "overview" && (
                         <>
                             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -300,7 +294,11 @@ export function CategoryServiceDetailsPage() {
                             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                                 <div className="mb-4 flex items-center justify-between">
                                     <h3 className="text-sm font-bold text-gray-900">Photos</h3>
-                                    <button type="button" className="text-xs font-medium text-primary hover:underline">View All</button>
+                                    <button
+                                        type="button"
+                                        className="text-xs font-medium text-primary hover:underline cursor-pointer"
+                                        onClick={() => setShowPhotoViewer(true)}
+                                    >View All</button>
                                 </div>
                                 <div className="mb-4 flex gap-2 overflow-x-auto text-xs">
                                     <button
@@ -319,16 +317,56 @@ export function CategoryServiceDetailsPage() {
                                         >{label}</button>
                                     ))}
                                 </div>
-                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-                                    {galleryFilterRecords.map((image, index) => (
-                                        <img
-                                            key={`gallery-image-${index}`}
-                                            src={image?.gallery_image ? `${BACKEND_BASE_URL}/${image.gallery_image}` : undefined}
-                                            className="h-24 w-full rounded-lg object-cover transition-transform duration-700 ease-out hover:scale-110"
-                                            alt="Gallery"
-                                        />
-                                    ))}
-                                </div>
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={isOccasionTabOpen}
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -15 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="grid grid-cols-2 gap-3 sm:grid-cols-5"
+                                    >
+                                        {galleryFilterRecords.map((image, index) => (
+                                            <motion.img
+                                                key={`gallery-image-${image.id ?? index}`}
+                                                src={
+                                                    image?.gallery_image
+                                                        ? `${BACKEND_BASE_URL}/${image.gallery_image}`
+                                                        : undefined
+                                                }
+                                                alt="Gallery"
+                                                className="h-24 w-full rounded-lg object-cover cursor-pointer"
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{
+                                                    duration: 0.25,
+                                                    delay: index * 0.05,
+                                                }}
+                                                whileHover={{ scale: 1.05 }}
+                                                onClick={() => {
+                                                    if (image?.gallery_image) {
+                                                        setSelectedGalleryImage(
+                                                            `${BACKEND_BASE_URL}/${image.gallery_image}`
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                        ))}
+                                    </motion.div>
+                                </AnimatePresence>
+
+                                <ImageViewer
+                                    image={selectedGalleryImage}
+                                    onClose={() => setSelectedGalleryImage(null)}
+                                />
+
+                                {showPhotoViewer && (
+                                    <PhotoViewer
+                                        images={allGalleryImages}
+                                        initialIndex={0}
+                                        onClose={() => setShowPhotoViewer(false)}
+                                    />
+                                )}
                             </div>
                         </>
                     )}
@@ -386,7 +424,7 @@ export function CategoryServiceDetailsPage() {
                         </>
                     )}
                 </main>
-                <aside className="md:col-span-3 space-y-6">
+                <aside className="order-3 md:order-3 md:col-span-3 space-y-6">
                     <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                         <h3 className="mb-4 text-sm font-bold text-gray-900">Timeline</h3>
 
@@ -417,9 +455,7 @@ export function CategoryServiceDetailsPage() {
                                 </p>
 
                                 <div className="mb-3 grid grid-cols-2 gap-1.5 overflow-hidden rounded-lg">
-                                    {galleryImages.slice(0, 4).map((image) => (
-                                        <img key={`post-${image}`} src={image} alt="Post" className="h-28 w-full object-cover" />
-                                    ))}
+
                                 </div>
 
                                 <div className="flex items-center gap-4 text-xs text-gray-500">

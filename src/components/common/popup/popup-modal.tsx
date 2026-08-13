@@ -1,6 +1,7 @@
 "use client";
 
 import { FiX } from "react-icons/fi";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface PopupModalProps {
     show: boolean;
@@ -33,9 +34,6 @@ export default function PopupModal({
     closeButtonText = "Close",
     footerContent,
 }: PopupModalProps) {
-
-    if (!show) return null;
-
     const widthClass = {
         sm: "max-w-sm",
         md: "max-w-md",
@@ -55,52 +53,84 @@ export default function PopupModal({
             : "items-start pt-10";
 
     return (
-        <div
-            className={`fixed inset-0 z-[60] flex justify-center bg-black/50 ${blurBackground ? "backdrop-blur-sm" : ""} p-4 animate-fade-in ${positionClass}`}
-            role="dialog"
-            aria-modal="true"
-        >
-            <div
-                className={`relative w-full ${widthClass} max-h-[calc(100vh-2rem)] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 shadow-2xl animate-popup-in`}
-            >
-                {/* Header */}
-                {showHeader && (
-                    <div className="flex items-center justify-between border-b bg-primary px-5 py-4">
-                        <h5 className="text-lg font-semibold text-white">
-                            {title ? title : ""}
-                        </h5>
+        <AnimatePresence>
+            {show && (
+                <motion.div
+                    className={`fixed inset-0 z-[60] flex justify-center bg-black/50 ${blurBackground
+                        ? "backdrop-blur-sm"
+                        : ""
+                        } p-4 ${positionClass}`}
+                    role="dialog"
+                    aria-modal="true"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                        duration: 0.2,
+                    }}
+                >
+                    <motion.div
+                        className={`relative w-full ${widthClass} max-h-[calc(100vh-2rem)] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 shadow-2xl`}
+                        initial={{
+                            opacity: 0,
+                            scale: 0.9,
+                            y: position === "center" ? 20 : -20,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                            y: 0,
+                        }}
+                        exit={{
+                            opacity: 0,
+                            scale: 0.9,
+                            y: position === "center" ? 20 : -20,
+                        }}
+                        transition={{
+                            duration: 0.25,
+                            ease: "easeOut",
+                        }}
+                    >
+                        {/* Header */}
+                        {showHeader && (
+                            <div className="flex items-center justify-between border-b bg-primary px-5 py-4">
+                                <h5 className="text-lg font-semibold text-white">
+                                    {title}
+                                </h5>
 
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="cursor-pointer rounded-full bg-primary-dark p-1 text-white transition hover:bg-primary-light"
-                            aria-label="Close"
-                        >
-                            <FiX className="h-5 w-5" />
-                        </button>
-                    </div>
-                )}
-
-                {/* Body */}
-                <div className="px-5 py-6 text-sm text-gray-600 text-justify">
-                    {children}
-                </div>
-
-                {/* Footer */}
-                {showFooter && (
-                    <div className="flex justify-end gap-2 border-t border-gray-200 px-5 py-4">
-                        {footerContent || (
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="cursor-pointer rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100"
-                            >
-                                {closeButtonText}
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="cursor-pointer rounded-full bg-primary-dark p-1 text-white transition hover:bg-primary-light"
+                                    aria-label="Close"
+                                >
+                                    <FiX className="h-5 w-5" />
+                                </button>
+                            </div>
                         )}
-                    </div>
-                )}
-            </div>
-        </div>
+
+                        {/* Body */}
+                        <div className="px-5 py-6 text-sm text-gray-600 text-justify">
+                            {children}
+                        </div>
+
+                        {/* Footer */}
+                        {showFooter && (
+                            <div className="flex justify-end gap-2 border-t border-gray-200 px-5 py-4">
+                                {footerContent || (
+                                    <button
+                                        type="button"
+                                        onClick={onClose}
+                                        className="cursor-pointer rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100"
+                                    >
+                                        {closeButtonText}
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 }
