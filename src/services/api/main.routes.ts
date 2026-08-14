@@ -13,6 +13,10 @@ const galleryRecords = async (payload: any) => {
     return await apiService.post<any>("/gallery-records", payload);
 };
 
+const serviceReviewList = async (payload: any) => {
+    return await apiService.post<any>("/service-review-list", payload);
+};
+
 const serviceReviewRecords = async (payload: any) => {
     return await apiService.post<any>("/service-review-records", payload);
 };
@@ -21,6 +25,7 @@ const mainService = {
     categoryServiceSearch,
     getCategoryService,
     galleryRecords,
+    serviceReviewList,
     serviceReviewRecords,
 };
 

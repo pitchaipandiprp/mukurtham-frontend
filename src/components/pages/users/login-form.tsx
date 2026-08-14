@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useLogin } from "@/hooks/useLogin";
 
 type LoginTab = "otp" | "email";
@@ -17,6 +17,9 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
     const [password, setPassword] = useState("");
     const [mobile, setMobile] = useState("");
     const [otp, setOtp] = useState("");
+    const [otpCursor, setOtpCursor] = useState(0);
+    const otpInputRef = useRef<HTMLInputElement>(null);
+
     const {
         loginWithEmail,
         loginWithOtp,
@@ -29,6 +32,15 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
         setOtpSent,
         resendCountdown,
     } = useLogin();
+
+    useEffect(() => {
+        if (otpSent) {
+            setTimeout(() => {
+                otpInputRef.current?.focus();
+                setOtpCursor(0);
+            }, 0);
+        }
+    }, [otpSent]);
 
     async function handleSendOtp() {
         await sendOtp(mobile);
@@ -162,15 +174,56 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
                             {otpSent ? (
                                 <label className="block text-sm font-medium text-slate-700">
                                     OTP
-                                    <input
-                                        type="text"
-                                        inputMode="numeric"
-                                        maxLength={6}
-                                        value={otp}
-                                        onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
-                                        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-primary-light"
-                                        placeholder="Enter 6-digit OTP"
-                                    />
+
+                                    <div className="relative mt-2">
+                                        <div className="flex gap-2">
+                                            {Array.from({ length: 6 }).map((_, index) => (
+                                                <div
+                                                    key={index}
+                                                    className={`relative flex h-12 w-12 items-center justify-center rounded-xl border text-lg font-semibold transition ${otp[index]
+                                                        ? "border-primary bg-primary/5 text-primary"
+                                                        : "border-slate-300 bg-white text-slate-400"
+                                                        }`}
+                                                >
+                                                    {otp[index] || ""}
+
+                                                    {/* Cursor */}
+                                                    {otpCursor === index && (
+                                                        <span className="absolute h-6 w-[2px] animate-pulse bg-primary" />
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <input
+                                            ref={otpInputRef}
+                                            type="text"
+                                            inputMode="numeric"
+                                            autoComplete="one-time-code"
+                                            maxLength={6}
+                                            value={otp}
+                                            onChange={(event) => {
+                                                const value = event.target.value
+                                                    .replace(/\D/g, "")
+                                                    .slice(0, 6);
+
+                                                setOtp(value);
+                                                setOtpCursor(value.length);
+                                            }}
+                                            onClick={(event) => {
+                                                setOtpCursor(
+                                                    event.currentTarget.selectionStart ?? 0
+                                                );
+                                            }}
+                                            onKeyUp={(event) => {
+                                                setOtpCursor(
+                                                    event.currentTarget.selectionStart ?? 0
+                                                );
+                                            }}
+                                            className="absolute inset-0 h-full w-full cursor-text opacity-0"
+                                            aria-label="Enter 6-digit OTP"
+                                        />
+                                    </div>
                                 </label>
                             ) : null}
                         </>

@@ -6,7 +6,7 @@ import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 export function MainFooter() {
 
     return (
-        <footer className="bg-gradient-to-br from-red-600 via-pink-700 to-amber-600 text-white">
+        <footer className="bg-gradient-to-br from-red-600 via-pink-700 to-amber-600 text-white mt-5">
             <div className="mx-auto max-w-7xl px-4 py-10">
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
                     <div>

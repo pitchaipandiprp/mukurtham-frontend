@@ -13,6 +13,7 @@ import ImageViewer from "@/components/common/image-viewer/image-viewer";
 import PhotoViewer from "@/components/common/image-viewer/photo-viewer";
 import ReviewSection from "@/components/common/review/review-section";
 import RatingStars from "@/components/common/review/rating-stars";
+import TablePagination from "@/components/common/datatable/pagination";
 import RecordNotFoundOverlay from "@/components/common/not-found/record-not-found-overlay";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -75,6 +76,9 @@ export function CategoryServiceDetailsPage() {
     const [allGalleryImages, setAllGalleryImages] = useState<string[]>([]);
     const [showPhotoViewer, setShowPhotoViewer] = useState(false);
 
+    const [reviewLoading, setReviewLoading] = useState(false);
+    const [reviewPage, setReviewPage] = useState(1);
+    const [totalReviewPages, setTotalReviewPages] = useState(0);
     const [reviews, setReviews] = useState<any[]>([]);
     const [totalReviews, setTotalReviews] = useState(0);
     const [averageRating, setAverageRating] = useState(0);
@@ -94,9 +98,15 @@ export function CategoryServiceDetailsPage() {
         if (categoryServiceId) {
             loadCategoryService();
             loadGalleryRecords();
-            loadReviewRecords();
         }
     }, [categoryServiceId]);
+
+    useEffect(() => {
+        if (categoryServiceId) {
+            loadReviewList();
+        }
+    }, [categoryServiceId, reviewPage]);
+
 
     const loadCategoryService = async () => {
         try {
@@ -147,17 +157,23 @@ export function CategoryServiceDetailsPage() {
         }
     };
 
-    const loadReviewRecords = async () => {
+    const loadReviewList = async () => {
         try {
+            setReviewLoading(true);
             if (!categoryServiceId) {
                 return;
             }
-            const result = await mainService.serviceReviewRecords({ category_service_id: Number(categoryServiceId), limit: 5 });
+            const result = await mainService.serviceReviewList({
+                page: reviewPage,
+                limit: 5,
+                category_service_id: Number(categoryServiceId)
+            });
 
             if (!result?.success) {
                 return;
             }
 
+            setTotalReviewPages(result.data?.totalPages ?? 0);
             setReviews(result.data?.rows || []);
             setTotalReviews(result.data?.total || 0);
             setAverageRating(Number(result.data?.averageRating || 0));
@@ -173,6 +189,8 @@ export function CategoryServiceDetailsPage() {
 
         } catch (caughtError) {
             console.error("Failed to load review records:", caughtError);
+        } finally {
+            setReviewLoading(false);
         }
     };
 
@@ -479,9 +497,18 @@ export function CategoryServiceDetailsPage() {
                                     description="Customer experiences and feedback"
                                     showWriteReview={false}
                                     showHelpful={false}
+                                    showViewAll={false}
                                     onViewAll={() => {
                                         // open review modal/page
                                     }}
+                                />
+
+                                <TablePagination
+                                    page={reviewPage}
+                                    totalPages={totalReviewPages}
+                                    totalRecords={totalReviews}
+                                    loading={reviewLoading}
+                                    onPageChange={setReviewPage}
                                 />
                             </>
                         )}
