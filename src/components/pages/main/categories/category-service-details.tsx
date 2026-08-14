@@ -1,93 +1,40 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { FiCheck } from "react-icons/fi";
-import { AnimatePresence, motion } from "framer-motion";
 import { FiArrowUpRight, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
 import { apiConfig } from "@/environments/api";
-import { constants } from "@/utils/constants";
 import mainService from "@/services/api/main.routes";
-import PopupModal from "@/components/common/popup/popup-modal";
-import ImageViewer from "@/components/common/image-viewer/image-viewer";
-import PhotoViewer from "@/components/common/image-viewer/photo-viewer";
-import ReviewSection from "@/components/common/review/review-section";
 import RatingStars from "@/components/common/review/rating-stars";
-import TablePagination from "@/components/common/datatable/pagination";
 import RecordNotFoundOverlay from "@/components/common/not-found/record-not-found-overlay";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import "@/assets/css/fullcalendar.css";
+import { CategoryServiceReview } from "./category-service-review";
+import { CategoryServiceOverview } from "./category-service-overview";
+import { CategoryServiceGallery } from "./category-service-gallery";
+import { CategoryServiceCalendar } from "./category-service-calendar";
+import { CategoryServicePackage } from "./category-service-package";
 
 const tabs = [
     { key: "overview", label: "Overview" },
     { key: "photos-videos", label: "Photos & Videos" },
     { key: "availability", label: "Availability" },
     { key: "reviews", label: "Reviews" },
-    { key: "timeline", label: "Timeline" },
     { key: "packages", label: "Packages" },
+    { key: "timeline", label: "Timeline" },
     { key: "offers", label: "Offers" },
 ];
 
-const occasionTypeLabels = [
-    { key: "mandap", label: "Mandap" },
-    { key: "wedding", label: "Wedding" },
-    { key: "stage-decoration", label: "Stage Decoration" },
-    { key: "reception", label: "Reception" },
-    { key: "events", label: "Events" },
-];
 
 
-const mukurthamDates = [
-    {
-        date: "2026-08-15",
-        type: "waxing",
-        title: "Waxing",
-    },
-    {
-        date: "2026-08-18",
-        type: "waning ",
-        title: "Waning ",
-    },
-];
-
-const calendarEvents = mukurthamDates.map((item) => ({
-    title: item.title,
-    start: item.date,
-    allDay: true,
-    classNames:
-        item.type === "waxing"
-            ? ["muhurtham-waxing"]
-            : ["muhurtham-waning "],
-}));
-
-export function CategoryServiceDetailsPage() {
+export function CategoryServiceDetails() {
     const [serviceNotFound, setServiceNotFound] = useState(false);
     const [serviceRecord, setServiceRecord] = useState<any>(null);
-    const [showPopup, setShowPopup] = useState(false);
-    const [popupTitle, setPopupTitle] = useState("");
-    const [popupContent, setPopupContent] = useState("");
     const [isTabOpen, setIsTabOpen] = useState("");
-    const [isOccasionTabOpen, setIsOccasionTabOpen] = useState("all");
-    const [galleryRecords, setGalleryRecords] = useState<any[]>([]);
-    const [galleryFilterRecords, setGalleryFilterRecords] = useState<any[]>([]);
-    const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null);
-    const [allGalleryImages, setAllGalleryImages] = useState<string[]>([]);
-    const [showPhotoViewer, setShowPhotoViewer] = useState(false);
-
-    const [reviewLoading, setReviewLoading] = useState(false);
-    const [reviewPage, setReviewPage] = useState(1);
-    const [totalReviewPages, setTotalReviewPages] = useState(0);
-    const [reviews, setReviews] = useState<any[]>([]);
-    const [totalReviews, setTotalReviews] = useState(0);
-    const [averageRating, setAverageRating] = useState(0);
-    const [ratingCounts, setRatingCounts] = useState({ 5: 0, 4: 0, 3: 0, 2: 0, 1: 0, });
 
     const BACKEND_BASE_URL = apiConfig.baseUrl;
 
     const searchParams = useSearchParams();
-    const categoryServiceId = searchParams.get("serviceId");
+    const categoryServiceId = Number(searchParams.get("serviceId"));
 
 
     useEffect(() => {
@@ -97,15 +44,9 @@ export function CategoryServiceDetailsPage() {
     useEffect(() => {
         if (categoryServiceId) {
             loadCategoryService();
-            loadGalleryRecords();
         }
     }, [categoryServiceId]);
 
-    useEffect(() => {
-        if (categoryServiceId) {
-            loadReviewList();
-        }
-    }, [categoryServiceId, reviewPage]);
 
 
     const loadCategoryService = async () => {
@@ -113,7 +54,7 @@ export function CategoryServiceDetailsPage() {
             if (!categoryServiceId) {
                 return;
             }
-            const result = await mainService.getCategoryService({ category_service_id: Number(categoryServiceId) });
+            const result = await mainService.getCategoryService({ category_service_id: categoryServiceId });
 
             if (!result?.success || !result?.data) {
                 setServiceNotFound(true);
@@ -130,92 +71,10 @@ export function CategoryServiceDetailsPage() {
         }
     };
 
-    const loadGalleryRecords = async () => {
-        try {
-            if (!categoryServiceId) {
-                return;
-            }
-            const result = await mainService.galleryRecords({ category_service_id: Number(categoryServiceId) });
-
-            if (!result?.success) {
-                return;
-            }
-
-            setGalleryRecords(result.data);
-            setGalleryFilterRecords(result.data);
-
-            const allGalleryImages = result.data
-                .filter((image: any) => image?.gallery_image)
-                .map(
-                    (image: any) =>
-                        `${BACKEND_BASE_URL}/${image.gallery_image}`
-                );
-            setAllGalleryImages(allGalleryImages);
-
-        } catch (caughtError) {
-            console.error("Failed to load gallery records:", caughtError);
-        }
-    };
-
-    const loadReviewList = async () => {
-        try {
-            setReviewLoading(true);
-            if (!categoryServiceId) {
-                return;
-            }
-            const result = await mainService.serviceReviewList({
-                page: reviewPage,
-                limit: 5,
-                category_service_id: Number(categoryServiceId)
-            });
-
-            if (!result?.success) {
-                return;
-            }
-
-            setTotalReviewPages(result.data?.totalPages ?? 0);
-            setReviews(result.data?.rows || []);
-            setTotalReviews(result.data?.total || 0);
-            setAverageRating(Number(result.data?.averageRating || 0));
-            setRatingCounts(
-                result.data?.ratingCounts || {
-                    5: 0,
-                    4: 0,
-                    3: 0,
-                    2: 0,
-                    1: 0,
-                }
-            );
-
-        } catch (caughtError) {
-            console.error("Failed to load review records:", caughtError);
-        } finally {
-            setReviewLoading(false);
-        }
-    };
-
-    const occasionTabChange = (key: string) => {
-        setIsOccasionTabOpen(key);
-
-        if (key === "all") {
-            setGalleryFilterRecords(galleryRecords);
-            return;
-        }
-
-        const filteredRecords = galleryRecords.filter(
-            (image) => image.occasion_type === key
-        );
-
-        setGalleryFilterRecords(filteredRecords);
-    };
 
     return (
         <>
-            <RecordNotFoundOverlay
-                show={serviceNotFound}
-                blurBackground={true}
-            />
-
+            <RecordNotFoundOverlay show={serviceNotFound} blurBackground={true} />
 
             <main className="mx-auto max-w-screen-2xl space-y-12 px-4 py-6 sm:px-6 lg:px-8">
                 <div className="relative mb-6 overflow-hidden rounded-xl bg-white shadow-sm">
@@ -356,188 +215,23 @@ export function CategoryServiceDetailsPage() {
                     </aside>
                     <main className="order-1 md:order-2 md:col-span-6 space-y-6">
                         {isTabOpen === "overview" && (
-                            <>
-                                <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                                    <h3 className="mb-3 text-sm font-bold text-gray-900">About Us</h3>
-                                    <p className="text-xs leading-relaxed text-gray-600 line-clamp-3">
-                                        {serviceRecord?.service_description || "No description available."}
-                                    </p>
-                                    <button
-                                        type="button"
-                                        className="mt-1 text-xs font-medium text-primary hover:underline cursor-pointer"
-                                        onClick={() => {
-                                            setShowPopup(true);
-                                            setPopupTitle("About Us");
-                                            setPopupContent(serviceRecord?.service_description || "No description available.");
-                                        }}
-                                    >
-                                        Read more
-                                    </button>
-                                </div>
-                            </>
+                            <CategoryServiceOverview categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
                         )}
 
                         {isTabOpen === "photos-videos" && (
-                            <>
-                                <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                                    <div className="mb-4 flex items-center justify-between">
-                                        <h3 className="text-sm font-bold text-gray-900">Photos</h3>
-                                        <button
-                                            type="button"
-                                            className="text-xs font-medium text-primary hover:underline cursor-pointer"
-                                            onClick={() => setShowPhotoViewer(true)}
-                                        >View All</button>
-                                    </div>
-                                    <div className="mb-4 flex gap-2 overflow-x-auto text-xs">
-                                        <button
-                                            type="button"
-                                            className={`rounded-full px-3 py-1 cursor-pointer ${isOccasionTabOpen === 'all' ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'}`}
-                                            onClick={() => occasionTabChange('all')}
-                                        >
-                                            All
-                                        </button>
-                                        {occasionTypeLabels.map(({ key, label }) => (
-                                            <button
-                                                key={key}
-                                                type="button"
-                                                className={`rounded-full px-3 py-1 cursor-pointer ${isOccasionTabOpen === key ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'}`}
-                                                onClick={() => occasionTabChange(key)}
-                                            >{label}</button>
-                                        ))}
-                                    </div>
-                                    <AnimatePresence mode="wait">
-                                        <motion.div
-                                            key={isOccasionTabOpen}
-                                            initial={{ opacity: 0, y: 15 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -15 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="grid grid-cols-2 gap-3 sm:grid-cols-5"
-                                        >
-                                            {galleryFilterRecords.map((image, index) => (
-                                                <motion.img
-                                                    key={`gallery-image-${image.id ?? index}`}
-                                                    src={
-                                                        image?.gallery_image
-                                                            ? `${BACKEND_BASE_URL}/${image.gallery_image}`
-                                                            : undefined
-                                                    }
-                                                    alt="Gallery"
-                                                    className="h-24 w-full rounded-lg object-cover cursor-pointer"
-                                                    initial={{ opacity: 0, scale: 0.9 }}
-                                                    animate={{ opacity: 1, scale: 1 }}
-                                                    transition={{
-                                                        duration: 0.25,
-                                                        delay: index * 0.05,
-                                                    }}
-                                                    whileHover={{ scale: 1.05 }}
-                                                    onClick={() => {
-                                                        if (image?.gallery_image) {
-                                                            setSelectedGalleryImage(
-                                                                `${BACKEND_BASE_URL}/${image.gallery_image}`
-                                                            );
-                                                        }
-                                                    }}
-                                                />
-                                            ))}
-                                        </motion.div>
-                                    </AnimatePresence>
-
-                                    <ImageViewer
-                                        image={selectedGalleryImage}
-                                        onClose={() => setSelectedGalleryImage(null)}
-                                    />
-
-                                    {showPhotoViewer && (
-                                        <PhotoViewer
-                                            images={allGalleryImages}
-                                            initialIndex={0}
-                                            onClose={() => setShowPhotoViewer(false)}
-                                        />
-                                    )}
-                                </div>
-                            </>
+                            <CategoryServiceGallery categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
                         )}
 
                         {isTabOpen === "availability" && (
-                            <>
-                                <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                                    <h3 className="mb-3 text-sm font-bold text-gray-900">Availability Calendar</h3>
-
-                                    <FullCalendar
-                                        plugins={[
-                                            dayGridPlugin,
-                                            interactionPlugin,
-                                        ]}
-                                        initialView="dayGridMonth"
-                                        // dateClick={handleDateClick}
-                                        events={calendarEvents}
-                                        height="auto"
-                                        headerToolbar={{
-                                            left: "prev,next today",
-                                            center: "title",
-                                            right: "",
-                                        }}
-                                        buttonText={{
-                                            today: "Today",
-                                        }}
-                                    />
-                                </div>
-                            </>
+                            <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
                         )}
 
                         {isTabOpen === "reviews" && (
-                            <>
-                                <ReviewSection
-                                    reviews={reviews}
-                                    totalReviews={totalReviews}
-                                    averageRating={averageRating}
-                                    ratingCounts={ratingCounts}
-                                    title="Reviews & Ratings"
-                                    description="Customer experiences and feedback"
-                                    showWriteReview={false}
-                                    showHelpful={false}
-                                    showViewAll={false}
-                                    onViewAll={() => {
-                                        // open review modal/page
-                                    }}
-                                />
-
-                                <TablePagination
-                                    page={reviewPage}
-                                    totalPages={totalReviewPages}
-                                    totalRecords={totalReviews}
-                                    loading={reviewLoading}
-                                    onPageChange={setReviewPage}
-                                />
-                            </>
+                            <CategoryServiceReview categoryServiceId={categoryServiceId} />
                         )}
 
                         {isTabOpen === "packages" && (
-                            <>
-                                <div className="flex flex-col justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                                    <div>
-                                        <h4 className="mb-4 text-xs font-bold text-gray-900">Packages</h4>
-                                        <div className="space-y-3">
-                                            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                                <div className="text-xs font-semibold text-gray-800">Silver Package</div>
-                                                <div className="text-right text-xs font-bold text-gray-900">Rs 75,000</div>
-                                            </div>
-                                            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                                <div className="text-xs font-semibold text-gray-800">Gold Package</div>
-                                                <div className="text-right text-xs font-bold text-gray-900">Rs 1,25,000</div>
-                                            </div>
-                                            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                                <div className="text-xs font-semibold text-gray-800">Platinum Package</div>
-                                                <div className="text-right text-xs font-bold text-gray-900">Rs 2,25,000</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
-                                        View All Packages
-                                    </button>
-                                </div>
-                            </>
+                            <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
                         )}
                     </main>
                     <aside className="order-3 md:order-3 md:col-span-3 space-y-6">
@@ -621,19 +315,6 @@ export function CategoryServiceDetailsPage() {
                         </div>
                     </aside>
                 </div>
-
-
-
-                <PopupModal
-                    show={showPopup}
-                    title={popupTitle}
-                    onClose={() => setShowPopup(false)}
-                    width="3xl"
-                    position="top"
-                    blurBackground={false}
-                >
-                    {popupContent}
-                </PopupModal>
             </main>
         </>
     );
