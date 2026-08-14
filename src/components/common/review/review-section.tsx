@@ -10,6 +10,7 @@ export interface Review {
     rating: number;
     review_title?: string | null;
     review_description?: string | null;
+    status?: number | null;
     created_at?: string | null;
 
     user?: {
@@ -35,18 +36,21 @@ interface ReviewSectionProps {
     title?: string;
     description?: string;
 
+    showTitle?: boolean;
+    showDescription?: boolean;
     showWriteReview?: boolean;
     showHelpful?: boolean;
     showViewAll?: boolean;
-
-    showTitle?: boolean;
-    showDescription?: boolean;
+    showStatus?: boolean;
 
     onWriteReview?: () => void;
     onViewAll?: () => void;
+    reviewStatusUpdate?: (review: Review, action: 'approve' | 'disapprove') => void;
 }
 
 const buttonClassWhite = constants.buttonClassWhite;
+const badgeClassGreen = constants.badgeClassGreen;
+const badgeClassRed = constants.badgeClassRed;
 
 export default function ReviewSection({
     reviews,
@@ -56,15 +60,17 @@ export default function ReviewSection({
 
     title = "Customer Reviews",
     description = "What our customers say about this service",
+
     showTitle = true,
     showDescription = true,
-
-    showWriteReview = true,
-    showHelpful = true,
-    showViewAll = true,
+    showWriteReview = false,
+    showHelpful = false,
+    showViewAll = false,
+    showStatus = false,
 
     onWriteReview,
     onViewAll,
+    reviewStatusUpdate,
 }: ReviewSectionProps) {
     return (
         <section className="space-y-6">
@@ -90,7 +96,7 @@ export default function ReviewSection({
                     <button
                         type="button"
                         onClick={onWriteReview}
-                        className="cursor-pointer rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-dark"
+                        className={buttonClassWhite}
                     >
                         Write a Review
                     </button>
@@ -202,6 +208,30 @@ export default function ReviewSection({
                                         </div>
                                     </div>
                                 </div>
+
+                                {showStatus && (
+                                    <div className="flex items-center gap-2">
+                                        {Number(review.status) === 1 ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => reviewStatusUpdate?.(review, 'disapprove')}
+                                                title="Disapprove"
+                                                className={`mr-4 ${badgeClassGreen}`}
+                                            >
+                                                Active
+                                            </button>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={() => reviewStatusUpdate?.(review, 'approve')}
+                                                title="Approve"
+                                                className={`mr-4 ${badgeClassRed}`}
+                                            >
+                                                Inactive
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Review Content */}

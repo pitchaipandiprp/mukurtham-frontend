@@ -92,7 +92,7 @@ export default function ServiceReviewList() {
         }
     };
 
-    const handleStatusUpdate = async (row: any, status: string) => {
+    const reviewStatusUpdate = async (row: any, status: string) => {
         let msg = "Are you sure you want to delete?";
         let title = "Delete Confirmation";
 
@@ -116,7 +116,7 @@ export default function ServiceReviewList() {
                 fetchReviewData();
             }
         } catch (error) {
-            console.error("Delete failed:", error);
+            console.error("Status update failed:", error);
         }
     };
 
@@ -181,16 +181,10 @@ export default function ServiceReviewList() {
                     totalReviews={totalReviews}
                     averageRating={averageRating}
                     ratingCounts={ratingCounts}
-                    title="Reviews & Ratings"
-                    description="Customer experiences and feedback"
-                    showWriteReview={false}
-                    showHelpful={false}
                     showTitle={false}
                     showDescription={false}
-                    showViewAll={false}
-                    onViewAll={() => {
-                        // open review modal/page
-                    }}
+                    showStatus={true}
+                    reviewStatusUpdate={reviewStatusUpdate}
                 />
 
                 <TablePagination

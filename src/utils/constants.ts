@@ -11,6 +11,8 @@ const buttonClassOrange = 'rounded-lg bg-orange-100 px-3 py-2 text-sm font-semib
 const buttonClassGreen = 'rounded-lg bg-green-100 px-3 py-2 text-sm font-semibold text-green-600 transition-all duration-300 hover:text-white hover:bg-green-600 hover:shadow-lg hover:shadow-primary/30 cursor-pointer';
 const buttonClassWhite = 'cursor-pointer bg-white rounded-lg px-3 py-2 border border-primary text-xs font-medium text-primary transition hover:bg-primary/5 transition-colors';
 
+const badgeClassGreen = 'cursor-pointer inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-700';
+const badgeClassRed = 'cursor-pointer inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-rose-100 text-rose-700';
 
 export const constants = {
     inputClass,
@@ -23,4 +25,6 @@ export const constants = {
     buttonClassOrange,
     buttonClassGreen,
     buttonClassWhite,
+    badgeClassGreen,
+    badgeClassRed
 };
