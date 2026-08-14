@@ -50,8 +50,6 @@ const capacities = [
 ];
 
 
-const PAGE_SIZE = 3;
-
 export default function CategoryServiceSearch() {
     const router = useRouter();
 

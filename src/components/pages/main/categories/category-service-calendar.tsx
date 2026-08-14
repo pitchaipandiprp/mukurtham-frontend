@@ -10,12 +10,12 @@ import "@/assets/css/fullcalendar.css";
 const mukurthamDates = [
     {
         date: "2026-08-15",
-        type: "waxing",
+        date_type: "waxing",
         title: "Waxing",
     },
     {
         date: "2026-08-18",
-        type: "waning ",
+        date_type: "waning ",
         title: "Waning ",
     },
 ];
@@ -25,7 +25,7 @@ const calendarEvents = mukurthamDates.map((item) => ({
     start: item.date,
     allDay: true,
     classNames:
-        item.type === "waxing"
+        item.date_type === "waxing"
             ? ["muhurtham-waxing"]
             : ["muhurtham-waning "],
 }));
@@ -55,6 +55,9 @@ export function CategoryServiceCalendar({
                     // dateClick={handleDateClick}
                     events={calendarEvents}
                     height="auto"
+                    validRange={{
+                        start: new Date(),
+                    }}
                     headerToolbar={{
                         left: "prev,next today",
                         center: "title",

@@ -127,6 +127,7 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
             if (result?.success) {
                 await sweetalert.success(result.message);
                 setForm(initialForm);
+                setSelectedRating("5");
                 setShowPopup(false);
             }
         } catch (caughtError) {

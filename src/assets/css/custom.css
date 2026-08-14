@@ -40,6 +40,10 @@
 }
 
 /* React DatePicker - Modern Theme Start*/
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
 .react-datepicker {
     font-family: inherit;
     border: none;

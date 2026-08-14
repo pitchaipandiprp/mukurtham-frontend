@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Users, ShoppingBag, Settings, BarChart3, ShieldCheck, UserPlus, LogOut, Sparkles, Menu, X, Bell, Search, ChevronRight, TrendingUp, CreditCard, DollarSign, LucideIcon } from 'lucide-react';
+import { CalendarDays, LayoutDashboard, Users, ShoppingBag, Settings, BarChart3, ShieldCheck, UserPlus, LogOut, Sparkles, Menu, X, Bell, Search, ChevronRight, TrendingUp, CreditCard, DollarSign, LucideIcon } from 'lucide-react';
 import { useRouter } from "next/navigation";
 
 interface SubNavItem {
@@ -34,6 +34,15 @@ const navItems: NavItem[] = [
         icon: CreditCard,
         subItems: [
             { title: 'Payment History', href: '/panel/payment-history' },
+        ],
+    },
+    {
+        id: 'service-date',
+        title: 'Service',
+        icon: CalendarDays,
+        subItems: [
+            { title: 'Service Date List', href: '/panel/service-date-list' },
+            { title: 'Add Service Date', href: '/panel/create-service-date' },
         ],
     },
     {

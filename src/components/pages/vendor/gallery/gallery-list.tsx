@@ -101,7 +101,7 @@ export default function GalleryList() {
                 fetchGalleryData();
             }
         } catch (error) {
-            console.error("Delete failed:", error);
+            console.error("Status update failed:", error);
         }
     };
 
@@ -172,7 +172,7 @@ export default function GalleryList() {
                                     title="Approve"
                                     className={`mr-4 ${buttonClassGreen}`}
                                 >
-                                    <CheckCircle2 className="h-5 w-5" />
+                                    <CheckCircle2 className="h-4 w-4" />
                                 </button>
                             )}
 

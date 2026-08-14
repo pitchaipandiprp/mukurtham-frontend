@@ -42,6 +42,7 @@ const galleryRecords = async (payload: any) => {
     return await apiService.post<any>("/vendors/gallery-records", payload);
 };
 
+/////Service Review/////
 const serviceReviewList = async (payload: any) => {
     return await apiService.post<any>("/vendors/service-review-list", payload);
 };
