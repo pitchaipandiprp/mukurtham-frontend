@@ -50,6 +50,28 @@ const updateServiceReviewStatus = async (payload: any) => {
     return await apiService.post<any>("/vendors/update-service-review-status", payload);
 };
 
+
+/////Service Date/////
+const createServiceDate = async (payload: any) => {
+    return await apiService.post<any>("/vendors/create-service-date", payload);
+};
+
+const updateServiceDateStatus = async (payload: any) => {
+    return await apiService.post<any>("/vendors/update-service-date-status", payload);
+};
+
+const getServiceDate = async (payload: any) => {
+    return await apiService.post<any>("/vendors/get-service-date", payload);
+};
+
+const serviceDateList = async (payload: any) => {
+    return await apiService.post<any>("/vendors/service-date-list", payload);
+};
+
+const serviceDateRecords = async (payload: any) => {
+    return await apiService.post<any>("/vendors/service-date-records", payload);
+};
+
 export const vendorService = {
     createCategoryService,
     getCategoryService,
@@ -62,5 +84,11 @@ export const vendorService = {
     galleryList,
     galleryRecords,
     serviceReviewList,
-    updateServiceReviewStatus
+    updateServiceReviewStatus,
+    createServiceDate,
+    updateServiceDateStatus,
+    getServiceDate,
+    serviceDateList,
+    serviceDateRecords,
+
 };

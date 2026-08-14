@@ -7,16 +7,14 @@ import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TablePagination from "@/components/common/datatable/pagination";
 import TableSearch from "@/components/common/datatable/searchbox";
-import { adminService } from "@/services/api/admin.routes";
-import commonService from "@/services/api/common.routes";
+import { vendorService } from "@/services/api/vendor.routes";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
 
 const PAGE_SIZE = 10;
 
-
-export default function ServiceDateList() {
+export default function ServiceDatesList() {
     const [loading, setLoading] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -24,7 +22,6 @@ export default function ServiceDateList() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
-    const [categoryList, setCategoryList] = useState<any[]>([]);
     const buttonClass = constants.buttonClass;
     const buttonClassBlue = constants.buttonClassBlue;
     const buttonClassRed = constants.buttonClassRed;
@@ -40,23 +37,16 @@ export default function ServiceDateList() {
         return () => clearTimeout(timer);
     }, [searchInput]);
 
-    useEffect(() => {
-        loadCategories();
-    }, []);
 
     useEffect(() => {
         fetchServiceDateList();
     }, [page, searchTerm]);
 
-    const loadCategories = async () => {
-        const result = await commonService.getCategories();
-        setCategoryList(result?.data || []);
-    };
 
     const fetchServiceDateList = async () => {
         try {
             setLoading(true);
-            const response = await adminService.serviceDateList({
+            const response = await vendorService.serviceDateList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
@@ -83,7 +73,7 @@ export default function ServiceDateList() {
             return;
         }
 
-        const result = await adminService.updateServiceDateStatus({ id: row.id, status });
+        const result = await vendorService.updateServiceDateStatus({ id: row.id, status });
         if (result?.success) {
             await sweetalert.success(result.message);
             fetchServiceDateList();
@@ -91,6 +81,11 @@ export default function ServiceDateList() {
     };
 
     const columns = useMemo<ColumnDef<any>[]>(() => [
+        {
+            accessorKey: "category_service_id",
+            header: "Category Service",
+            cell: ({ row }) => row.original.category_service?.service_name ?? "-",
+        },
         {
             accessorKey: "date_type",
             header: "Date Type",
@@ -120,7 +115,7 @@ export default function ServiceDateList() {
                     ) : (
                         <button type="button" onClick={() => handleStatusUpdate(row.original, "approve")} title="Approve" className={`mr-4 ${buttonClassGreen}`}><CheckCircle2 className="h-4 w-4" /></button>
                     )}
-                    <Link href={`/panel/create-service-date?id=${row.original.id}`} className={`mr-4 inline-flex ${buttonClassBlue}`} title="Edit"><Pencil className="h-4 w-4" /></Link>
+                    <Link href={`/panel/create-service-dates?id=${row.original.id}`} className={`mr-4 inline-flex ${buttonClassBlue}`} title="Edit"><Pencil className="h-4 w-4" /></Link>
                     <button type="button" className={buttonClassRed} title="Delete" onClick={() => handleStatusUpdate(row.original, "delete")}><Trash2 className="h-4 w-4" /></button>
                 </>;
             },
@@ -132,12 +127,12 @@ export default function ServiceDateList() {
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="flex items-center gap-2 text-2xl tracking-tight text-slate-600">Service Date Lists</b>
+                <b className="flex items-center gap-2 text-2xl tracking-tight text-slate-600">Date Lists</b>
             </div>
             <section className="space-y-5">
                 <div className="mb-0 flex items-center justify-between gap-4">
                     <TableSearch value={searchInput} onChange={setSearchInput} placeholder="Search Service Date..." />
-                    <Link href="/panel/create-service-date" className={buttonClass}>Add Service Date</Link>
+                    <Link href="/panel/create-service-dates" className={buttonClass}>Add Date</Link>
                 </div>
                 <DataTable table={table} loading={loading} emptyMessage="No Records Found" />
                 <TablePagination page={page} totalPages={totalPages} totalRecords={totalRecords} loading={loading} onPageChange={setPage} />

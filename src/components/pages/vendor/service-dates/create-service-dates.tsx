@@ -4,43 +4,41 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
-import { adminService } from "@/services/api/admin.routes";
-import commonService from "@/services/api/common.routes";
+import { vendorService } from "@/services/api/vendor.routes";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
 import "react-datepicker/dist/react-datepicker.css";
 
 type ServiceDateForm = {
-    category_id: string;
+    category_service_id: string;
     date_type: string;
     service_date: string;
     status: string;
 };
 
 const initialForm: ServiceDateForm = {
-    category_id: "",
+    category_service_id: "",
     date_type: "",
     service_date: "",
     status: "0",
 };
 
-export default function CreateServiceDate() {
+export default function CreateServiceDates() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const serviceDateId = searchParams.get("id");
     const [form, setForm] = useState<ServiceDateForm>(initialForm);
-    const [categoryList, setCategoryList] = useState<any[]>([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [categoryServiceRecords, setCategoryServiceRecords] = useState<any[]>([]);
     const inputClass = constants.inputClass;
     const buttonClass = constants.buttonClass;
     const buttonClassSubmit = constants.buttonClassSubmit;
 
     useEffect(() => {
-        loadCategoryList();
+        loadCategoryServiceRecords();
     }, []);
-
 
     useEffect(() => {
         if (!serviceDateId) {
@@ -49,14 +47,15 @@ export default function CreateServiceDate() {
         loadServiceDate();
     }, [serviceDateId]);
 
-    const loadCategoryList = async () => {
-        const result = await commonService.getCategories();
-        setCategoryList(result?.data || []);
+
+    const loadCategoryServiceRecords = async () => {
+        const result = await vendorService.categoryServiceRecords({});
+        setCategoryServiceRecords(result?.data || []);
     };
 
     const loadServiceDate = async () => {
         try {
-            const result = await adminService.getServiceDate({ id: Number(serviceDateId) });
+            const result = await vendorService.getServiceDate({ id: Number(serviceDateId) });
 
             if (!result?.success) {
                 return;
@@ -65,13 +64,13 @@ export default function CreateServiceDate() {
             if (!result.data || result.data.length === 0) {
                 const swalConfirm = await sweetalert.warning("Something went wrong");
                 if (swalConfirm.isConfirmed) {
-                    router.push("/panel/service-date-list");
+                    router.push("/panel/service-dates-list");
                 }
                 return;
             }
 
             setForm({
-                category_id: String(result?.data.category_id ?? ""),
+                category_service_id: String(result?.data.category_service_id ?? ""),
                 date_type: result?.data.date_type ?? "",
                 service_date: result?.data.service_date ? commonUtils.formatDateTime(result?.data.service_date, "YYYY-MM-DD") : "",
                 status: String(result?.data.status ?? 0),
@@ -89,6 +88,11 @@ export default function CreateServiceDate() {
         event.preventDefault();
         setError("");
 
+        if (!form.category_service_id) {
+            setError("Category service is required");
+            return;
+        }
+
         if (!form.date_type) {
             setError("Type is required");
             return;
@@ -102,8 +106,8 @@ export default function CreateServiceDate() {
         setLoading(true);
 
         try {
-            const result = await adminService.createServiceDate({
-                category_id: Number(form.category_id),
+            const result = await vendorService.createServiceDate({
+                category_service_id: Number(form.category_service_id),
                 date_type: form.date_type.trim() || null,
                 service_date: commonUtils.formatDateTime(form.service_date, "YYYY-MM-DD") || null,
                 status: Number(form.status),
@@ -112,7 +116,7 @@ export default function CreateServiceDate() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
-                router.push("/panel/service-date-list");
+                router.push("/panel/service-dates-list");
             }
         } catch (caughtError) {
             console.error("Save service date failed:", caughtError);
@@ -125,10 +129,10 @@ export default function CreateServiceDate() {
         <div className="d-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
                 <b className="text-2xl text-slate-600 tracking-tight">
-                    {serviceDateId ? "Edit Service Date" : "Service Date"}
+                    {serviceDateId ? "Edit Date" : "Service Date"}
                 </b>
-                <Link href="/panel/service-date-list" className={buttonClass}>
-                    Service Date Lists
+                <Link href="/panel/service-dates-list" className={buttonClass}>
+                    Date Lists
                 </Link>
             </div>
 
@@ -150,24 +154,24 @@ export default function CreateServiceDate() {
                             </select>
                         </div>
 
-                        {/* <div className="md:col-span-4">
-                            <label htmlFor="categoryId" className="mb-2 block text-sm font-medium text-gray-700">
-                                Category
+                        <div className="md:col-span-4">
+                            <label htmlFor="categoryServiceId" className="mb-2 block text-sm font-medium text-gray-700">
+                                Category Service
                             </label>
                             <select
-                                id="categoryId"
-                                value={form.category_id}
-                                onChange={(event) => updateField("category_id", event.target.value)}
+                                id="categoryServiceId"
+                                value={form.category_service_id}
+                                onChange={(event) => updateField("category_service_id", event.target.value)}
                                 className={inputClass}
                             >
-                                <option value="">Select Category</option>
-                                {categoryList.map((category) => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.name}
+                                <option value="">Select Category Service</option>
+                                {categoryServiceRecords.map((item) => (
+                                    <option key={`category-service-${item.id}`} value={item.id}>
+                                        {item.service_name}
                                     </option>
                                 ))}
                             </select>
-                        </div> */}
+                        </div>
 
                         <div className="md:col-span-4">
                             <label htmlFor="dateType" className="mb-2 block text-sm font-medium text-gray-700">
@@ -180,8 +184,8 @@ export default function CreateServiceDate() {
                                 className={inputClass}
                             >
                                 <option value="">Select Type</option>
-                                <option value="Waxing">Waxing Crescent(Valarpirai)</option>
-                                <option value="Waning">Waning Crescent(Theipirai)</option>
+                                <option value="Available">Available</option>
+                                <option value="Unavailable">Unavailable</option>
                             </select>
                         </div>
 
