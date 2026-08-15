@@ -184,8 +184,12 @@ export default function CreateServiceDates() {
                                 className={inputClass}
                             >
                                 <option value="">Select Type</option>
-                                <option value="Available">Available</option>
-                                <option value="Unavailable">Unavailable</option>
+                                {serviceDateId && (
+                                    <option value="Available">Available</option>
+                                )}
+                                {!serviceDateId && (
+                                    <option value="Unavailable">Unavailable</option>
+                                )}
                             </select>
                         </div>
 
