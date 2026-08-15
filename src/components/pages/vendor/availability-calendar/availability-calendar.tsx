@@ -25,7 +25,9 @@ export default function AvailabilityCalendar() {
     }, []);
 
     useEffect(() => {
-        fetchServiceDateRecords();
+        if (categoryServiceId) {
+            fetchServiceDateRecords();
+        }
     }, [categoryServiceId]);
 
     const loadCategoryServiceRecords = async () => {
