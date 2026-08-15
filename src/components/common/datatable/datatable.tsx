@@ -23,7 +23,7 @@ export default function DataTable<TData>({
     const columnCount = table.getAllColumns().length;
 
     return (
-        <div className="overflow-hidden rounded-b rounded-xl border border-slate-200 bg-white mb-0">
+        <div className="overflow-hidden rounded-b rounded-xl border border-slate-200 bg-white shadow-sm mb-0">
             <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead className="bg-primary-light text-white">

@@ -45,6 +45,7 @@ const navItems: NavItem[] = [
             { title: 'Add Service', href: '/panel/create-category-service' },
             { title: 'Gallery List', href: '/panel/gallery-list' },
             { title: 'Important Dates', href: '/panel/service-dates-list' },
+            { title: 'Availability Calendar', href: '/panel/availability-calendar' },
             { title: 'Package List', href: '/panel/package-list' },
         ],
     },

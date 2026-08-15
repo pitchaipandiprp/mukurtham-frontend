@@ -1,6 +1,8 @@
 
 const ratingStars = [1, 2, 3, 4, 5];
 
+const capitalizeFirst = (value: string) => value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+
 const formatAmount = (amount: number | null) => {
     if (amount === null || Number.isNaN(amount)) {
         return "-";
@@ -103,6 +105,7 @@ export const formatDateTime = (
 
 export const common = {
     ratingStars,
+    capitalizeFirst,
     formatAmount,
     formatDateTime,
 };
