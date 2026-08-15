@@ -7,28 +7,6 @@ import interactionPlugin from "@fullcalendar/interaction";
 import "@/assets/css/fullcalendar.css";
 
 
-const mukurthamDates = [
-    {
-        date: "2026-08-15",
-        date_type: "waxing",
-        title: "Waxing",
-    },
-    {
-        date: "2026-08-18",
-        date_type: "waning ",
-        title: "Waning ",
-    },
-];
-
-const calendarEvents = mukurthamDates.map((item) => ({
-    title: item.title,
-    start: item.date,
-    allDay: true,
-    classNames:
-        item.date_type === "waxing"
-            ? ["muhurtham-waxing"]
-            : ["muhurtham-waning "],
-}));
 
 
 type Props = {
@@ -41,6 +19,56 @@ export function CategoryServiceCalendar({
     serviceRecord,
 }: Props) {
 
+    const [loading, setLoading] = useState(false);
+    const [serviceDateRecords, setServiceDateRecords] = useState<any[]>([]);
+    const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetchServiceDateRecords()
+    }, []);
+
+    const fetchServiceDateRecords = async () => {
+        try {
+            setLoading(true);
+            const result = await mainRoutes.serviceDateRecords({});
+
+            if (!result?.success) {
+                return;
+            }
+
+            const resultData = result.data || [];
+            setServiceDateRecords(resultData);
+
+            if (resultData && resultData.length > 0) {
+
+                const eventsData = resultData
+                    .filter(
+                        (item: any) =>
+                            item?.date_type?.toLowerCase() !== "available"
+                    )
+                    .map((item: any) => ({
+                        title: item?.date_type,
+                        start: item?.service_date,
+                        allDay: true,
+                        classNames: item?.date_type && item?.date_type.toLowerCase(),
+                    }));
+
+                setCalendarEvents(eventsData);
+            }
+
+        } catch (caughtError) {
+            console.error("Failed to load review records:", caughtError);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDateClick = (arg: any) => {
+        const clickedDate = arg.dateStr;
+        const clickedEvent = calendarEvents.find((event) => event.start === clickedDate);
+        alert(`Clicked on date: ${clickedDate}\nEvent: ${clickedEvent ? clickedEvent.title : "No event"}`);
+    }
+
     return (
         <>
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -52,7 +80,7 @@ export function CategoryServiceCalendar({
                         interactionPlugin,
                     ]}
                     initialView="dayGridMonth"
-                    // dateClick={handleDateClick}
+                    dateClick={handleDateClick}
                     events={calendarEvents}
                     height="auto"
                     validRange={{

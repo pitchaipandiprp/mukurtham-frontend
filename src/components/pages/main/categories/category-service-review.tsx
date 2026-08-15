@@ -111,12 +111,12 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
         }
 
         if (!form.rating.trim()) {
-            setError("Rating is required");
+            setError("Please provide a rating");
             return;
         }
 
         if (!form.review_description.trim()) {
-            setError("Feedback is required");
+            setError("Please enter the feedback");
             return;
         }
 

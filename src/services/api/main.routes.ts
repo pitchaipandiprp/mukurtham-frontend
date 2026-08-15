@@ -25,6 +25,10 @@ const serviceReviewRecords = async (payload: any) => {
     return await apiService.post<any>("/service-review-records", payload);
 };
 
+const serviceDateRecords = async (payload: any) => {
+    return await apiService.post<any>("/service-date-records", payload);
+};
+
 const mainRoutes = {
     categoryServiceSearch,
     getCategoryService,
@@ -32,6 +36,7 @@ const mainRoutes = {
     createServiceReview,
     serviceReviewList,
     serviceReviewRecords,
+    serviceDateRecords,
 };
 
 export default mainRoutes;

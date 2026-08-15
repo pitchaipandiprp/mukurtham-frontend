@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarDays, LayoutDashboard, Users, ShoppingBag, Settings, BarChart3, ShieldCheck, UserPlus, LogOut, Sparkles, Menu, X, Bell, Search, ChevronRight, TrendingUp, CreditCard, DollarSign, LucideIcon } from 'lucide-react';
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 interface SubNavItem {
     title: string;
