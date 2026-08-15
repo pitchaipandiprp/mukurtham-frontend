@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { userService } from "@/services/api/users.routes";
+import { userRoutes } from "@/services/api/users.routes";
 import { sweetalert } from "@/utils/sweetalert";
 
 type UserType = "customer" | "vendor";
@@ -66,7 +66,7 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
         setError("");
 
         try {
-            const result = await userService.createUser({
+            const result = await userRoutes.createUser({
                 user_type: userType,
                 name,
                 email,

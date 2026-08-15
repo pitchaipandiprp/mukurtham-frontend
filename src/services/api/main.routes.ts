@@ -25,7 +25,7 @@ const serviceReviewRecords = async (payload: any) => {
     return await apiService.post<any>("/service-review-records", payload);
 };
 
-const mainService = {
+const mainRoutes = {
     categoryServiceSearch,
     getCategoryService,
     galleryRecords,
@@ -34,4 +34,4 @@ const mainService = {
     serviceReviewRecords,
 };
 
-export default mainService;
+export default mainRoutes;

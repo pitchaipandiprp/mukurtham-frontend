@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { authService } from "@/services/api/auth.routes";
+import { authRoutes } from "@/services/api/auth.routes";
 import { setAuthData } from "@/utils/auth";
 
 export function useLogin(redirectTo = "/panel/dashboard") {
@@ -63,7 +63,7 @@ export function useLogin(redirectTo = "/panel/dashboard") {
         setError("");
 
         try {
-            const result = await authService.loginUser({ email, password });
+            const result = await authRoutes.loginUser({ email, password });
             return await handleSuccessfulLogin(result);
         } catch (caughtError) {
             console.error("Email login failed:", caughtError);
@@ -93,7 +93,7 @@ export function useLogin(redirectTo = "/panel/dashboard") {
         setError("");
 
         try {
-            const result = await authService.otpLoginUser({ mobile, otp });
+            const result = await authRoutes.otpLoginUser({ mobile, otp });
             return await handleSuccessfulLogin(result);
         } catch (caughtError) {
             console.error("OTP login failed:", caughtError);
@@ -118,7 +118,7 @@ export function useLogin(redirectTo = "/panel/dashboard") {
         setError("");
 
         try {
-            const result = await authService.sendOtp({ mobile });
+            const result = await authRoutes.sendOtp({ mobile });
 
             if (!result.success) {
                 // setError(result.message || "Failed to send OTP");

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import mainService from "@/services/api/main.routes";
+import mainRoutes from "@/services/api/main.routes";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";

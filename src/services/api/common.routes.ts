@@ -17,11 +17,11 @@ const getCities = async (payload: any) => {
     return await apiService.post<any>("/cities", payload);
 }
 
-const commonService = {
+const commonRoutes = {
     getCategories,
     getFacilities,
     getLocalities,
     getCities,
 };
 
-export default commonService;
+export default commonRoutes;

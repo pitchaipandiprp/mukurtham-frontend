@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import ImageViewer from "@/components/common/image-viewer/image-viewer";
 import PhotoViewer from "@/components/common/image-viewer/photo-viewer";
-import mainService from "@/services/api/main.routes";
+import mainRoutes from "@/services/api/main.routes";
 import { apiConfig } from "@/environments/api";
 
 const occasionTypeLabels = [
@@ -42,7 +42,7 @@ export function CategoryServiceGallery({
             if (!categoryServiceId) {
                 return;
             }
-            const result = await mainService.galleryRecords({ category_service_id: categoryServiceId });
+            const result = await mainRoutes.galleryRecords({ category_service_id: categoryServiceId });
 
             if (!result?.success) {
                 return;

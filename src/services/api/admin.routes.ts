@@ -21,7 +21,7 @@ const serviceDateRecords = async (payload: any) => {
     return await apiService.post<any>("/admin/service-date-records", payload);
 };
 
-export const adminService = {
+export const adminRoutes = {
     createServiceDate,
     updateServiceDateStatus,
     getServiceDate,

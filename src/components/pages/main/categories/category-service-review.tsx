@@ -5,7 +5,7 @@ import { FiStar } from "react-icons/fi";
 import ReviewSection from "@/components/common/review/review-section";
 import TablePagination from "@/components/common/datatable/pagination";
 import PopupModal from "@/components/common/popup/popup-modal";
-import mainService from "@/services/api/main.routes";
+import mainRoutes from "@/services/api/main.routes";
 import { authUserId } from "@/utils/auth";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
@@ -60,7 +60,7 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
             if (!categoryServiceId) {
                 return;
             }
-            const result = await mainService.serviceReviewList({
+            const result = await mainRoutes.serviceReviewList({
                 page: reviewPage,
                 limit: 5,
                 category_service_id: categoryServiceId
@@ -123,7 +123,7 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
         setLoading(true);
 
         try {
-            const result = await mainService.createServiceReview(form);
+            const result = await mainRoutes.createServiceReview(form);
             if (result?.success) {
                 await sweetalert.success(result.message);
                 setForm(initialForm);

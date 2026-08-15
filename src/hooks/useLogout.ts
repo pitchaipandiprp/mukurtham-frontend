@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { authService } from "@/services/api/auth.routes";
+import { authRoutes } from "@/services/api/auth.routes";
 import { sweetalert } from "@/utils/sweetalert";
 import { clearAuthData } from "@/utils/auth";
 
@@ -15,7 +15,7 @@ export function useLogout(redirectTo = "/login") {
         }
 
         try {
-            await authService.logoutUser({});
+            await authRoutes.logoutUser({});
         } catch (caughtError) {
             console.error("Logout failed:", caughtError);
         } finally {

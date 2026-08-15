@@ -6,8 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
-import { vendorService } from "@/services/api/vendor.routes";
-import commonService from "@/services/api/common.routes";
+import { vendorRoutes } from "@/services/api/vendor.routes";
+import commonRoutes from "@/services/api/common.routes";
 import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
 import { apiConfig } from "@/environments/api";
 import LocationPicker from "@/components/common/map/openstreetmap/location-picker";
@@ -87,12 +87,12 @@ export default function CreateCategoryService() {
     }, [form.category_id]);
 
     const loadCategories = async () => {
-        const result = await commonService.getCategories();
+        const result = await commonRoutes.getCategories();
         setCategoryList(result?.data || []);
     };
 
     const loadFacility = async () => {
-        const result = await commonService.getFacilities({ category_id: form.category_id });
+        const result = await commonRoutes.getFacilities({ category_id: form.category_id });
         setFacilityList(result?.data || []);
     };
 
@@ -166,7 +166,7 @@ export default function CreateCategoryService() {
                 return;
             }
 
-            const result = await vendorService.getCategoryService({ id: Number(categoryServiceId) });
+            const result = await vendorRoutes.getCategoryService({ id: Number(categoryServiceId) });
 
             if (!result?.success) {
                 return;
@@ -309,7 +309,7 @@ export default function CreateCategoryService() {
         }
 
         try {
-            const result = await vendorService.createCategoryService(formData);
+            const result = await vendorRoutes.createCategoryService(formData);
 
             if (result?.success) {
                 await sweetalert.success(result.message);

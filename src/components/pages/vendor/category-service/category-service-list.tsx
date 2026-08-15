@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { vendorService } from "@/services/api/vendor.routes";
+import { vendorRoutes } from "@/services/api/vendor.routes";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, CheckCircle2, XCircle, } from "lucide-react";
 import { FiStar } from "react-icons/fi";
@@ -52,7 +52,7 @@ export default function CategoryServiceList() {
         try {
             setLoading(true);
 
-            const response = await vendorService.categoryServiceList({
+            const response = await vendorRoutes.categoryServiceList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
@@ -87,7 +87,7 @@ export default function CategoryServiceList() {
         }
 
         try {
-            const result = await vendorService.updateCategoryServiceStatus({ id: row.id, status });
+            const result = await vendorRoutes.updateCategoryServiceStatus({ id: row.id, status });
             if (result?.success) {
                 sweetalert.success(result.message);
                 fetchServiceData();

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { FiMenu, FiX, FiBell, FiChevronDown, FiHeart, FiMapPin, FiMessageCircle, FiSearch, } from "react-icons/fi";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useRouter, useSearchParams } from "next/navigation";
-import commonService from "@/services/api/common.routes";
+import commonRoutes from "@/services/api/common.routes";
 
 const navLinks = [
     { label: "Home", href: "/" },
@@ -48,7 +48,7 @@ export function MainHeader() {
     }
 
     const loadCity = async () => {
-        const result = await commonService.getCities({ is_popular: 1 });
+        const result = await commonRoutes.getCities({ is_popular: 1 });
         setCityList(result?.data || []);
     };
 

@@ -2,7 +2,7 @@
 
 import { FaBuilding, FaCamera, FaUtensils, FaPaintBrush, FaSpa, FaCar, FaMusic, FaEnvelopeOpenText, FaEllipsisH } from "react-icons/fa";
 import { FiMapPin, FiSearch, FiCheckCircle, FiTag, FiCreditCard } from "react-icons/fi";
-import commonService from "@/services/api/common.routes";
+import commonRoutes from "@/services/api/common.routes";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import * as FaIcons from "react-icons/fa";
@@ -36,7 +36,7 @@ export function HomePage() {
 
     async function loadCategories() {
         try {
-            const categories = await commonService.getCategories();
+            const categories = await commonRoutes.getCategories();
             setCategoryList(categories?.data);
         } catch (error) {
             console.error("Failed to load categories:", error);
@@ -44,7 +44,7 @@ export function HomePage() {
     }
 
     const loadCity = async () => {
-        const result = await commonService.getCities({ is_popular: 1 });
+        const result = await commonRoutes.getCities({ is_popular: 1 });
         setCityList(result?.data || []);
     };
 

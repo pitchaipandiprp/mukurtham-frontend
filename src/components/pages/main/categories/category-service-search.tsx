@@ -7,8 +7,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
-import commonService from "@/services/api/common.routes";
-import mainService from "@/services/api/main.routes";
+import commonRoutes from "@/services/api/common.routes";
+import mainRoutes from "@/services/api/main.routes";
 import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
 import { apiConfig } from "@/environments/api";
 import TablePagination from "@/components/common/datatable/pagination";
@@ -129,7 +129,7 @@ export default function CategoryServiceSearch() {
 
 
     const loadCategories = async () => {
-        const result = await commonService.getCategories();
+        const result = await commonRoutes.getCategories();
 
         const categories = result?.data || [];
 
@@ -147,14 +147,14 @@ export default function CategoryServiceSearch() {
     };
 
     const loadFacility = async () => {
-        const result = await commonService.getFacilities({ category_id: categoryId });
+        const result = await commonRoutes.getFacilities({ category_id: categoryId });
         setFacilityList(result?.data || []);
     };
 
     const fetchServiceData = async (fields: any = searchFields) => {
         try {
             setLoading(true);
-            const response = await mainService.categoryServiceSearch(fields);
+            const response = await mainRoutes.categoryServiceSearch(fields);
             const responData = response.data;
             setSearchServiceData(responData.rows || []);
             setTotalPages(responData?.totalPages ?? 0);

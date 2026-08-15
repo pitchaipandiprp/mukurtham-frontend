@@ -30,7 +30,7 @@ const logoutUser = async (payload: any) => {
     return await apiService.post<any>("/auth/logout", payload);
 }
 
-export const authService = {
+export const authRoutes = {
     loginUser,
     otpLoginUser,
     sendOtp,

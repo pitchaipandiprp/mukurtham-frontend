@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { userService } from "@/services/api/users.routes";
+import { userRoutes } from "@/services/api/users.routes";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
 
@@ -16,7 +16,7 @@ export function ChangeProfile() {
     useEffect(() => {
         async function fetchProfile() {
             try {
-                const result = await userService.userProfile({});
+                const result = await userRoutes.userProfile({});
 
                 if (result.success) {
                     setName(result.data?.name ?? "");
@@ -42,7 +42,7 @@ export function ChangeProfile() {
         setError("");
 
         try {
-            const result = await userService.userUpdate({
+            const result = await userRoutes.userUpdate({
                 name,
             });
             if (result.success) {

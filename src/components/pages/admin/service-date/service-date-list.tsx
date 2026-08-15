@@ -7,8 +7,8 @@ import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TablePagination from "@/components/common/datatable/pagination";
 import TableSearch from "@/components/common/datatable/searchbox";
-import { adminService } from "@/services/api/admin.routes";
-import commonService from "@/services/api/common.routes";
+import { adminRoutes } from "@/services/api/admin.routes";
+import commonRoutes from "@/services/api/common.routes";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
@@ -49,14 +49,14 @@ export default function ServiceDateList() {
     }, [page, searchTerm]);
 
     const loadCategories = async () => {
-        const result = await commonService.getCategories();
+        const result = await commonRoutes.getCategories();
         setCategoryList(result?.data || []);
     };
 
     const fetchServiceDateList = async () => {
         try {
             setLoading(true);
-            const response = await adminService.serviceDateList({
+            const response = await adminRoutes.serviceDateList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
@@ -83,7 +83,7 @@ export default function ServiceDateList() {
             return;
         }
 
-        const result = await adminService.updateServiceDateStatus({ id: row.id, status });
+        const result = await adminRoutes.updateServiceDateStatus({ id: row.id, status });
         if (result?.success) {
             await sweetalert.success(result.message);
             fetchServiceDateList();

@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { vendorService } from "@/services/api/vendor.routes";
+import { vendorRoutes } from "@/services/api/vendor.routes";
 import { Pencil, Trash2, CheckCircle2, XCircle, } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -60,7 +60,7 @@ export default function ServiceReviewList() {
         try {
             setLoading(true);
 
-            const response = await vendorService.serviceReviewList({
+            const response = await vendorRoutes.serviceReviewList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
@@ -110,7 +110,7 @@ export default function ServiceReviewList() {
         }
 
         try {
-            const result = await vendorService.updateServiceReviewStatus({ id: row.id, status });
+            const result = await vendorRoutes.updateServiceReviewStatus({ id: row.id, status });
             if (result?.success) {
                 sweetalert.success(result.message);
                 fetchReviewData();

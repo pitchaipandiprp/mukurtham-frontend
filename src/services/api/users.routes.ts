@@ -27,7 +27,7 @@ const updateStatus = async (payload: any) => {
     return await apiService.post<any>("/users/update-status", payload);
 }
 
-export const userService = {
+export const userRoutes = {
     createUser,
     changePassword,
     userUpdate,

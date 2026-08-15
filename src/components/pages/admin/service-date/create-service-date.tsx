@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
-import { adminService } from "@/services/api/admin.routes";
-import commonService from "@/services/api/common.routes";
+import { adminRoutes } from "@/services/api/admin.routes";
+import commonRoutes from "@/services/api/common.routes";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
@@ -50,13 +50,13 @@ export default function CreateServiceDate() {
     }, [serviceDateId]);
 
     const loadCategoryList = async () => {
-        const result = await commonService.getCategories();
+        const result = await commonRoutes.getCategories();
         setCategoryList(result?.data || []);
     };
 
     const loadServiceDate = async () => {
         try {
-            const result = await adminService.getServiceDate({ id: Number(serviceDateId) });
+            const result = await adminRoutes.getServiceDate({ id: Number(serviceDateId) });
 
             if (!result?.success) {
                 return;
@@ -102,7 +102,7 @@ export default function CreateServiceDate() {
         setLoading(true);
 
         try {
-            const result = await adminService.createServiceDate({
+            const result = await adminRoutes.createServiceDate({
                 category_id: Number(form.category_id),
                 date_type: form.date_type.trim() || null,
                 service_date: commonUtils.formatDateTime(form.service_date, "YYYY-MM-DD") || null,

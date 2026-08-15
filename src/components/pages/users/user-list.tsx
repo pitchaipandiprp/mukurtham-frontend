@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { userService } from "@/services/api/users.routes";
+import { userRoutes } from "@/services/api/users.routes";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, CheckCircle2, XCircle, Eye, Copy, MoreVertical, } from "lucide-react";
 import Link from "next/link";
@@ -53,7 +53,7 @@ export default function UserList({
         try {
             setLoading(true);
 
-            const response = await userService.userList({
+            const response = await userRoutes.userList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
@@ -89,7 +89,7 @@ export default function UserList({
         }
 
         try {
-            const result = await userService.updateStatus({ id: row.id, status });
+            const result = await userRoutes.updateStatus({ id: row.id, status });
             if (result?.success) {
                 sweetalert.success('Updated successfully');
                 fetchUserData();

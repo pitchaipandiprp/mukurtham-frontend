@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { vendorService } from "@/services/api/vendor.routes";
+import { vendorRoutes } from "@/services/api/vendor.routes";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, CheckCircle2, XCircle, } from "lucide-react";
 import Link from "next/link";
@@ -60,7 +60,7 @@ export default function GalleryList() {
         try {
             setLoading(true);
 
-            const response = await vendorService.galleryList({
+            const response = await vendorRoutes.galleryList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
@@ -95,7 +95,7 @@ export default function GalleryList() {
         }
 
         try {
-            const result = await vendorService.updateGalleryStatus({ id: row.id, status });
+            const result = await vendorRoutes.updateGalleryStatus({ id: row.id, status });
             if (result?.success) {
                 sweetalert.success(result.message);
                 fetchGalleryData();

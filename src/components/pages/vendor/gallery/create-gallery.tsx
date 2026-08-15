@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
-import { vendorService } from "@/services/api/vendor.routes";
+import { vendorRoutes } from "@/services/api/vendor.routes";
 import { apiConfig } from "@/environments/api";
 
 type GalleryForm = {
@@ -63,7 +63,7 @@ export default function CreateGallery() {
 
 
     const loadCategoryServiceRecords = async () => {
-        const result = await vendorService.categoryServiceRecords({});
+        const result = await vendorRoutes.categoryServiceRecords({});
         setCategoryServiceRecords(result?.data || []);
     };
 
@@ -113,7 +113,7 @@ export default function CreateGallery() {
                 return;
             }
 
-            const result = await vendorService.getGallery({ id: Number(galleryId) });
+            const result = await vendorRoutes.getGallery({ id: Number(galleryId) });
 
             if (!result?.success) {
                 return;
@@ -188,7 +188,7 @@ export default function CreateGallery() {
         }
 
         try {
-            const result = await vendorService.createGallery(formData);
+            const result = await vendorRoutes.createGallery(formData);
 
             if (result?.success) {
                 await sweetalert.success(result.message);

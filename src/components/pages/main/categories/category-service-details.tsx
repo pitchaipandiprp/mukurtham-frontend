@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { FiCheck } from "react-icons/fi";
 import { FiArrowUpRight, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
 import { apiConfig } from "@/environments/api";
-import mainService from "@/services/api/main.routes";
+import mainRoutes from "@/services/api/main.routes";
 import RatingStars from "@/components/common/review/rating-stars";
 import RecordNotFoundOverlay from "@/components/common/not-found/record-not-found-overlay";
 import { CategoryServiceReview } from "./category-service-review";
@@ -54,7 +54,7 @@ export function CategoryServiceDetails() {
             if (!categoryServiceId) {
                 return;
             }
-            const result = await mainService.getCategoryService({ category_service_id: categoryServiceId });
+            const result = await mainRoutes.getCategoryService({ category_service_id: categoryServiceId });
 
             if (!result?.success || !result?.data) {
                 setServiceNotFound(true);

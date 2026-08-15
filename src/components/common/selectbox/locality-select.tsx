@@ -2,7 +2,7 @@
 
 import AsyncSelect from "react-select/async";
 import type { SingleValue } from "react-select";
-import commonService from "@/services/api/common.routes";
+import commonRoutes from "@/services/api/common.routes";
 
 export interface LocalityOption {
     value: number;
@@ -41,7 +41,7 @@ export default function LocalitySelect({
         // }
 
         try {
-            const result = await commonService.getLocalities({
+            const result = await commonRoutes.getLocalities({
                 search: inputValue,
                 limit: 10,
                 state_id: stateId ?? undefined,

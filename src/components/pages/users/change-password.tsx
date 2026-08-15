@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { userService } from "@/services/api/users.routes";
+import { userRoutes } from "@/services/api/users.routes";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
 
@@ -42,7 +42,7 @@ export function ChangePassword() {
         setError("");
 
         try {
-            const result = await userService.changePassword({
+            const result = await userRoutes.changePassword({
                 current_password: currentPassword,
                 new_password: newPassword,
                 confirm_password: confirmPassword,

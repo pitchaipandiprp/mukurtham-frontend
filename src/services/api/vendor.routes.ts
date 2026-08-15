@@ -72,7 +72,7 @@ const serviceDateRecords = async (payload: any) => {
     return await apiService.post<any>("/vendors/service-date-records", payload);
 };
 
-export const vendorService = {
+export const vendorRoutes = {
     createCategoryService,
     getCategoryService,
     categoryServiceList,

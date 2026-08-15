@@ -7,7 +7,7 @@ import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TablePagination from "@/components/common/datatable/pagination";
 import TableSearch from "@/components/common/datatable/searchbox";
-import { vendorService } from "@/services/api/vendor.routes";
+import { vendorRoutes } from "@/services/api/vendor.routes";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
@@ -46,7 +46,7 @@ export default function ServiceDatesList() {
     const fetchServiceDateList = async () => {
         try {
             setLoading(true);
-            const response = await vendorService.serviceDateList({
+            const response = await vendorRoutes.serviceDateList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
@@ -73,7 +73,7 @@ export default function ServiceDatesList() {
             return;
         }
 
-        const result = await vendorService.updateServiceDateStatus({ id: row.id, status });
+        const result = await vendorRoutes.updateServiceDateStatus({ id: row.id, status });
         if (result?.success) {
             await sweetalert.success(result.message);
             fetchServiceDateList();
