@@ -36,6 +36,12 @@ export function getAccessToken(): string | null {
     return localStorage.getItem("accessToken");
 }
 
+export function setAccessToken(token: string): void {
+    if (typeof window === "undefined") return;
+
+    localStorage.setItem("accessToken", token);
+}
+
 export function getRefreshToken(): string | null {
     if (typeof window === "undefined") {
         return null;

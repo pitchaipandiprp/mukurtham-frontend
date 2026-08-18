@@ -1,5 +1,5 @@
 import { apiConfig } from "@/environments/api";
-import { authUserId, getAccessToken } from "@/utils/auth";
+import { authUserId, getAccessToken, getRefreshToken, setAccessToken, clearAuthData } from "@/utils/auth";
 import { sweetalert } from "@/utils/sweetalert";
 
 type RequestOptions = RequestInit & {
@@ -13,10 +13,6 @@ function buildUrl(path: string): string {
   return `${baseUrl}${normalizedPath}`;
 }
 
-function getAccessTokens(): string | null {
-  return getAccessToken();
-}
-
 function withDefaultBody(body: any) {
   const userId = authUserId();
   return userId ? { ...body, user_id: userId } : body;
@@ -28,55 +24,75 @@ const requestWithBody = async <T>(
   body: unknown,
   options: RequestOptions = {},
 ): Promise<T> => {
-  const accessToken = getAccessTokens();
 
-  const isFormData = body instanceof FormData;
+  const makeRequest = async (token: string | null) => {
 
-  const userId = authUserId();
-  if (isFormData && userId) {
-    body.append("user_id", userId);
-  }
+    const isFormData = body instanceof FormData;
 
-  const headers = new Headers();
+    const userId = authUserId();
 
-  headers.set("Accept", "application/json");
-
-  if (accessToken) {
-    headers.set("Authorization", `Bearer ${accessToken}`);
-  }
-
-  // Only add Content-Type for JSON
-  if (!isFormData) {
-    headers.set("Content-Type", "application/json");
-  }
-
-  // Add custom headers from options
-  if (options.headers) {
-    const customHeaders = new Headers(
-      options.headers
-    );
-
-    customHeaders.forEach((value, key) => {
-      headers.set(key, value);
-    });
-  }
-
-  const response = await fetch(
-    buildUrl(path),
-    {
-      ...options,
-      method,
-      headers,
-      body: isFormData ? body as FormData : JSON.stringify(withDefaultBody(body)),
+    if (isFormData && userId) {
+      body.append("user_id", userId);
     }
-  );
+
+    const headers = new Headers();
+
+    headers.set("Accept", "application/json");
+
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    if (!isFormData) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    if (options.headers) {
+      const customHeaders = new Headers(
+        options.headers
+      );
+
+      customHeaders.forEach((value, key) => {
+        headers.set(key, value);
+      });
+    }
+
+    return fetch(
+      buildUrl(path),
+      {
+        ...options,
+        method,
+        headers,
+        body: isFormData ? body as FormData : JSON.stringify(withDefaultBody(body)),
+      }
+    );
+  };
+
+  let accessToken = getAccessToken();
+
+  let response = await makeRequest(accessToken);
+
+  // Access token expired
+  if (response.status === 401) {
+
+    const newAccessToken = await refreshAccessToken();
+
+    if (!newAccessToken) {
+      clearAuthData();
+      window.location.href = "/login";
+      throw new Error("Session expired. Please login again.");
+    }
+
+    // Retry original request
+    response = await makeRequest(newAccessToken);
+  }
 
   return handleResponse<T>(response);
 };
 
 
 const get = async <T>(path: string, options: RequestOptions = {}): Promise<T> => {
-  const accessToken = getAccessTokens();
+  const accessToken = getAccessToken();
   const userId = authUserId();
 
   const url = new URL(
@@ -155,6 +171,70 @@ async function handleResponse<T>(response: Response): Promise<T> {
   }
 
   return payload;
+}
+
+
+
+async function refreshAccessToken(): Promise<string | null> {
+  let isRefreshing = false;
+  let refreshPromise: Promise<string | null> | null = null;
+
+  const refreshToken = getRefreshToken();
+
+  if (!refreshToken) {
+    return null;
+  }
+
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  isRefreshing = true;
+
+  refreshPromise = (async () => {
+    try {
+      const response = await fetch(
+        buildUrl("/auth/refresh-token"),
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refresh_token: refreshToken,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        clearAuthData();
+        return null;
+      }
+
+      const data = await response.json();
+
+      const newAccessToken = data?.access_token ?? data?.data?.access_token;
+
+      if (!newAccessToken) {
+        clearAuthData();
+        return null;
+      }
+
+      setAccessToken(newAccessToken);
+
+      return newAccessToken;
+    } catch (error) {
+      console.error("Refresh token error:", error);
+      clearAuthData();
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
 }
 
 
