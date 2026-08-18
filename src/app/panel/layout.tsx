@@ -10,13 +10,14 @@ import VendorLeftMenu from '@/components/layout/panel/vendor-left-menu';
 import AdminLeftMenu from '@/components/layout/panel/admin-left-menu';
 import PanelHeader from '@/components/layout/panel/panel-header';
 import MobileBottomNav from '@/components/layout/main/mobile-bottom-nav';
+import { useRouter } from "nextjs-toploader/app";
 
 
 export default function PanelLayout({
     children,
 }: { children: React.ReactNode }) {
     useAuthRedirect();
-
+    const router = useRouter();
     const { userRole } = useAuthUser();
 
     const [activeMainTab, setActiveMainTab] = useState<string>('dashboard');
@@ -24,12 +25,16 @@ export default function PanelLayout({
     const [isSecondaryOpen, setIsSecondaryOpen] = useState(true);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-    const handleMainTabClick = (itemId: string) => {
+    const handleMainTabClick = (itemId: string, href?: string) => {
         if (activeMainTab === itemId) {
             setIsSecondaryOpen(!isSecondaryOpen);
         } else {
             setActiveMainTab(itemId);
             setIsSecondaryOpen(true);
+        }
+
+        if (href) {
+            router.push(href);
         }
     };
 
