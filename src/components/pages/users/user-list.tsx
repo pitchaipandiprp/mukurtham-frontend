@@ -195,7 +195,7 @@ export default function UserList({
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">{roleTitle} Lists</b>
+                <span className="text-2xl font-semibold leading-none text-slate-600">{roleTitle} Lists</span>
             </div>
 
             <section className="space-y-5">

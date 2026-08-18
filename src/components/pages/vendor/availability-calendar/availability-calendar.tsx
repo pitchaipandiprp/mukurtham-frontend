@@ -181,7 +181,7 @@ export default function AvailabilityCalendar() {
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="flex items-center gap-2 text-2xl tracking-tight text-slate-600">Availability Calendar</b>
+                <span className="text-2xl font-semibold leading-none text-slate-600">Availability Calendar</span>
             </div>
             <section className="space-y-5">
                 <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-4">

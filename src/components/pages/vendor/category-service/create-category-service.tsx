@@ -328,8 +328,8 @@ export default function CreateCategoryService() {
     return (
         <div className="d-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">Category Service</b>
-                <Link href="/panel/category-service-list" className={buttonClass}> Service Lists</Link>
+                <span className="text-2xl font-semibold leading-none text-slate-600">Business / Service</span>
+                <Link href="/panel/category-service-list" className={buttonClass}> Business Lists</Link>
             </div>
 
             <div className="min-h-full px-4 py-4 rounded-xl border border-primary/10 bg-white shadow-sm">

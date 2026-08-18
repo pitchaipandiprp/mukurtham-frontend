@@ -63,7 +63,7 @@ export function ChangePassword() {
     return (
         <div className="d-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">Change Password</b>
+                <span className="text-2xl font-semibold leading-none text-slate-600">Change Password</span>
             </div>
 
             <div className="min-h-full px-4 py-12 rounded-lg border border-primary/10 bg-white shadow-sm">

@@ -128,9 +128,9 @@ export default function CreateServiceDates() {
     return (
         <div className="d-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">
+                <span className="text-2xl font-semibold leading-none text-slate-600">
                     {serviceDateId ? "Edit Date" : "Service Date"}
-                </b>
+                </span>
                 <Link href="/panel/service-dates-list" className={buttonClass}>
                     Date Lists
                 </Link>

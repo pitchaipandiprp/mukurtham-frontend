@@ -2,13 +2,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { vendorRoutes } from "@/services/api/vendor.routes";
-import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2, CheckCircle2, XCircle, } from "lucide-react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Pencil, Trash2, CheckCircle2, XCircle, ArrowRight, ChevronRight, } from "lucide-react";
+import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
 import TablePagination from "@/components/common/datatable/pagination";
+import { vendorRoutes } from "@/services/api/vendor.routes";
 import { constants } from "@/utils/constants";
 import { sweetalert } from "@/utils/sweetalert";
 import { apiConfig } from "@/environments/api";
@@ -17,18 +18,10 @@ import { apiConfig } from "@/environments/api";
 
 const PAGE_SIZE = 10;
 
-const occasionTypeLabels = [
-    { key: "mandap", label: "Mandap" },
-    { key: "wedding", label: "Wedding" },
-    { key: "stage-decoration", label: "Stage Decoration" },
-    { key: "reception", label: "Reception" },
-    { key: "events", label: "Events" },
-];
-
 
 export default function GalleryList() {
-
-    //Data Table Code Start
+    const searchParams = useSearchParams();
+    const categoryServiceId = searchParams.get("serviceId");
     const [loading, setLoading] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
@@ -41,6 +34,8 @@ export default function GalleryList() {
     const buttonClassRed = constants.buttonClassRed;
     const buttonClassGreen = constants.buttonClassGreen;
     const buttonClassOrange = constants.buttonClassOrange;
+    const buttonClassWhite = constants.buttonClassWhite;
+    const [categoryServiceData, setCategoryServiceData] = useState<any>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -55,23 +50,32 @@ export default function GalleryList() {
         fetchGalleryData();
     }, [page, searchTerm]);
 
-    const fetchGalleryData = async () => {
+    useEffect(() => {
+        if (categoryServiceId) {
+            getCategoryService();
+        }
+    }, [categoryServiceId]);
 
+    const getCategoryService = async () => {
+        const response = await vendorRoutes.getCategoryService({
+            id: categoryServiceId ?? undefined,
+        });
+        setCategoryServiceData(response?.data ?? null);
+    };
+
+    const fetchGalleryData = async () => {
         try {
             setLoading(true);
-
             const response = await vendorRoutes.galleryList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
+                category_service_id: categoryServiceId ?? undefined,
             });
-
             const responData = response.data;
-
             setRows(responData?.rows ?? []);
             setTotalPages(responData?.totalPages ?? 0);
             setTotalRecords(responData?.total ?? 0);
-
         } finally {
             setLoading(false);
         }
@@ -107,16 +111,6 @@ export default function GalleryList() {
 
     const columns = useMemo<ColumnDef<any>[]>(() => {
         return [
-            {
-                accessorKey: "category_service_id",
-                header: "Category Service",
-                cell: ({ row }) => row.original.category_service?.service_name ?? "-",
-            },
-            {
-                accessorKey: "occasion_type",
-                header: "Occasion Type",
-                cell: ({ row }) => occasionTypeLabels.find(item => item.key === row.original.occasion_type)?.label ?? '-',
-            },
             {
                 accessorKey: "image_video",
                 header: "Image/Video",
@@ -176,7 +170,7 @@ export default function GalleryList() {
                                 </button>
                             )}
 
-                            <Link href={`/panel/create-gallery?id=${row.original.id}`}>
+                            <Link href={`/panel/create-gallery?serviceId=${categoryServiceId ?? ""}&id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -204,13 +198,20 @@ export default function GalleryList() {
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
-    //Data Table Code End
 
 
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">Gallery Lists</b>
+                <div className="flex items-center gap-2">
+                    <span className="text-2xl font-semibold leading-none text-slate-600">
+                        Gallery
+                    </span>
+
+                    <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 mt-2" />
+
+                    <Link href={`/panel/category-service-list`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
+                </div>
             </div>
 
             <section className="space-y-5">
@@ -220,7 +221,7 @@ export default function GalleryList() {
                         onChange={setSearchInput}
                         placeholder="Search Gallery..."
                     />
-                    <Link href="/panel/create-gallery" className={buttonClass}> Add Gallery </Link>
+                    <Link href={`/panel/create-gallery?serviceId=${categoryServiceId ?? ""}`} className={buttonClass}> Add Gallery </Link>
                 </div>
 
 

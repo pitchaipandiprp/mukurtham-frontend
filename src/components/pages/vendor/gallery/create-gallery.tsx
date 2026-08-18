@@ -8,52 +8,48 @@ import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
 import { vendorRoutes } from "@/services/api/vendor.routes";
 import { apiConfig } from "@/environments/api";
+import { ChevronRight } from "lucide-react";
 
 type GalleryForm = {
     category_service_id: string;
     gallery_type: string;
-    occasion_type: string;
     gallery_image: string;
     gallery_video: string;
     status: string;
 };
 
-const initialForm: GalleryForm = {
-    category_service_id: "",
-    gallery_type: "",
-    occasion_type: "",
-    gallery_image: "",
-    gallery_video: "",
-    status: "0",
-};
 
-const occasionTypeLabels = [
-    { key: "mandap", label: "Mandap" },
-    { key: "wedding", label: "Wedding" },
-    { key: "stage-decoration", label: "Stage Decoration" },
-    { key: "reception", label: "Reception" },
-    { key: "events", label: "Events" },
-];
+
 
 export default function CreateGallery() {
+    const searchParams = useSearchParams();
+    const galleryId = searchParams.get("id");
+    const categoryServiceId = searchParams.get("serviceId");
+
+    const initialForm: GalleryForm = {
+        category_service_id: String(categoryServiceId),
+        gallery_type: "",
+        gallery_image: "",
+        gallery_video: "",
+        status: "0",
+    };
+
     const router = useRouter();
     const [form, setForm] = useState<GalleryForm>(initialForm);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [categoryServiceRecords, setCategoryServiceRecords] = useState<any[]>([]);
     const [galleryImagePreview, setGalleryImagePreview] = useState<string | null>(null);
-    const searchParams = useSearchParams();
-    const galleryId = searchParams.get("id");
     const isEditMode = Boolean(galleryId);
     const inputClass = constants.inputClass;
     const buttonClass = constants.buttonClass;
     const buttonClassSubmit = constants.buttonClassSubmit;
-
+    const [categoryServiceData, setCategoryServiceData] = useState<any>(null);
 
     useEffect(() => {
-        loadCategoryServiceRecords();
-    }, []);
-
+        if (categoryServiceId) {
+            getCategoryService();
+        }
+    }, [categoryServiceId]);
 
     useEffect(() => {
         if (galleryId) {
@@ -62,46 +58,11 @@ export default function CreateGallery() {
     }, [galleryId]);
 
 
-    const loadCategoryServiceRecords = async () => {
-        const result = await vendorRoutes.categoryServiceRecords({});
-        setCategoryServiceRecords(result?.data || []);
-    };
-
-    const updateField = (field: keyof GalleryForm, value: string) => {
-        setForm((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
-
-
-    const handleGalleryImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0] || null;
-
-        if (!file) {
-            return;
-        }
-
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-            setError("Please select a valid image");
-            return;
-        }
-
-        // Validate file size - 5MB
-        if (file.size > 5 * 1024 * 1024) {
-            setError("Banner image must be less than 5MB");
-            return;
-        }
-
-        setError("");
-
-        setForm((prev: any) => ({
-            ...prev,
-            gallery_image: file,
-        }));
-
-        setGalleryImagePreview(URL.createObjectURL(file));
+    const getCategoryService = async () => {
+        const response = await vendorRoutes.getCategoryService({
+            id: categoryServiceId ?? undefined,
+        });
+        setCategoryServiceData(response?.data ?? null);
     };
 
     const loadGallery = async () => {
@@ -132,7 +93,6 @@ export default function CreateGallery() {
             setForm({
                 category_service_id: galleryData.category_service_id ?? "",
                 gallery_type: galleryData.gallery_type ?? "",
-                occasion_type: galleryData.occasion_type ?? "",
                 gallery_image: galleryData.gallery_image ?? "",
                 gallery_video: galleryData.gallery_video ?? "",
                 status: galleryData.status,
@@ -143,6 +103,35 @@ export default function CreateGallery() {
             console.error("Failed to load category service:", caughtError);
         } finally {
         }
+    };
+
+    const handleGalleryImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] || null;
+
+        if (!file) {
+            return;
+        }
+
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+            setError("Please select a valid image");
+            return;
+        }
+
+        // Validate file size - 5MB
+        if (file.size > 5 * 1024 * 1024) {
+            setError("Banner image must be less than 5MB");
+            return;
+        }
+
+        setError("");
+
+        setForm((prev: any) => ({
+            ...prev,
+            gallery_image: file,
+        }));
+
+        setGalleryImagePreview(URL.createObjectURL(file));
     };
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -159,10 +148,6 @@ export default function CreateGallery() {
             return;
         }
 
-        if (!form.occasion_type.trim()) {
-            setError("Occasion Type is required");
-            return;
-        }
 
         setLoading(true);
 
@@ -171,7 +156,6 @@ export default function CreateGallery() {
 
         formData.append("category_service_id", form.category_service_id);
         formData.append("gallery_type", form.gallery_type);
-        formData.append("occasion_type", form.occasion_type);
         // formData.append("gallery_video", form.gallery_video);
 
         if (form.gallery_image) {
@@ -200,51 +184,33 @@ export default function CreateGallery() {
         }
     }
 
+    const updateField = (field: keyof GalleryForm, value: string) => {
+        setForm((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
 
     return (
         <div className="d-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">Gallery</b>
-                <Link href="/panel/gallery-list" className={buttonClass}> Gallery Lists</Link>
+                <div className="flex items-center gap-2">
+                    <span className="text-2xl font-semibold leading-none text-slate-600">
+                        Gallery
+                    </span>
+
+                    <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 mt-2" />
+
+                    <span className="text-base font-medium leading-none text-slate-500 mt-2">
+                        {categoryServiceData?.service_name ?? ""}
+                    </span>
+                </div>
+                <Link href={`/panel/gallery-list?serviceId=${categoryServiceId}`} className={buttonClass}> Gallery Lists</Link>
             </div>
 
             <div className="min-h-full px-4 py-4 rounded-xl border border-primary/10 bg-white shadow-sm">
                 <form onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
-                        <div className="md:col-span-4">
-                            <label htmlFor="status" className="mb-2 block text-sm font-medium text-gray-700">
-                                Status
-                            </label>
-                            <select
-                                id="status"
-                                value={form.status}
-                                onChange={(event) => updateField("status", event.target.value)}
-                                className={inputClass}
-                            >
-                                <option value="">Select status</option>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
-
-                        <div className="md:col-span-4">
-                            <label htmlFor="categoryServiceId" className="mb-2 block text-sm font-medium text-gray-700">
-                                Category Service
-                            </label>
-                            <select
-                                id="categoryServiceId"
-                                value={form.category_service_id}
-                                onChange={(event) => updateField("category_service_id", event.target.value)}
-                                className={inputClass}
-                            >
-                                <option value="">Select Category Service</option>
-                                {categoryServiceRecords.map((item) => (
-                                    <option key={`category-service-${item.id}`} value={item.id}>
-                                        {item.service_name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
 
                         <div className="md:col-span-4">
                             <label htmlFor="galleryType" className="mb-2 block text-sm font-medium text-gray-700">
@@ -262,28 +228,10 @@ export default function CreateGallery() {
                             </select>
                         </div>
 
+                        <div className="md:col-span-2"></div>
 
-                        <div className="md:col-span-4">
-                            <label htmlFor="occasionType" className="mb-2 block text-sm font-medium text-gray-700">
-                                Occasion Type
-                            </label>
-                            <select
-                                id="occasionType"
-                                value={form.occasion_type}
-                                onChange={(event) => updateField("occasion_type", event.target.value)}
-                                className={inputClass}
-                            >
-                                <option value="">Select Occasion Type</option>
 
-                                {occasionTypeLabels.map(({ key, label }) => (
-                                    <option key={`occasion-type-${key}`} value={key}>
-                                        {label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="md:col-span-12 mb-3">
+                        <div className="md:col-span-4 mb-3">
                             <label htmlFor="galleryImage" className="mb-2 block text-sm font-medium text-gray-700">
                                 Gallery Image
                             </label>

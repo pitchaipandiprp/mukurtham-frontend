@@ -127,7 +127,7 @@ export default function ServiceDatesList() {
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="flex items-center gap-2 text-2xl tracking-tight text-slate-600">Date Lists</b>
+                <span className="text-2xl font-semibold leading-none text-slate-600">Date Lists</span>
             </div>
             <section className="space-y-5">
                 <div className="mb-0 flex items-center justify-between gap-4">

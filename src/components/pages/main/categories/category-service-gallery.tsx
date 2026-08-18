@@ -6,13 +6,6 @@ import PhotoViewer from "@/components/common/image-viewer/photo-viewer";
 import mainRoutes from "@/services/api/main.routes";
 import { apiConfig } from "@/environments/api";
 
-const occasionTypeLabels = [
-    { key: "mandap", label: "Mandap" },
-    { key: "wedding", label: "Wedding" },
-    { key: "stage-decoration", label: "Stage Decoration" },
-    { key: "reception", label: "Reception" },
-    { key: "events", label: "Events" },
-];
 
 type Props = {
     categoryServiceId: number | null;
@@ -65,20 +58,6 @@ export function CategoryServiceGallery({
     };
 
 
-    const occasionTabChange = (key: string) => {
-        setIsOccasionTabOpen(key);
-
-        if (key === "all") {
-            setGalleryFilterRecords(galleryRecords);
-            return;
-        }
-
-        const filteredRecords = galleryRecords.filter(
-            (image) => image.occasion_type === key
-        );
-
-        setGalleryFilterRecords(filteredRecords);
-    };
 
     return (
         <>
@@ -90,23 +69,6 @@ export function CategoryServiceGallery({
                         className="text-xs font-medium text-primary hover:underline cursor-pointer"
                         onClick={() => setShowPhotoViewer(true)}
                     >View All</button>
-                </div>
-                <div className="mb-4 flex gap-2 overflow-x-auto text-xs">
-                    <button
-                        type="button"
-                        className={`rounded-full px-3 py-1 cursor-pointer ${isOccasionTabOpen === 'all' ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'}`}
-                        onClick={() => occasionTabChange('all')}
-                    >
-                        All
-                    </button>
-                    {occasionTypeLabels.map(({ key, label }) => (
-                        <button
-                            key={key}
-                            type="button"
-                            className={`rounded-full px-3 py-1 cursor-pointer ${isOccasionTabOpen === key ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600'}`}
-                            onClick={() => occasionTabChange(key)}
-                        >{label}</button>
-                    ))}
                 </div>
                 <AnimatePresence mode="wait">
                     <motion.div

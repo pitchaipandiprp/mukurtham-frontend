@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { vendorRoutes } from "@/services/api/vendor.routes";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, CheckCircle2, XCircle, } from "lucide-react";
-import { FiStar } from "react-icons/fi";
+import { FiImage, FiStar } from "react-icons/fi";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
@@ -180,12 +180,21 @@ export default function CategoryServiceList() {
 
                             <button
                                 className={`mr-4 ${buttonClassBlue}`}
+                                title="Gallery"
+                            >
+                                <Link href={`/panel/gallery-list?serviceId=${row.original.id}`}>
+                                    <FiImage className="h-4 w-4" />
+                                </Link>
+                            </button>
+
+                            {/* <button
+                                className={`mr-4 ${buttonClassBlue}`}
                                 title="Reviews"
                             >
                                 <Link href={`/panel/service-review-list?serviceId=${row.original.id}`}>
                                     <FiStar className="h-4 w-4" />
                                 </Link>
-                            </button>
+                            </button> */}
 
                             <button
                                 className={buttonClassRed}
@@ -212,7 +221,7 @@ export default function CategoryServiceList() {
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <b className="text-2xl text-slate-600 tracking-tight">Service Lists</b>
+                <span className="text-2xl font-semibold leading-none text-slate-600">Business List</span>
             </div>
 
             <section className="space-y-5">
@@ -222,7 +231,7 @@ export default function CategoryServiceList() {
                         onChange={setSearchInput}
                         placeholder="Search Service..."
                     />
-                    <Link href="/panel/create-category-service" className={buttonClass}> Add Service </Link>
+                    <Link href="/panel/create-category-service" className={buttonClass}> Add Business </Link>
                 </div>
 
 

@@ -5,6 +5,10 @@ const getCategories = async () => {
     return await apiService.post<any>("/categories", {});
 }
 
+const getCategoryById = async (payload: any) => {
+    return await apiService.post<any>("/getCategoryById", payload);
+}
+
 const getFacilities = async (payload: any) => {
     return await apiService.post<any>("/facilities", payload);
 }
@@ -19,6 +23,7 @@ const getCities = async (payload: any) => {
 
 const commonRoutes = {
     getCategories,
+    getCategoryById,
     getFacilities,
     getLocalities,
     getCities,

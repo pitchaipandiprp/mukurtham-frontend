@@ -214,7 +214,7 @@ async function refreshAccessToken(): Promise<string | null> {
 
       const data = await response.json();
 
-      const newAccessToken = data?.access_token ?? data?.data?.access_token;
+      const newAccessToken = data?.accessToken ?? null;
 
       if (!newAccessToken) {
         clearAuthData();
