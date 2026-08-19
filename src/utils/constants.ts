@@ -1,5 +1,5 @@
 
-const inputClass = 'w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/5 shadow-sm outline-none transition-all duration-300 hover:border-slate-300';
+const inputClass = 'w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/5 shadow-sm outline-none transition-all duration-300 hover:border-slate-300 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed';
 const inputClassSearch = 'w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20';
 
 const btnClass = 'cursor-pointer bg-primary rounded-lg px-3 py-2 text-xs font-semibold text-white transition hover:bg-primary-dark';

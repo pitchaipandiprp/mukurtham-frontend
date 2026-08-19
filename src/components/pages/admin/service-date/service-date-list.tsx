@@ -83,12 +83,17 @@ export default function ServiceDateList() {
     const columns = useMemo<ColumnDef<any>[]>(() => [
         {
             accessorKey: "date_type",
-            header: "Date Type",
+            header: "Type",
             cell: ({ row }) => row.original.date_type || "-",
         },
         {
+            accessorKey: "event_name",
+            header: "Event Name",
+            cell: ({ row }) => row.original.event_name || "-",
+        },
+        {
             accessorKey: "from_date",
-            header: "Service Date",
+            header: "Date",
             cell: ({ row }) => commonUtils.formatDateTime(row.original.from_date, "MMM DD, YYYY") || "-",
         },
         {
@@ -126,7 +131,7 @@ export default function ServiceDateList() {
             </div>
             <section className="space-y-5">
                 <div className="mb-0 flex items-center justify-between gap-4">
-                    <TableSearch value={searchInput} onChange={setSearchInput} placeholder="Search Date..." />
+                    <TableSearch value={searchInput} onChange={setSearchInput} placeholder="Search..." />
                     <Link href="/panel/create-service-date" className={buttonClass}>Add Date</Link>
                 </div>
                 <DataTable table={table} loading={loading} emptyMessage="No Records Found" />

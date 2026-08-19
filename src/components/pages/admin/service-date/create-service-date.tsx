@@ -13,12 +13,14 @@ import "react-datepicker/dist/react-datepicker.css";
 
 type ServiceDateForm = {
     date_type: string;
+    event_name: string;
     from_date: string;
     status: string;
 };
 
 const initialForm: ServiceDateForm = {
     date_type: "",
+    event_name: "",
     from_date: "",
     status: "1",
 };
@@ -61,6 +63,7 @@ export default function CreateServiceDate() {
 
             setForm({
                 date_type: result?.data.date_type ?? "",
+                event_name: result?.data.event_name ?? "",
                 from_date: result?.data.from_date ? commonUtils.formatDateTime(result?.data.from_date, "YYYY-MM-DD") : "",
                 status: String(result?.data.status ?? 0),
             });
@@ -87,11 +90,17 @@ export default function CreateServiceDate() {
             return;
         }
 
+        if (!form.event_name) {
+            setError("Event Name is required");
+            return;
+        }
+
         setLoading(true);
 
         try {
             const result = await adminRoutes.createServiceDate({
                 date_type: form.date_type.trim() || null,
+                event_name: form.event_name.trim() || null,
                 from_date: commonUtils.formatDateTime(form.from_date, "YYYY-MM-DD") || null,
                 status: Number(form.status),
                 ...(serviceDateId ? { id: Number(serviceDateId) } : {}),
@@ -107,6 +116,19 @@ export default function CreateServiceDate() {
             setLoading(false);
         }
     };
+
+    const eventTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedType = event.target.value;
+        updateField("date_type", selectedType);
+
+        if (selectedType == 'Waxing') {
+            updateField("event_name", 'Valarpirai Muhurtham');
+        } else if (selectedType == 'Waning') {
+            updateField("event_name", 'Theipirai Muhurtham');
+        } else if (selectedType == 'Holiday') {
+            updateField("event_name", '');
+        }
+    }
 
     return (
         <div className="d-block">
@@ -129,13 +151,29 @@ export default function CreateServiceDate() {
                             <select
                                 id="dateType"
                                 value={form.date_type}
-                                onChange={(event) => updateField("date_type", event.target.value)}
+                                onChange={eventTypeChange}
                                 className={inputClass}
                             >
                                 <option value="">Select Type</option>
                                 <option value="Waxing">Waxing Crescent(Valarpirai)</option>
                                 <option value="Waning">Waning Crescent(Theipirai)</option>
+                                <option value="Holiday">Holiday</option>
                             </select>
+                        </div>
+
+                        <div className="md:col-span-4">
+                            <label htmlFor="eventName" className="mb-2 block text-sm font-medium text-gray-700">
+                                Event Name
+                            </label>
+                            <input
+                                id="eventName"
+                                type="text"
+                                placeholder="Enter Event Name"
+                                className={inputClass}
+                                value={form.event_name}
+                                disabled={form.date_type !== "Holiday"}
+                                onChange={(event) => updateField("event_name", event.target.value)}
+                            />
                         </div>
 
                         <div className="md:col-span-4">
