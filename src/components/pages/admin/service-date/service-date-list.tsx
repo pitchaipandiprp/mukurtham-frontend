@@ -8,13 +8,11 @@ import DataTable from "@/components/common/datatable/datatable";
 import TablePagination from "@/components/common/datatable/pagination";
 import TableSearch from "@/components/common/datatable/searchbox";
 import { adminRoutes } from "@/services/api/admin.routes";
-import commonRoutes from "@/services/api/common.routes";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
 
 const PAGE_SIZE = 10;
-
 
 export default function ServiceDateList() {
     const [loading, setLoading] = useState(false);
@@ -24,7 +22,6 @@ export default function ServiceDateList() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
-    const [categoryList, setCategoryList] = useState<any[]>([]);
     const buttonClass = constants.buttonClass;
     const buttonClassBlue = constants.buttonClassBlue;
     const buttonClassRed = constants.buttonClassRed;
@@ -40,18 +37,11 @@ export default function ServiceDateList() {
         return () => clearTimeout(timer);
     }, [searchInput]);
 
-    useEffect(() => {
-        loadCategories();
-    }, []);
 
     useEffect(() => {
         fetchServiceDateList();
     }, [page, searchTerm]);
 
-    const loadCategories = async () => {
-        const result = await commonRoutes.getCategories();
-        setCategoryList(result?.data || []);
-    };
 
     const fetchServiceDateList = async () => {
         try {
@@ -97,9 +87,9 @@ export default function ServiceDateList() {
             cell: ({ row }) => row.original.date_type || "-",
         },
         {
-            accessorKey: "service_date",
+            accessorKey: "from_date",
             header: "Service Date",
-            cell: ({ row }) => commonUtils.formatDateTime(row.original.service_date, "MMM DD, YYYY") || "-",
+            cell: ({ row }) => commonUtils.formatDateTime(row.original.from_date, "MMM DD, YYYY") || "-",
         },
         {
             accessorKey: "status",
@@ -136,8 +126,8 @@ export default function ServiceDateList() {
             </div>
             <section className="space-y-5">
                 <div className="mb-0 flex items-center justify-between gap-4">
-                    <TableSearch value={searchInput} onChange={setSearchInput} placeholder="Search Service Date..." />
-                    <Link href="/panel/create-service-date" className={buttonClass}>Add Service Date</Link>
+                    <TableSearch value={searchInput} onChange={setSearchInput} placeholder="Search Date..." />
+                    <Link href="/panel/create-service-date" className={buttonClass}>Add Date</Link>
                 </div>
                 <DataTable table={table} loading={loading} emptyMessage="No Records Found" />
                 <TablePagination page={page} totalPages={totalPages} totalRecords={totalRecords} loading={loading} onPageChange={setPage} />

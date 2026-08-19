@@ -162,7 +162,7 @@ export default function CreateServiceDates() {
 
             <div className="min-h-full rounded-xl border border-primary/10 bg-white px-4 py-4 shadow-sm">
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-5 grid grid-cols-1 gap-4 md:grid-cols-12">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
                         <div className="md:col-span-4">
                             <label htmlFor="fromDate" className="mb-2 block text-sm font-medium text-gray-700">
                                 From Date
@@ -191,13 +191,13 @@ export default function CreateServiceDates() {
                                 className={`w-full ${inputClass}`}
                             />
                         </div>
-                        <div className="md:col-span-4 mt-8">
-                            <button type="submit" className={buttonClassSubmit} disabled={loading}>
+                        <div className="md:col-span-4">
+                            <button type="submit" className={`mt-8 ${buttonClassSubmit}`} disabled={loading}>
                                 {loading ? "Saving..." : "Save"}
                             </button>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
                         {error && <div className="text-sm text-rose-600 md:col-span-12">{error}</div>}
                     </div>
                 </form>

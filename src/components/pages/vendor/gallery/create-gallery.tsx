@@ -267,12 +267,8 @@ export default function CreateGallery() {
                             )}
                         </div>
 
-                        <div className="md:col-span-4 mt-6">
-                            <button
-                                type="submit"
-                                className={buttonClassSubmit}
-                                disabled={loading}
-                            >
+                        <div className="md:col-span-4">
+                            <button type="submit" className={`mt-8 ${buttonClassSubmit}`} disabled={loading}>
                                 {loading ? "Saving..." : "Save"}
                             </button>
                         </div>

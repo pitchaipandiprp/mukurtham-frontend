@@ -12,17 +12,15 @@ import { sweetalert } from "@/utils/sweetalert";
 import "react-datepicker/dist/react-datepicker.css";
 
 type ServiceDateForm = {
-    category_id: string;
     date_type: string;
-    service_date: string;
+    from_date: string;
     status: string;
 };
 
 const initialForm: ServiceDateForm = {
-    category_id: "",
     date_type: "",
-    service_date: "",
-    status: "0",
+    from_date: "",
+    status: "1",
 };
 
 export default function CreateServiceDate() {
@@ -30,31 +28,22 @@ export default function CreateServiceDate() {
     const searchParams = useSearchParams();
     const serviceDateId = searchParams.get("id");
     const [form, setForm] = useState<ServiceDateForm>(initialForm);
-    const [categoryList, setCategoryList] = useState<any[]>([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const inputClass = constants.inputClass;
     const buttonClass = constants.buttonClass;
     const buttonClassSubmit = constants.buttonClassSubmit;
 
-    useEffect(() => {
-        loadCategoryList();
-    }, []);
-
 
     useEffect(() => {
         if (!serviceDateId) {
             return;
         }
-        loadServiceDate();
+        getServiceDate();
     }, [serviceDateId]);
 
-    const loadCategoryList = async () => {
-        const result = await commonRoutes.getCategories();
-        setCategoryList(result?.data || []);
-    };
 
-    const loadServiceDate = async () => {
+    const getServiceDate = async () => {
         try {
             const result = await adminRoutes.getServiceDate({ id: Number(serviceDateId) });
 
@@ -71,9 +60,8 @@ export default function CreateServiceDate() {
             }
 
             setForm({
-                category_id: String(result?.data.category_id ?? ""),
                 date_type: result?.data.date_type ?? "",
-                service_date: result?.data.service_date ? commonUtils.formatDateTime(result?.data.service_date, "YYYY-MM-DD") : "",
+                from_date: result?.data.from_date ? commonUtils.formatDateTime(result?.data.from_date, "YYYY-MM-DD") : "",
                 status: String(result?.data.status ?? 0),
             });
         } catch (caughtError) {
@@ -94,8 +82,8 @@ export default function CreateServiceDate() {
             return;
         }
 
-        if (!form.service_date) {
-            setError("Service date is required");
+        if (!form.from_date) {
+            setError("Date is required");
             return;
         }
 
@@ -103,9 +91,8 @@ export default function CreateServiceDate() {
 
         try {
             const result = await adminRoutes.createServiceDate({
-                category_id: Number(form.category_id),
                 date_type: form.date_type.trim() || null,
-                service_date: commonUtils.formatDateTime(form.service_date, "YYYY-MM-DD") || null,
+                from_date: commonUtils.formatDateTime(form.from_date, "YYYY-MM-DD") || null,
                 status: Number(form.status),
                 ...(serviceDateId ? { id: Number(serviceDateId) } : {}),
             });
@@ -134,41 +121,7 @@ export default function CreateServiceDate() {
 
             <div className="min-h-full rounded-xl border border-primary/10 bg-white px-4 py-4 shadow-sm">
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-5 grid grid-cols-1 gap-4 md:grid-cols-12">
-                        <div className="md:col-span-4">
-                            <label htmlFor="status" className="mb-2 block text-sm font-medium text-gray-700">
-                                Status
-                            </label>
-                            <select
-                                id="status"
-                                value={form.status}
-                                onChange={(event) => updateField("status", event.target.value)}
-                                className={inputClass}
-                            >
-                                <option value="0">Inactive</option>
-                                <option value="1">Active</option>
-                            </select>
-                        </div>
-
-                        {/* <div className="md:col-span-4">
-                            <label htmlFor="categoryId" className="mb-2 block text-sm font-medium text-gray-700">
-                                Category
-                            </label>
-                            <select
-                                id="categoryId"
-                                value={form.category_id}
-                                onChange={(event) => updateField("category_id", event.target.value)}
-                                className={inputClass}
-                            >
-                                <option value="">Select Category</option>
-                                {categoryList.map((category) => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div> */}
-
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
                         <div className="md:col-span-4">
                             <label htmlFor="dateType" className="mb-2 block text-sm font-medium text-gray-700">
                                 Type
@@ -186,12 +139,12 @@ export default function CreateServiceDate() {
                         </div>
 
                         <div className="md:col-span-4">
-                            <label htmlFor="serviceDate" className="mb-2 block text-sm font-medium text-gray-700">
-                                Service Date
+                            <label htmlFor="fromDate" className="mb-2 block text-sm font-medium text-gray-700">
+                                From Date
                             </label>
                             <DatePicker
-                                selected={form.service_date ? new Date(form.service_date) : null}
-                                onChange={(date: any) => { updateField("service_date", date); }}
+                                selected={form.from_date ? new Date(form.from_date) : null}
+                                onChange={(date: any) => { updateField("from_date", date); }}
                                 minDate={new Date()}
                                 dateFormat="yyyy-MM-dd"
                                 placeholderText="Select Date"
@@ -199,15 +152,15 @@ export default function CreateServiceDate() {
                                 className={`w-full ${inputClass}`}
                             />
                         </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-                        {error && <div className="text-sm text-rose-600 md:col-span-12">{error}</div>}
-                        <div className="flex justify-end md:col-span-12">
-                            <button type="submit" className={buttonClassSubmit} disabled={loading}>
+                        <div className="md:col-span-4">
+                            <button type="submit" className={`mt-8 ${buttonClassSubmit}`} disabled={loading}>
                                 {loading ? "Saving..." : "Save"}
                             </button>
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
+                        {error && <div className="text-sm text-rose-600 md:col-span-12">{error}</div>}
                     </div>
                 </form>
             </div>
