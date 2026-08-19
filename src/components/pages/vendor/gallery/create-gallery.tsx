@@ -148,6 +148,10 @@ export default function CreateGallery() {
             return;
         }
 
+        if (!form.gallery_image) {
+            setError("Gallery Image is required");
+            return;
+        }
 
         setLoading(true);
 
@@ -265,11 +269,8 @@ export default function CreateGallery() {
                                 </div>
                             )}
                         </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
-                        {error && <div className="md:col-span-12 text-sm text-rose-600">{error}</div>}
-                        <div className="md:col-span-12 flex justify-end">
+                        <div className="md:col-span-2 mt-6">
                             <button
                                 type="submit"
                                 className={buttonClassSubmit}
@@ -278,6 +279,10 @@ export default function CreateGallery() {
                                 {loading ? "Saving..." : "Save"}
                             </button>
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
+                        {error && <div className="md:col-span-12 text-sm text-rose-600">{error}</div>}
                     </div>
                 </form>
             </div>
