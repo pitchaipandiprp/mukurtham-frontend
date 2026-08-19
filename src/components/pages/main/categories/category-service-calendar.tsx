@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -20,18 +21,21 @@ export function CategoryServiceCalendar({
 }: Props) {
 
     const [loading, setLoading] = useState(false);
-    const [serviceDateRecords, setServiceDateRecords] = useState<any[]>([]);
+    const [serviceDates, setServiceDates] = useState<any[]>([]);
     const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
 
     useEffect(() => {
-        fetchServiceDateRecords()
-    }, []);
+        if (categoryServiceId) {
+            fetchServiceDateForcalendar();
+        }
+    }, [categoryServiceId]);
 
-    const fetchServiceDateRecords = async () => {
+    const fetchServiceDateForcalendar = async () => {
         try {
             setLoading(true);
-            const result = await mainRoutes.serviceDateRecords({
-                category_service_id: categoryServiceId,
+
+            const result = await mainRoutes.serviceDateForcalendar({
+                category_service_id: Number(categoryServiceId),
             });
 
             if (!result?.success) {
@@ -39,7 +43,7 @@ export function CategoryServiceCalendar({
             }
 
             const resultData = result.data || [];
-            setServiceDateRecords(resultData);
+            setServiceDates(resultData);
 
             if (resultData && resultData.length > 0) {
 
@@ -49,13 +53,14 @@ export function CategoryServiceCalendar({
                             item?.date_type?.toLowerCase() !== "available"
                     )
                     .map((item: any) => ({
-                        title: item?.date_type,
-                        start: item?.service_date,
+                        title: item?.event_name || item?.date_type,
+                        start: item?.from_date,
                         allDay: true,
                         classNames: [
                             item?.date_type?.toLowerCase()
                         ],
                         extendedProps: {
+                            service_date_id: item?.id,
                             date_type: item?.date_type?.toLowerCase(),
                         },
                     }));
@@ -70,43 +75,60 @@ export function CategoryServiceCalendar({
         }
     };
 
-    const handleDateClick = (arg: any) => {
-        const clickedDate = arg.dateStr;
+    const handleDateClick = async (arg: any) => {
+        await handleServiceDateClick(arg.dateStr);
+    }
 
-        const isUnavailable = serviceDateRecords.some((item: any) => {
-            const serviceDate = item?.service_date ? commonUtils.formatDateTime(item.service_date, "YYYY-MM-DD") : "";
+    const handleEventClick = async (info: any) => {
+        const event = info.event;
+
+        await handleServiceDateClick(
+            event.startStr,
+            event.extendedProps?.service_date_id,
+            event.extendedProps?.date_type
+        );
+    };
+
+    const handleServiceDateClick = async (clickedDate: string, serviceDateId?: number, currentDateType?: string) => {
+        if (!clickedDate) {
+            return;
+        }
+
+        //Only Future Date is clickable, Past Date is not clickable
+        if (new Date(clickedDate) < new Date(commonUtils.formatDateTime(new Date(), "YYYY-MM-DD"))) {
+            return;
+        }
+
+        let isUnavailable = false;
+
+        const isUnavailableFromDateClick = serviceDates.some((item: any) => {
+            const serviceDate = item?.from_date ? commonUtils.formatDateTime(item.from_date, "YYYY-MM-DD") : "";
             return (serviceDate === clickedDate && item?.date_type?.toLowerCase() === "unavailable");
         });
 
+        if (isUnavailableFromDateClick || currentDateType?.toLowerCase() === "unavailable") {
+            isUnavailable = true;
+        }
+
         if (isUnavailable) {
-            return;
+            unavailableClickHandler(clickedDate, serviceDateId, currentDateType);
+        } else {
+            availableClickHandler(clickedDate, serviceDateId, currentDateType);
         }
-
-        const clickedEvent = calendarEvents.find((event: any) => {
-            const eventDate = event?.start ? commonUtils.formatDateTime(event.start, "YYYY-MM-DD") : "";
-            return eventDate === clickedDate;
-        });
-
-        alert(`Clicked on date: ${clickedDate}\nEvent: ${clickedEvent ? clickedEvent.title : "No event"}`);
-    }
-
-    const handleEventClick = (info: any) => {
-        const clickedDate = info.event.startStr;
-        const dateType = info.event.extendedProps?.date_type?.toLowerCase();
-        if (dateType === "unavailable") {
-            return;
-        }
-
-        alert(
-            `Clicked on date: ${clickedDate}\nEvent: ${info.event.title}`
-        );
     };
+
+    const unavailableClickHandler = async (clickedDate: string, serviceDateId?: number, currentDateType?: string) => {
+
+    }
+    const availableClickHandler = async (clickedDate: string, serviceDateId?: number, currentDateType?: string) => {
+
+    }
 
     const handleDayCellClassNames = (arg: any) => {
         const date = commonUtils.formatDateTime(arg.date, "YYYY-MM-DD");
 
-        const dateRecords = serviceDateRecords.filter((item: any) => {
-            const serviceDate = item?.service_date ? commonUtils.formatDateTime(item.service_date, "YYYY-MM-DD") : "";
+        const dateRecords = serviceDates.filter((item: any) => {
+            const serviceDate = item?.from_date ? commonUtils.formatDateTime(item.from_date, "YYYY-MM-DD") : "";
             return serviceDate === date;
         });
 
@@ -121,13 +143,13 @@ export function CategoryServiceCalendar({
             return ["calendar-unavailable"];
         }
 
-        if (dateTypes.includes("waxing")) {
-            return ["calendar-waxing"];
-        }
+        // if (dateTypes.includes("waxing")) {
+        //     return ["calendar-waxing"];
+        // }
 
-        if (dateTypes.includes("waning")) {
-            return ["calendar-waning"];
-        }
+        // if (dateTypes.includes("waning")) {
+        //     return ["calendar-waning"];
+        // }
 
         // Ignore available
         return [];
@@ -154,29 +176,31 @@ export function CategoryServiceCalendar({
                     </div>
                 </div>
 
-                <FullCalendar
-                    plugins={[
-                        dayGridPlugin,
-                        interactionPlugin,
-                    ]}
-                    initialView="dayGridMonth"
-                    dateClick={handleDateClick}
-                    eventClick={handleEventClick}
-                    events={calendarEvents}
-                    dayCellClassNames={handleDayCellClassNames}
-                    height="auto"
-                    validRange={{
-                        // start: new Date(),
-                    }}
-                    headerToolbar={{
-                        left: "prev,next today",
-                        center: "title",
-                        right: "",
-                    }}
-                    buttonText={{
-                        today: "Today",
-                    }}
-                />
+                <div className="calendar-container">
+                    <FullCalendar
+                        plugins={[
+                            dayGridPlugin,
+                            interactionPlugin,
+                        ]}
+                        initialView="dayGridMonth"
+                        dateClick={handleDateClick}
+                        eventClick={handleEventClick}
+                        events={calendarEvents}
+                        dayCellClassNames={handleDayCellClassNames}
+                        height="auto"
+                        validRange={{
+                            // start: new Date(),
+                        }}
+                        headerToolbar={{
+                            left: "prev,next today",
+                            center: "title",
+                            right: "",
+                        }}
+                        buttonText={{
+                            today: "Today",
+                        }}
+                    />
+                </div>
             </div>
         </>
     )

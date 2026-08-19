@@ -132,7 +132,7 @@ export default function ServiceReviewList() {
                     <TableSearch
                         value={searchInput}
                         onChange={setSearchInput}
-                        placeholder="Search Review..."
+                        placeholder="Search..."
                     />
 
                     <div className="flex flex-wrap gap-2">

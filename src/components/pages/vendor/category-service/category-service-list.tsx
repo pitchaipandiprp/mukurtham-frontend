@@ -238,7 +238,7 @@ export default function CategoryServiceList() {
                     <TableSearch
                         value={searchInput}
                         onChange={setSearchInput}
-                        placeholder="Search Service..."
+                        placeholder="Search..."
                     />
                     <Link href="/panel/create-category-service" className={buttonClass}> Add Business </Link>
                 </div>

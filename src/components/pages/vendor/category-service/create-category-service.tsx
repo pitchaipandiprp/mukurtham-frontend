@@ -313,6 +313,7 @@ export default function CreateCategoryService() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
+                router.push("/panel/category-service-list");
             }
         } catch (caughtError) {
             console.error("Create category service failed:", caughtError);

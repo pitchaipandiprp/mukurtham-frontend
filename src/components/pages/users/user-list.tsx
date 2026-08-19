@@ -203,7 +203,7 @@ export default function UserList({
                     <TableSearch
                         value={searchInput}
                         onChange={setSearchInput}
-                        placeholder="Search User..."
+                        placeholder="Search..."
                     />
                     <Link href="/panel/add-user" className={buttonClass}> Add {roleTitle} </Link>
                 </div>

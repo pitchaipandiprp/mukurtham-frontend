@@ -219,7 +219,7 @@ export default function GalleryList() {
                     <TableSearch
                         value={searchInput}
                         onChange={setSearchInput}
-                        placeholder="Search Gallery..."
+                        placeholder="Search..."
                     />
                     <Link href={`/panel/create-gallery?serviceId=${categoryServiceId ?? ""}`} className={buttonClass}> Add Gallery </Link>
                 </div>
