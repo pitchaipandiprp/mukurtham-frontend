@@ -18,7 +18,7 @@ export function CategoryServiceGallery({
 }: Props) {
     const BACKEND_BASE_URL = apiConfig.baseUrl;
     const [galleryRecords, setGalleryRecords] = useState<any[]>([]);
-    const [isOccasionTabOpen, setIsOccasionTabOpen] = useState("all");
+    const [isGalleryTypeTabOpen, setIsGalleryTypeTabOpen] = useState("all");
     const [galleryFilterRecords, setGalleryFilterRecords] = useState<any[]>([]);
     const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null);
     const [allGalleryImages, setAllGalleryImages] = useState<string[]>([]);
@@ -58,12 +58,52 @@ export function CategoryServiceGallery({
     };
 
 
+    const galleryTypeChange = (type: string) => {
+        setIsGalleryTypeTabOpen(type);
+
+        if (type === "all") {
+            setGalleryFilterRecords(galleryRecords);
+            return;
+        }
+
+        const filteredRecords = galleryRecords.filter(
+            (record) => record.gallery_type === type
+        );
+
+        setGalleryFilterRecords(filteredRecords);
+    };
 
     return (
         <>
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-gray-900">Photos</h3>
+                    <div className="flex items-center">
+                        <button
+                            type="button"
+                            className={`cursor-pointer  rounded px-3 py-1 mr-2 text-[11px] ${isGalleryTypeTabOpen === 'all' ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600 hover:bg-pink-50'}`}
+                            onClick={() => galleryTypeChange('all')}
+                        >
+                            All
+                        </button>
+
+                        <button
+                            type="button"
+                            className={`cursor-pointer  rounded px-3 py-1 mr-2 text-[11px] ${isGalleryTypeTabOpen === 'image' ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600 hover:bg-pink-50'}`}
+                            onClick={() => galleryTypeChange('image')}
+                        >
+                            Photo
+                        </button>
+
+                        <button
+                            type="button"
+                            className={`cursor-pointer  rounded px-3 py-1 mr-2 text-[11px] ${isGalleryTypeTabOpen === 'video' ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600 hover:bg-pink-50'}`}
+                            onClick={() => galleryTypeChange('video')}
+                        >
+                            Video
+                        </button>
+                    </div>
+
+
                     <button
                         type="button"
                         className="text-xs font-medium text-primary hover:underline cursor-pointer"
@@ -72,7 +112,7 @@ export function CategoryServiceGallery({
                 </div>
                 <AnimatePresence mode="wait">
                     <motion.div
-                        key={isOccasionTabOpen}
+                        key={isGalleryTypeTabOpen}
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -15 }}

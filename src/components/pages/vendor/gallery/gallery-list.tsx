@@ -117,7 +117,7 @@ export default function GalleryList() {
                 cell: ({ row }) => {
                     const BACKEND_BASE_URL = apiConfig.baseUrl;
                     return row.original.gallery_image ? (
-                        <img src={row.original.gallery_image ? `${BACKEND_BASE_URL}/${row.original.gallery_image}` : undefined} alt="Gallery" className="h-10 w-10 object-cover" />
+                        <img src={row.original.gallery_image ? `${BACKEND_BASE_URL}/${row.original.gallery_image}` : undefined} alt="Gallery" className="h-25 w-35 object-cover" />
                     ) : row.original.gallery_video ? (
                         <video src={row.original.gallery_video} className="h-10 w-10 object-cover" controls />
                     ) : (

@@ -31,7 +31,7 @@ export default function CreateGallery() {
         gallery_type: "",
         gallery_image: "",
         gallery_video: "",
-        status: "0",
+        status: "1",
     };
 
     const router = useRouter();

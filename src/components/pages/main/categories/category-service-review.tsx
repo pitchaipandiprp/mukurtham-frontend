@@ -39,7 +39,7 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
         rating: "5",
         review_title: "",
         review_description: "",
-        status: "0",
+        status: "1",
     };
 
     const [form, setForm] = useState<ReviewForm>(initialForm);
@@ -115,10 +115,6 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
             return;
         }
 
-        if (!form.review_description.trim()) {
-            setError("Please enter the feedback");
-            return;
-        }
 
         setLoading(true);
 
@@ -129,6 +125,7 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
                 setForm(initialForm);
                 setSelectedRating("5");
                 setShowPopup(false);
+                loadReviewList();
             }
         } catch (caughtError) {
             console.error("Create service review failed:", caughtError);
