@@ -174,10 +174,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 
+let isTokenRefreshing = false;
+let refreshTokenPromise: Promise<string | null> | null = null;
 
 async function refreshAccessToken(): Promise<string | null> {
-  let isRefreshing = false;
-  let refreshPromise: Promise<string | null> | null = null;
 
   const refreshToken = getRefreshToken();
 
@@ -185,24 +185,24 @@ async function refreshAccessToken(): Promise<string | null> {
     return null;
   }
 
-  if (isRefreshing && refreshPromise) {
-    return refreshPromise;
+  if (isTokenRefreshing && refreshTokenPromise) {
+    return refreshTokenPromise;
   }
 
-  isRefreshing = true;
+  isTokenRefreshing = true;
 
-  refreshPromise = (async () => {
+  refreshTokenPromise = (async () => {
     try {
       const response = await fetch(
         buildUrl("/auth/refresh-token"),
         {
           method: "POST",
           headers: {
-            Accept: "application/json",
+            "Accept": "application/json",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            refresh_token: refreshToken,
+            refreshToken: refreshToken,
           }),
         }
       );
@@ -212,9 +212,9 @@ async function refreshAccessToken(): Promise<string | null> {
         return null;
       }
 
-      const data = await response.json();
+      const responseJson = await response.json();
 
-      const newAccessToken = data?.accessToken ?? null;
+      const newAccessToken = responseJson?.data?.accessToken ?? null;
 
       if (!newAccessToken) {
         clearAuthData();
@@ -229,12 +229,12 @@ async function refreshAccessToken(): Promise<string | null> {
       clearAuthData();
       return null;
     } finally {
-      isRefreshing = false;
-      refreshPromise = null;
+      isTokenRefreshing = false;
+      refreshTokenPromise = null;
     }
   })();
 
-  return refreshPromise;
+  return refreshTokenPromise;
 }
 
 
