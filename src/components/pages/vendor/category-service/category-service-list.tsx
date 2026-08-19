@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { vendorRoutes } from "@/services/api/vendor.routes";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, CheckCircle2, XCircle, } from "lucide-react";
-import { FiImage, FiStar } from "react-icons/fi";
+import { FiCalendar, FiImage, FiStar } from "react-icons/fi";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
@@ -177,6 +177,15 @@ export default function CategoryServiceList() {
                                     <Pencil className="h-4 w-4" />
                                 </button>
                             </Link>
+
+                            <button
+                                className={`mr-4 ${buttonClassBlue}`}
+                                title="Gallery"
+                            >
+                                <Link href={`/panel/service-dates-list?serviceId=${row.original.id}`}>
+                                    <FiCalendar className="h-4 w-4" />
+                                </Link>
+                            </button>
 
                             <button
                                 className={`mr-4 ${buttonClassBlue}`}

@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Pencil, Trash2, CheckCircle2, XCircle, ArrowRight, ChevronRight, } from "lucide-react";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/datatable/datatable";
@@ -47,7 +47,7 @@ export default function GalleryList() {
     }, [searchInput]);
 
     useEffect(() => {
-        fetchGalleryData();
+        fetchGalleryList();
     }, [page, searchTerm]);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ export default function GalleryList() {
         setCategoryServiceData(response?.data ?? null);
     };
 
-    const fetchGalleryData = async () => {
+    const fetchGalleryList = async () => {
         try {
             setLoading(true);
             const response = await vendorRoutes.galleryList({
@@ -102,7 +102,7 @@ export default function GalleryList() {
             const result = await vendorRoutes.updateGalleryStatus({ id: row.id, status });
             if (result?.success) {
                 sweetalert.success(result.message);
-                fetchGalleryData();
+                fetchGalleryList();
             }
         } catch (error) {
             console.error("Status update failed:", error);

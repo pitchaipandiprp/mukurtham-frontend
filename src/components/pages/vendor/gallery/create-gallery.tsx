@@ -232,10 +232,7 @@ export default function CreateGallery() {
                             </select>
                         </div>
 
-                        <div className="md:col-span-2"></div>
-
-
-                        <div className="md:col-span-4 mb-3">
+                        <div className="md:col-span-4">
                             <label htmlFor="galleryImage" className="mb-2 block text-sm font-medium text-gray-700">
                                 Gallery Image
                             </label>
@@ -270,7 +267,7 @@ export default function CreateGallery() {
                             )}
                         </div>
 
-                        <div className="md:col-span-2 mt-6">
+                        <div className="md:col-span-4 mt-6">
                             <button
                                 type="submit"
                                 className={buttonClassSubmit}
