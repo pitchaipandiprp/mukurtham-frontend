@@ -68,8 +68,8 @@ const serviceDateList = async (payload: any) => {
     return await apiService.post<any>("/vendors/service-date-list", payload);
 };
 
-const serviceDateRecords = async (payload: any) => {
-    return await apiService.post<any>("/vendors/service-date-records", payload);
+const serviceDateForcalendar = async (payload: any) => {
+    return await apiService.post<any>("/vendors/service-date-for-calendar", payload);
 };
 
 export const vendorRoutes = {
@@ -89,6 +89,6 @@ export const vendorRoutes = {
     updateServiceDateStatus,
     getServiceDate,
     serviceDateList,
-    serviceDateRecords,
+    serviceDateForcalendar,
 
 };

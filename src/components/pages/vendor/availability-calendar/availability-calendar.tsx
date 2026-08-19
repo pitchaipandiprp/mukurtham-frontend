@@ -13,9 +13,9 @@ import { sweetalert } from "@/utils/sweetalert";
 
 export default function AvailabilityCalendar() {
     const [loading, setLoading] = useState(false);
-    const [serviceDateRecords, setServiceDateRecords] = useState<any[]>([]);
-    const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
     const [categoryServiceRecords, setCategoryServiceRecords] = useState<any[]>([]);
+    const [serviceDates, setServiceDates] = useState<any[]>([]);
+    const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
     const [categoryServiceId, setCategoryServiceId] = useState<string>("");
     const inputClass = constants.inputClass;
 
@@ -26,7 +26,7 @@ export default function AvailabilityCalendar() {
 
     useEffect(() => {
         if (categoryServiceId) {
-            fetchServiceDateRecords();
+            fetchServiceDateForcalendar();
         }
     }, [categoryServiceId]);
 
@@ -38,11 +38,11 @@ export default function AvailabilityCalendar() {
         setCategoryServiceId(catServiceId);
     };
 
-    const fetchServiceDateRecords = async () => {
+    const fetchServiceDateForcalendar = async () => {
         try {
             setLoading(true);
 
-            const result = await vendorRoutes.serviceDateRecords({
+            const result = await vendorRoutes.serviceDateForcalendar({
                 category_service_id: Number(categoryServiceId),
             });
 
@@ -51,7 +51,7 @@ export default function AvailabilityCalendar() {
             }
 
             const resultData = result.data || [];
-            setServiceDateRecords(resultData);
+            setServiceDates(resultData);
 
             if (resultData && resultData.length > 0) {
 
@@ -61,8 +61,8 @@ export default function AvailabilityCalendar() {
                             item?.date_type?.toLowerCase() !== "available"
                     )
                     .map((item: any) => ({
-                        title: item?.date_type,
-                        start: item?.service_date,
+                        title: item?.event_name || item?.date_type,
+                        start: item?.from_date,
                         allDay: true,
                         classNames: [
                             item?.date_type?.toLowerCase()
@@ -98,10 +98,19 @@ export default function AvailabilityCalendar() {
     };
 
     const handleServiceDateClick = async (clickedDate: string, serviceDateId?: number, currentDateType?: string) => {
+        if (!clickedDate) {
+            return;
+        }
+
+        //Only Future Date is clickable, Past Date is not clickable
+        if (new Date(clickedDate) < new Date(commonUtils.formatDateTime(new Date(), "YYYY-MM-DD"))) {
+            return;
+        }
+
         let isUnavailable = false;
 
-        const isUnavailableFromDateClick = serviceDateRecords.some((item: any) => {
-            const serviceDate = item?.service_date ? commonUtils.formatDateTime(item.service_date, "YYYY-MM-DD") : "";
+        const isUnavailableFromDateClick = serviceDates.some((item: any) => {
+            const serviceDate = item?.from_date ? commonUtils.formatDateTime(item.from_date, "YYYY-MM-DD") : "";
             return (serviceDate === clickedDate && item?.date_type?.toLowerCase() === "unavailable");
         });
 
@@ -136,21 +145,22 @@ export default function AvailabilityCalendar() {
             await vendorRoutes.createServiceDate({
                 category_service_id: Number(categoryServiceId),
                 date_type: commonUtils.capitalizeFirst(dateType || ""),
-                service_date: commonUtils.formatDateTime(clickedDate, "YYYY-MM-DD") || null,
+                from_date: commonUtils.formatDateTime(clickedDate, "YYYY-MM-DD") || null,
+                to_date: commonUtils.formatDateTime(clickedDate, "YYYY-MM-DD") || null,
                 status: 1,
                 ...(serviceDateId ? { id: Number(serviceDateId) } : {}),
             });
 
             await sweetalert.success(`Date marked as ${dateType}.`);
-            fetchServiceDateRecords();
+            fetchServiceDateForcalendar();
         }
     }
 
     const handleDayCellClassNames = (arg: any) => {
         const date = commonUtils.formatDateTime(arg.date, "YYYY-MM-DD");
 
-        const dateRecords = serviceDateRecords.filter((item: any) => {
-            const serviceDate = item?.service_date ? commonUtils.formatDateTime(item.service_date, "YYYY-MM-DD") : "";
+        const dateRecords = serviceDates.filter((item: any) => {
+            const serviceDate = item?.from_date ? commonUtils.formatDateTime(item.from_date, "YYYY-MM-DD") : "";
             return serviceDate === date;
         });
 
@@ -179,31 +189,32 @@ export default function AvailabilityCalendar() {
 
 
     return (
-        <div className="d-block mb-20">
+        <div className="calendar-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
                 <span className="text-2xl font-semibold leading-none text-slate-600">Availability Calendar</span>
             </div>
             <section className="space-y-5">
-                <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-4">
-                    <div className="grid grid-cols-12 md:grid-cols-12 gap-6">
-                        <div className="md:col-span-9"></div>
-                        <div className="col-span-12 mb-5 md:col-span-3">
-                            <select
-                                id="categoryServiceId"
-                                value={categoryServiceId}
-                                onChange={(event) => setCategoryServiceId(event.target.value)}
-                                className={inputClass}
-                            >
-                                <option value="">Select Category Service</option>
-                                {categoryServiceRecords.map((item) => (
-                                    <option key={`category-service-${item.id}`} value={item.id}>
-                                        {item.service_name}
-                                    </option>
-                                ))}
-                            </select>
+                <div className="no-class">
+                    {categoryServiceRecords.length >= 2 && (
+                        <div className="grid grid-cols-12 md:grid-cols-12 gap-6">
+                            <div className="md:col-span-9"></div>
+                            <div className="col-span-12 mb-5 md:col-span-3">
+                                <select
+                                    id="categoryServiceId"
+                                    value={categoryServiceId}
+                                    onChange={(event) => setCategoryServiceId(event.target.value)}
+                                    className={inputClass}
+                                >
+                                    {categoryServiceRecords.map((item) => (
+                                        <option key={`category-service-${item.id}`} value={item.id}>
+                                            {item.service_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div>
+                    )}
+                    <div className="calendar-container">
                         <FullCalendar
                             plugins={[
                                 dayGridPlugin,
@@ -216,7 +227,7 @@ export default function AvailabilityCalendar() {
                             dayCellClassNames={handleDayCellClassNames}
                             height="auto"
                             validRange={{
-                                start: new Date(),
+                                // start: new Date(),
                             }}
                             headerToolbar={{
                                 left: "prev,next today",

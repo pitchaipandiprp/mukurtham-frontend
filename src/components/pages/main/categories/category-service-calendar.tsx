@@ -136,16 +136,19 @@ export function CategoryServiceCalendar({
     return (
         <>
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                <h3 className="mb-3 text-sm font-bold text-gray-900 text-center">Availability Calendar</h3>
                 <div className="mb-10 flex items-center justify-between">
-                    <h3 className="mb-3 text-sm font-bold text-gray-900">Availability Calendar</h3>
                     <div className="flex items-center gap-2">
-                        <span className="cursor-pointer inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-pink-500 text-white">
+                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-green-500 text-white">
                             Waxing Crescent
                         </span>
-                        <span className="cursor-pointer inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-yellow-500 text-white">
+                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-blue-500 text-white">
                             Waning Crescent
                         </span>
-                        <span className="cursor-pointer inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-gray-300 text-white">
+                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-red-500 text-white">
+                            Booked
+                        </span>
+                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-gray-400 text-white">
                             Unavailable
                         </span>
                     </div>
@@ -163,7 +166,7 @@ export function CategoryServiceCalendar({
                     dayCellClassNames={handleDayCellClassNames}
                     height="auto"
                     validRange={{
-                        start: new Date(),
+                        // start: new Date(),
                     }}
                     headerToolbar={{
                         left: "prev,next today",

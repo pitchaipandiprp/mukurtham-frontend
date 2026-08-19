@@ -88,25 +88,31 @@
 
 /* Valarpirai */
 .fc .waxing {
-    background-color: var(--color-pink-500) !important;
-    border-color: var(--color-pink-500) !important;
+    background-color: var(--color-green-500) !important;
+    border-color: var(--color-green-500) !important;
 }
 
 /* Theipirai  */
 .fc .waning {
-    background-color: var(--color-yellow-500) !important;
-    border-color: var(--color-yellow-500) !important;
+    background-color: var(--color-blue-500) !important;
+    border-color: var(--color-blue-500) !important;
 }
 
-.fc .available {
-    background-color: var(--color-green-700) !important;
-    border-color: var(--color-green-700) !important;
+.fc .booked {
+    background-color: var(--color-red-500) !important;
+    border-color: var(--color-red-500) !important;
 }
 
 .fc .unavailable {
-    background-color: var(--color-gray-300) !important;
-    border-color: var(--color-gray-300) !important;
+    background-color: var(--color-gray-400) !important;
+    border-color: var(--color-gray-400) !important;
 }
+
+.fc .holiday {
+    background-color: var(--color-purple-400) !important;
+    border-color: var(--color-purple-400) !important;
+}
+
 
 .calendar-unavailable {
     /* background-color: var(--color-gray-300) !important;
