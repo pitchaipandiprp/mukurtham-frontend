@@ -20,7 +20,7 @@ export function CategoryServiceOverview({
         <>
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                 <h3 className="mb-3 text-sm font-bold text-gray-900">About Us</h3>
-                <p className="text-xs leading-relaxed text-gray-600 line-clamp-3">
+                <p className="text-xs leading-relaxed text-gray-600 text-justify line-clamp-20">
                     {serviceRecord?.service_description || "No description available."}
                 </p>
                 <button

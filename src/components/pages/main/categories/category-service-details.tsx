@@ -180,8 +180,8 @@ export function CategoryServiceDetails() {
                                 <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
                                 {/* <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div> */}
                                 {/* <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div> */}
-                                <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> +91 98765 43210</div>
-                                <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> royal.decor@gmail.com</div>
+                                <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> {serviceRecord?.service_mobile}</div>
+                                <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> {serviceRecord?.service_email}</div>
                             </div>
                         </div>
 

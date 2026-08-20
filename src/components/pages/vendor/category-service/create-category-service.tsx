@@ -4,6 +4,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Plus, Trash2 } from "lucide-react";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
 import { vendorRoutes } from "@/services/api/vendor.routes";
@@ -70,6 +71,7 @@ const categoryFields: Record<string, number[]> = {
     amenities: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     payment: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     banner_image: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    highlights: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     capacity: [1],
     number_of_rooms: [1],
     map_location: [1],
@@ -86,6 +88,7 @@ export default function CreateCategoryService() {
 
     const [facilityList, setFacilityList] = useState<any[]>([]);
     const [selectedFacilityIds, setSelectedFacilityIds] = useState<number[]>([]);
+    const [highlights, setHighlights] = useState<string[]>([""]);
 
     const searchParams = useSearchParams();
     const categoryServiceId = searchParams.get("id");
@@ -183,6 +186,14 @@ export default function CreateCategoryService() {
                     : []
             );
 
+            setHighlights(
+                serviceData.service_highlights?.length > 0
+                    ? serviceData.service_highlights.map(
+                        (item: any) => item.highlight
+                    )
+                    : [""]
+            );
+
             setBannerPreview(serviceData.service_banner_image ? `${BACKEND_BASE_URL}/${serviceData.service_banner_image}` : null);
 
         } catch (caughtError) {
@@ -255,6 +266,27 @@ export default function CreateCategoryService() {
 
         setBannerPreview(URL.createObjectURL(file));
     };
+
+    //Dynamic Highlight
+    const addHighlight = () => {
+        setHighlights((prev) => [...prev, ""]);
+    };
+    const removeHighlight = (index: number) => {
+        setHighlights((prev) => {
+            const updated = prev.filter((_, i) => i !== index);
+
+            // Always keep at least one row
+            return updated.length > 0 ? updated : [""];
+        });
+    };
+    const updateHighlight = (index: number, value: string) => {
+        setHighlights((prev) => {
+            const updated = [...prev];
+            updated[index] = value;
+            return updated;
+        });
+    };
+    //Dynamic Highlight
 
     const updateField = (field: keyof CategoryServiceForm, value: string) => {
         setForm((prev) => ({
@@ -370,6 +402,19 @@ export default function CreateCategoryService() {
             }
         }
 
+        const validHighlights = highlights
+            .map((item) => item.trim())
+            .filter(Boolean);
+
+        const uniqueHighlights = [
+            ...new Set(validHighlights.map((item) => item.toLowerCase())),
+        ];
+
+        if (uniqueHighlights.length !== validHighlights.length) {
+            sweetalert.toastError("Duplicate highlights are not allowed");
+            return;
+        }
+
         setLoading(true);
 
         //Create a FormData object to send the data as multipart/form-data
@@ -412,6 +457,10 @@ export default function CreateCategoryService() {
         );
         formData.append("status", form.status);
 
+        validHighlights.forEach((highlight) => {
+            formData.append("highlights[]", highlight);
+        });
+
         if (isEditMode) {
             formData.append("id", categoryServiceId!);
         }
@@ -421,7 +470,7 @@ export default function CreateCategoryService() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
-                router.push("/panel/category-service-list");
+                // router.push("/panel/category-service-list");
             }
         } catch (caughtError) {
             console.error("Create category service failed:", caughtError);
@@ -761,33 +810,75 @@ export default function CreateCategoryService() {
                             </div>
                         )}
 
-                        {showField("banner_image") && (
-                            <>
-                                <div className="md:col-span-12 mt-4">
-                                    <h2 className="text-lg font-semibold text-primary">
-                                        Map Location
-                                    </h2>
-                                </div>
+                        {showField("highlights") && (
+                            <div className="md:col-span-4 mt-4">
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-lg font-semibold text-primary">
+                                            Highlights
+                                        </h2>
 
-                                <div className="md:col-span-6">
-                                    <input
-                                        id="serviceLatitude"
-                                        type="text"
-                                        value={form.latitude}
-                                        readOnly
-                                        className={inputClass}
-                                        onChange={(event) => updateField("latitude", event.target.value)}
-                                    />
+                                        <button
+                                            type="button"
+                                            onClick={addHighlight}
+                                            className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-primary/90"
+                                        >
+                                            <Plus className="h-4 w-4" />
+                                        </button>
+                                    </div>
+
+                                    {highlights.map((highlight, index) => (
+                                        <div key={`dynamic-highlight-${index}`} className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={highlight}
+                                                onChange={(event) =>
+                                                    updateHighlight(index, event.target.value)
+                                                }
+                                                placeholder={`Enter highlight ${index + 1}`}
+                                                className={inputClass}
+                                            />
+
+                                            <button
+                                                type="button"
+                                                onClick={() => removeHighlight(index)}
+                                                disabled={highlights.length === 1}
+                                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-red-100 text-red-600 hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-40"
+                                                title="Remove"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+
                                 </div>
-                                <div className="md:col-span-6">
-                                    <input
-                                        id="serviceLongitude"
-                                        type="text"
-                                        value={form.longitude}
-                                        readOnly
-                                        className={inputClass}
-                                        onChange={(event) => updateField("longitude", event.target.value)}
-                                    />
+                            </div>
+                        )}
+                        <div className="md:col-span-1 mt-4"></div>
+                        {showField("map_location") && (
+                            <div className="md:col-span-7 mt-4">
+                                <h2 className="text-lg font-semibold text-primary">
+                                    Map Location
+                                </h2>
+                                <div className="md:col-span-12 mb-3">
+                                    <div className="flex items-center gap-4">
+                                        <input
+                                            id="serviceLatitude"
+                                            type="text"
+                                            value={form.latitude}
+                                            readOnly
+                                            className={inputClass}
+                                            onChange={(event) => updateField("latitude", event.target.value)}
+                                        />
+                                        <input
+                                            id="serviceLongitude"
+                                            type="text"
+                                            value={form.longitude}
+                                            readOnly
+                                            className={inputClass}
+                                            onChange={(event) => updateField("longitude", event.target.value)}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="md:col-span-12">
                                     <LocationPicker
@@ -799,7 +890,7 @@ export default function CreateCategoryService() {
                                         }}
                                     />
                                 </div>
-                            </>
+                            </div>
                         )}
 
                     </div>
