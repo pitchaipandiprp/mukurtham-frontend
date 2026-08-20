@@ -9,10 +9,9 @@ import { useEffect, useState } from "react";
 
 interface HeaderProps {
     setIsMobileOpen: () => void;
-    setIsSecondaryOpen: () => void;
 }
 
-export default function PanelHeader({ setIsMobileOpen, setIsSecondaryOpen }: HeaderProps) {
+export default function PanelHeader({ setIsMobileOpen }: HeaderProps) {
 
     const { logout } = useLogout();
     const [autoProfile, setAutoProfile] = useState<any>(null);
@@ -33,12 +32,12 @@ export default function PanelHeader({ setIsMobileOpen, setIsSecondaryOpen }: Hea
                     <Menu className="w-6 h-6" />
                 </button>
 
-                <button
+                {/* <button
                     onClick={setIsSecondaryOpen}
                     className="p-2 rounded-xl text-slate-500 hover:text-primary hover:bg-slate-100 hidden lg:block cursor-pointer transition-colors"
                 >
                     <Menu className="w-5 h-5" />
-                </button>
+                </button> */}
 
                 <div className="relative hidden sm:block">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
