@@ -39,6 +39,25 @@
     height: 30px !important;
 }
 
+.custom-toast {
+    display: flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    padding: 10px 5px !important;
+}
+
+.custom-toast .swal2-title {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 20px !important;
+}
+
+.custom-toast .swal2-icon {
+    margin: 0 8px 0 0 !important;
+    flex-shrink: 0 !important;
+}
+
+
 /* React DatePicker - Modern Theme Start*/
 .react-datepicker-wrapper {
     width: 100%;

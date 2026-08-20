@@ -55,10 +55,59 @@ const confirm = (message?: string, title = "Confirm") => {
     });
 };
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    customClass: {
+        popup: "custom-toast",
+    },
+});
+const showToast = (message?: string, title?: string, icon?: "success" | "error" | "warning" | "info") => {
+    const background = {
+        success: "#198754",
+        error: "#dc3545",
+        warning: "#ffc107",
+        info: "#A2004B",
+    }[icon || "info"];
+
+    return Toast.fire({
+        icon,
+        text: message,
+        background,
+        color: "#ffffff",
+    });
+};
+
+const toastSuccess = (message?: string, title = "Success") => {
+    showToast(message, title, "success");
+};
+
+const toastError = (message?: string, title = "Error") => {
+    showToast(message, title, "error");
+};
+
+const toastWarning = (message?: string, title = "Warning") => {
+    showToast(message, title, "warning");
+};
+
+const toastInfo = (message?: string, title = "Info") => {
+    showToast(message, title, "info");
+};
+
+
 export const sweetalert = {
     success,
     error,
     warning,
     confirm,
     info,
+    showToast,
+    toastSuccess,
+    toastError,
+    toastWarning,
+    toastInfo,
+
 };

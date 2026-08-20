@@ -98,7 +98,7 @@ export default function LocalitySelect({
                     }`,
 
                 valueContainer: () =>
-                    "!px-4 !py-2",
+                    "!px-4 !py-3",
 
                 input: () =>
                     "!m-0 !p-0 !text-sm !text-slate-800",
