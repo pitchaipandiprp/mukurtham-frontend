@@ -20,7 +20,6 @@ const tabs = [
     { key: "availability", label: "Availability" },
     { key: "reviews", label: "Reviews" },
     { key: "packages", label: "Packages" },
-    { key: "timeline", label: "Timeline" },
     { key: "offers", label: "Offers" },
 ];
 

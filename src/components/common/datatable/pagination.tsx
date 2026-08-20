@@ -19,7 +19,7 @@ export default function TablePagination({
     loading = false,
     onPageChange,
 }: TablePaginationProps) {
-    if (totalPages <= 1 && totalRecords === 0) {
+    if (totalPages <= 1 || totalRecords === 0) {
         return null;
     }
 
