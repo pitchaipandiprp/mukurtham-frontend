@@ -13,6 +13,7 @@ import { CategoryServiceOverview } from "./category-service-overview";
 import { CategoryServiceGallery } from "./category-service-gallery";
 import { CategoryServiceCalendar } from "./category-service-calendar";
 import { CategoryServicePackage } from "./category-service-package";
+import { Building, FileText, Info, Sparkles, UserRound } from "lucide-react";
 
 const tabs = [
     { key: "overview", label: "Overview" },
@@ -113,7 +114,7 @@ export function CategoryServiceDetails() {
                                     </h1>
                                     <span className="text-sm text-blue-500"></span>
                                 </div>
-                                <p className="mt-0.5 text-xs text-gray-500">8 Years Experience • {serviceRecord?.city?.name}</p>
+                                <p className="mt-0.5 text-xs text-gray-500">{serviceRecord?.service_experience} • {serviceRecord?.city?.name}</p>
                                 <div className="mt-2 flex items-center gap-2 text-xs">
                                     <span className="font-bold text-gray-800">{serviceRecord?.averageRating?.toFixed(1)}</span>
                                     <div className="flex gap-0.5 text-xs text-amber-400">
@@ -142,7 +143,7 @@ export function CategoryServiceDetails() {
 
                     <div className="grid grid-cols-2 divide-x border-t border-gray-200 bg-gray-50/50 text-center md:grid-cols-4">
                         <div className="p-4 border-gray-200">
-                            <div className="text-sm font-bold text-gray-800">500+</div>
+                            <div className="text-sm font-bold text-gray-800">{serviceRecord?.completed_events}</div>
                             <div className="text-[11px] text-gray-500">Events Completed</div>
                         </div>
                         <div className="p-4 border-gray-200">
@@ -155,7 +156,7 @@ export function CategoryServiceDetails() {
                         </div>
                         <div className="p-4 border-gray-200">
                             <div className="text-sm font-bold text-gray-800">Verified</div>
-                            <div className="text-[11px] text-gray-500">Business</div>
+                            <div className="text-[11px] text-gray-500">{serviceRecord?.verification_status?.business ? "Business" : "-"}</div>
                         </div>
                     </div>
 
@@ -175,13 +176,19 @@ export function CategoryServiceDetails() {
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                     <aside className="order-2 md:order-1 md:col-span-3 space-y-6">
-                        <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-                            <div className="space-y-2.5 text-xs text-gray-600">
-                                <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
-                                {/* <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div> */}
-                                {/* <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div> */}
-                                <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> {serviceRecord?.service_mobile}</div>
-                                <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> {serviceRecord?.service_email}</div>
+                        <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                            <div>
+                                <div className="space-y-3 text-xs text-gray-600">
+                                    <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
+                                    {/* <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div> */}
+                                    {/* <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div> */}
+                                    <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> {serviceRecord?.service_mobile}</div>
+                                    <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> {serviceRecord?.service_email}</div>
+
+                                </div>
+                            </div>
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
+                                <Building />
                             </div>
                         </div>
 
@@ -189,10 +196,17 @@ export function CategoryServiceDetails() {
                             <div>
                                 <h4 className="mb-3 text-xs font-bold text-gray-900">Verified & Trusted</h4>
                                 <div className="space-y-1.5 text-xs text-gray-600">
-                                    <div>Business Verified</div>
-                                    <div>GST Verified</div>
-                                    <div>PAN Verified</div>
-                                    <div>Bank Verified</div>
+                                    {serviceRecord?.verification_status && (
+                                        <>
+                                            {Object.entries(serviceRecord.verification_status)
+                                                .filter(([, status]) => String(status).toLowerCase() === "verified")
+                                                .map(([key]) => (
+                                                    <div key={`verified-record-${key}`}>
+                                                        {key.charAt(0).toUpperCase() + key.slice(1)} Verified
+                                                    </div>
+                                                ))}
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
@@ -200,16 +214,20 @@ export function CategoryServiceDetails() {
                             </div>
                         </div>
 
-                        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                            <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
-                            <ul className="space-y-2 text-xs text-gray-600">
-                                <li>Specialized in Wedding & Reception</li>
-                                <li>Customized Theme Decor</li>
-                                <li>Own Material & Team</li>
-                                <li>On-time Delivery</li>
-                                <li>Pan India Service</li>
-                                <li>Free Consultation</li>
-                            </ul>
+                        <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                            <div>
+                                <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
+                                <div className="space-y-1.5 text-xs text-gray-600">
+                                    {serviceRecord?.service_highlights && (
+                                        serviceRecord.service_highlights.map((item: any) => (
+                                            <div key={`highlight-record-${item.id}`}>{item.highlight}</div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
+                                <Sparkles />
+                            </div>
                         </div>
                     </aside>
                     <main className="order-1 md:order-2 md:col-span-6 space-y-6">

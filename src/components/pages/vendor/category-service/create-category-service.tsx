@@ -21,6 +21,8 @@ type CategoryServiceForm = {
     service_name: string;
     service_mobile: string;
     service_email: string;
+    service_experience: string;
+    completed_events: string;
     service_description: string;
     service_address: string;
     service_banner_image: File | null;
@@ -44,6 +46,8 @@ const initialForm: CategoryServiceForm = {
     service_name: "",
     service_mobile: "",
     service_email: "",
+    service_experience: "",
+    completed_events: "",
     service_description: "",
     service_address: "",
     service_banner_image: null,
@@ -63,6 +67,8 @@ const categoryFields: Record<string, number[]> = {
     service_name: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     service_mobile: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     service_email: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    service_experience: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    completed_events: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     state_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     city_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     locality_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -156,6 +162,8 @@ export default function CreateCategoryService() {
                 service_name: serviceData.service_name ?? "",
                 service_mobile: serviceData.service_mobile ?? "",
                 service_email: serviceData.service_email ?? "",
+                service_experience: serviceData.service_experience ?? "",
+                completed_events: serviceData.completed_events ?? "",
                 service_description: serviceData.service_description ?? "",
                 service_address: serviceData.service_address ?? "",
                 service_banner_image: serviceData.service_banner_image ?? "",
@@ -428,6 +436,8 @@ export default function CreateCategoryService() {
         formData.append("service_name", form.service_name);
         formData.append("service_mobile", form.service_mobile);
         formData.append("service_email", form.service_email);
+        formData.append("service_experience", form.service_experience);
+        formData.append("completed_events", form.completed_events);
         formData.append("service_description", form.service_description);
         formData.append("service_address", form.service_address);
 
@@ -597,6 +607,39 @@ export default function CreateCategoryService() {
                                 />
                             </div>
                         )}
+
+                        {showField("service_experience") && (
+                            <div className="md:col-span-4">
+                                <label htmlFor="serviceExperience" className="mb-2 block text-sm font-medium text-gray-700">
+                                    Service Experience
+                                </label>
+                                <input
+                                    id="serviceExperience"
+                                    type="text"
+                                    placeholder="Enter service experience"
+                                    className={inputClass}
+                                    value={form.service_experience}
+                                    onChange={(event) => updateField("service_experience", event.target.value)}
+                                />
+                            </div>
+                        )}
+
+                        {showField("completed_events") && (
+                            <div className="md:col-span-4">
+                                <label htmlFor="completedEvents" className="mb-2 block text-sm font-medium text-gray-700">
+                                    Completed Events
+                                </label>
+                                <input
+                                    id="completedEvents"
+                                    type="text"
+                                    placeholder="Enter completed events"
+                                    className={inputClass}
+                                    value={form.completed_events}
+                                    onChange={(event) => updateField("completed_events", event.target.value)}
+                                />
+                            </div>
+                        )}
+
 
                         {showField("locality_id") && (
                             <>
