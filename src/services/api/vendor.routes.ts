@@ -72,6 +72,16 @@ const serviceDateForcalendar = async (payload: any) => {
     return await apiService.post<any>("/vendors/service-date-for-calendar", payload);
 };
 
+/////Service Certificate/////
+const createServiceCertificate = async (formData: FormData) => {
+    return await apiService.post<any>("/vendors/create-service-certificate", formData);
+};
+
+const getServiceCertificate = async (payload: any) => {
+    return await apiService.post<any>("/vendors/get-service-certificate", payload);
+};
+
+
 export const vendorRoutes = {
     createCategoryService,
     getCategoryService,
@@ -90,5 +100,6 @@ export const vendorRoutes = {
     getServiceDate,
     serviceDateList,
     serviceDateForcalendar,
-
+    createServiceCertificate,
+    getServiceCertificate,
 };

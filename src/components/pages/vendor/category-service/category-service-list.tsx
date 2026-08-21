@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, CheckCircle2, XCircle, List, Grid3X3, } from "lucide-react";
-import { FiCalendar, FiImage } from "react-icons/fi";
+import { FiCalendar, FiFileText, FiImage } from "react-icons/fi";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
@@ -200,6 +200,15 @@ export default function CategoryServiceList() {
                                 </Link>
                             </button>
 
+                            <button
+                                className={`mr-4 ${buttonClassBlue}`}
+                                title="Service Certificate Upload"
+                            >
+                                <Link href={`/panel/service-certificates?serviceId=${row.original.id}`}>
+                                    <FiFileText className="h-4 w-4" />
+                                </Link>
+                            </button>
+
                             {/* <button
                                 className={`mr-4 ${buttonClassBlue}`}
                                 title="Reviews"
@@ -232,19 +241,22 @@ export default function CategoryServiceList() {
 
     return (
         <div className="d-block mb-20">
-            <div className="mb-6 ml-1 flex items-center justify-between">
+            {/* <div className="mb-6 ml-1 flex items-center justify-between">
                 <span className="text-2xl font-semibold leading-none text-slate-600">Business List</span>
-            </div>
+            </div> */}
 
             <section className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                    <div className="md:col-span-9">
-                        <TableSearch
+                    <div className="md:col-span-3">
+                        {/* <TableSearch
                             value={searchInput}
                             onChange={setSearchInput}
                             placeholder="Search..."
-                        />
+                        /> */}
+
+                        <span className="text-2xl font-semibold leading-none text-slate-600">Business List</span>
                     </div>
+                    <div className="md:col-span-6"></div>
                     <div className="md:col-span-3">
                         <div className="flex gap-4 items-center justify-end">
                             <button
@@ -346,14 +358,14 @@ export default function CategoryServiceList() {
                                         </div>
 
                                         {/* Actions */}
-                                        <div className="mt-4 flex items-center border-t border-gray-100 pt-3">
+                                        <div className="mt-4 border-t border-gray-200 pt-3">
 
                                             {isActive ? (
                                                 <button
                                                     type="button"
                                                     onClick={() => handleStatusUpdate(item, "disapprove")}
                                                     title="Disapprove"
-                                                    className={`mr-3 ${buttonClassOrange}`}>
+                                                    className={`mr-3 mb-3 ${buttonClassOrange}`}>
                                                     <XCircle className="h-4 w-4" />
                                                 </button>
                                             ) : (
@@ -361,25 +373,31 @@ export default function CategoryServiceList() {
                                                     type="button"
                                                     onClick={() => handleStatusUpdate(item, "approve")}
                                                     title="Approve"
-                                                    className={`mr-3 ${buttonClassGreen}`}
+                                                    className={`mr-3 mb-3 ${buttonClassGreen}`}
                                                 >
                                                     <CheckCircle2 className="h-4 w-4" />
                                                 </button>
                                             )}
 
                                             <Link href={`/panel/create-category-service?id=${item.id}`}>
-                                                <button type="button" className={`mr-3 ${buttonClassBlue}`} title="Edit">                                                     <Pencil className="h-4 w-4" />                                                 </button>
+                                                <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Edit">                                                     <Pencil className="h-4 w-4" />                                                 </button>
                                             </Link>
 
                                             <Link href={`/panel/service-dates-list?serviceId=${item.id}`}>
-                                                <button type="button" className={`mr-3 ${buttonClassBlue}`} title="Service Dates">
+                                                <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Service Dates">
                                                     <FiCalendar className="h-4 w-4" />
                                                 </button>
                                             </Link>
 
                                             <Link href={`/panel/gallery-list?serviceId=${item.id}`}>
-                                                <button type="button" className={`mr-3 ${buttonClassBlue}`} title="Gallery">
+                                                <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Gallery">
                                                     <FiImage className="h-4 w-4" />
+                                                </button>
+                                            </Link>
+
+                                            <Link href={`/panel/service-certificates?serviceId=${item.id}`}>
+                                                <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Service Certificate Upload">
+                                                    <FiFileText className="h-4 w-4" />
                                                 </button>
                                             </Link>
 
