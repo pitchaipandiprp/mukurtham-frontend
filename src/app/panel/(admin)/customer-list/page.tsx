@@ -1,6 +1,6 @@
-import UserList from "@/components/pages/users/user-list";
+import CustomerList from "@/components/pages/admin/customer/customer-list";
 
 export default function CustomerListPage() {
 
-  return <UserList roleId={3} roleTitle="Customer" />;
+  return <CustomerList />;
 }

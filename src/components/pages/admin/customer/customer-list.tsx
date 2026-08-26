@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { userRoutes } from "@/services/api/users.routes";
+import { adminRoutes } from "@/services/api/admin.routes";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2, CheckCircle2, XCircle, Eye, Copy, MoreVertical, } from "lucide-react";
 import Link from "next/link";
@@ -16,10 +16,7 @@ import { sweetalert } from "@/utils/sweetalert";
 
 const PAGE_SIZE = 10;
 
-export default function UserList({
-    roleId = 0,
-    roleTitle = "User",
-}) {
+export default function CustomerList() {
 
     const [rows, setRows] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -44,19 +41,18 @@ export default function UserList({
     }, [searchInput]);
 
     useEffect(() => {
-        fetchUserData();
+        fetchCustomerData();
     }, [page, searchTerm]);
 
 
-    const fetchUserData = async () => {
+    const fetchCustomerData = async () => {
         try {
             setLoading(true);
 
-            const response = await userRoutes.userList({
+            const response = await adminRoutes.customerList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
-                role_id: roleId,
             });
 
             const responData = response.data;
@@ -88,10 +84,10 @@ export default function UserList({
         }
 
         try {
-            const result = await userRoutes.updateStatus({ id: row.id, status });
+            const result = await adminRoutes.updateCustomerStatus({ id: row.id, status });
             if (result?.success) {
                 sweetalert.success('Updated successfully');
-                fetchUserData();
+                fetchCustomerData();
             }
         } catch (error) {
             console.error("Delete failed:", error);
@@ -160,7 +156,7 @@ export default function UserList({
                                 </button>
                             )}
 
-                            <Link href={`/panel/edit-user?id=${row.original.id}`}>
+                            <Link href={`/panel/create-customer?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -193,7 +189,7 @@ export default function UserList({
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <span className="text-2xl font-semibold leading-none text-slate-600">{roleTitle} Lists</span>
+                <span className="text-2xl font-semibold leading-none text-slate-600">Customer Lists</span>
             </div>
 
             <section className="space-y-5">
@@ -203,14 +199,14 @@ export default function UserList({
                         onChange={setSearchInput}
                         placeholder="Search..."
                     />
-                    {/* <Link href="/panel/add-user" className={buttonClass}> Add {roleTitle} </Link> */}
+                    {/* <Link href="/panel/create-customer" className={buttonClass}> Add Customer </Link> */}
                 </div>
 
 
                 <DataTable
                     table={table}
                     loading={loading}
-                    emptyMessage="No Users Found"
+                    emptyMessage="No Records Found"
                 />
 
                 <TablePagination

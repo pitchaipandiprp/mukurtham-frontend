@@ -1,6 +1,6 @@
-import UserList from "@/components/pages/users/user-list";
+import VendorList from "@/components/pages/admin/vendor/vendor-list";
 
 export default function VendorListPage() {
 
-  return <UserList roleId={2} roleTitle="Vendor" />;
+  return <VendorList />;
 }

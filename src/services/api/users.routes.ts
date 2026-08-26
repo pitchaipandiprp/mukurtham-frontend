@@ -5,6 +5,9 @@ const createUser = async (payload: any) => {
     return await apiService.post<any>("/users/create", payload);
 }
 
+const getUser = async (payload: any) => {
+    return await apiService.post<any>("/users/get-user", payload);
+}
 
 
 const changePassword = async (payload: any) => {
@@ -29,6 +32,7 @@ const updateStatus = async (payload: any) => {
 
 export const userRoutes = {
     createUser,
+    getUser,
     changePassword,
     userUpdate,
     userProfile,

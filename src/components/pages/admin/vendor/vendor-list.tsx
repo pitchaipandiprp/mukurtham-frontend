@@ -2,9 +2,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { userRoutes } from "@/services/api/users.routes";
+import { adminRoutes } from "@/services/api/admin.routes";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2, CheckCircle2, XCircle, Eye, Copy, MoreVertical, } from "lucide-react";
+import { Pencil, Trash2, CheckCircle2, XCircle, Eye, Copy, MoreVertical, List, Building, } from "lucide-react";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
@@ -16,10 +16,7 @@ import { sweetalert } from "@/utils/sweetalert";
 
 const PAGE_SIZE = 10;
 
-export default function UserList({
-    roleId = 0,
-    roleTitle = "User",
-}) {
+export default function VendorList() {
 
     const [rows, setRows] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -44,19 +41,18 @@ export default function UserList({
     }, [searchInput]);
 
     useEffect(() => {
-        fetchUserData();
+        fetchVendorData();
     }, [page, searchTerm]);
 
 
-    const fetchUserData = async () => {
+    const fetchVendorData = async () => {
         try {
             setLoading(true);
 
-            const response = await userRoutes.userList({
+            const response = await adminRoutes.vendorList({
                 page,
                 limit: PAGE_SIZE,
                 search: searchTerm,
-                role_id: roleId,
             });
 
             const responData = response.data;
@@ -88,10 +84,10 @@ export default function UserList({
         }
 
         try {
-            const result = await userRoutes.updateStatus({ id: row.id, status });
+            const result = await adminRoutes.updateVendorStatus({ id: row.id, status });
             if (result?.success) {
                 sweetalert.success('Updated successfully');
-                fetchUserData();
+                fetchVendorData();
             }
         } catch (error) {
             console.error("Delete failed:", error);
@@ -140,6 +136,15 @@ export default function UserList({
                     const isApproved = Number(row.original.status) === 1;
                     return (
                         <>
+                            <Link href={`/panel/vendor-business-list?vendorId=${row.original.id}`}>
+                                <button
+                                    className={`mr-4 ${buttonClassBlue}`}
+                                    title="Vendor Business List"
+                                >
+                                    <Building className="h-4 w-4" />
+                                </button>
+                            </Link>
+
                             {isApproved ? (
                                 <button
                                     type="button"
@@ -160,7 +165,7 @@ export default function UserList({
                                 </button>
                             )}
 
-                            <Link href={`/panel/edit-user?id=${row.original.id}`}>
+                            <Link href={`/panel/create-vendor?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -193,7 +198,7 @@ export default function UserList({
     return (
         <div className="d-block mb-20">
             <div className="mb-6 ml-1 flex items-center justify-between">
-                <span className="text-2xl font-semibold leading-none text-slate-600">{roleTitle} Lists</span>
+                <span className="text-2xl font-semibold leading-none text-slate-600">Vendor Lists</span>
             </div>
 
             <section className="space-y-5">
@@ -203,14 +208,14 @@ export default function UserList({
                         onChange={setSearchInput}
                         placeholder="Search..."
                     />
-                    {/* <Link href="/panel/add-user" className={buttonClass}> Add {roleTitle} </Link> */}
+                    {/* <Link href="/panel/create-vendor" className={buttonClass}> Add Vendor </Link> */}
                 </div>
 
 
                 <DataTable
                     table={table}
                     loading={loading}
-                    emptyMessage="No Users Found"
+                    emptyMessage="No Records Found"
                 />
 
                 <TablePagination
