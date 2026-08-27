@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2, CheckCircle2, XCircle, List, Grid3X3, } from "lucide-react";
+import { Pencil, Trash2, CheckCircle2, XCircle, List, Grid3X3, Milestone } from "lucide-react";
 import { FiCalendar, FiFileText, FiImage } from "react-icons/fi";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
@@ -209,6 +209,15 @@ export default function CategoryServiceList() {
                                 </Link>
                             </button>
 
+                            <button
+                                className={`mr-4 ${buttonClassBlue}`}
+                                title="Timeline"
+                            >
+                                <Link href={`/panel/service-timeline-list?serviceId=${row.original.id}`}>
+                                    <Milestone className="h-4 w-4" />
+                                </Link>
+                            </button>
+
                             {/* <button
                                 className={`mr-4 ${buttonClassBlue}`}
                                 title="Reviews"
@@ -219,7 +228,7 @@ export default function CategoryServiceList() {
                             </button> */}
 
                             <button
-                                className={buttonClassRed}
+                                className={`mt-3 ${buttonClassRed}`}
                                 title="Delete"
                                 onClick={() => handleStatusUpdate(row.original, 'delete')}
                             >
@@ -398,6 +407,12 @@ export default function CategoryServiceList() {
                                             <Link href={`/panel/service-certificates?serviceId=${item.id}`}>
                                                 <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Service Certificate Upload">
                                                     <FiFileText className="h-4 w-4" />
+                                                </button>
+                                            </Link>
+
+                                            <Link href={`/panel/service-timeline-list?serviceId=${item.id}`}>
+                                                <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Timeline">
+                                                    <Milestone className="h-4 w-4" />
                                                 </button>
                                             </Link>
 

@@ -12,7 +12,6 @@ import commonRoutes from "@/services/api/common.routes";
 const navLinks = [
     { label: "Home", href: "/" },
     { label: "About", href: "/about-us" },
-    { label: "Vendors", href: "/service-search" },
     { label: "Venues", href: "/service-search" },
     { label: "Categories", href: "/service-search" },
     { label: "Contact", href: "/contact-us" },];
@@ -100,6 +99,7 @@ export function MainHeader() {
                                 onChange={handleCitySearchChange}
                                 className="w-full bg-transparent border-none focus:outline-none cursor-pointer text-xs text-gray-600"
                             >
+                                <option value="all">All</option>
                                 {cityList.map((city) => (
                                     <option key={city.id} value={city.name}>
                                         {city.name}

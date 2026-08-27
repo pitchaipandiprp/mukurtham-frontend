@@ -18,37 +18,12 @@ const navItems: SidebarNavItem[] = [
         ],
     },
     {
-        id: "payments",
-        title: "Payments",
-        icon: CreditCard,
-        subItems: [{ title: "Payment History", href: "/panel/payment-history" }],
-    },
-    {
-        id: "service-date",
+        id: "services",
         title: "Service",
         icon: CalendarDays,
         subItems: [
             { title: "Service Date List", href: "/panel/service-date-list" },
             { title: "Add Service Date", href: "/panel/create-service-date" },
-        ],
-    },
-    {
-        id: "settings",
-        title: "Settings",
-        icon: Settings,
-        subItems: [
-            { title: "Profile Settings", href: "/panel/change-profile" },
-            { title: "Security & Auth", href: "/panel/change-password" },
-        ],
-    },
-    {
-        id: "support",
-        title: "Support",
-        icon: ShieldCheck,
-        subItems: [
-            { title: "Enquiries", href: "/panel/enquiry-list" },
-            { title: "Reviews", href: "/panel/review-list" },
-            { title: "Support Tickets", href: "/panel/support-ticket-list" },
         ],
     },
 ];

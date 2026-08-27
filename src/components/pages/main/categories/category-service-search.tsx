@@ -620,7 +620,6 @@ export default function CategoryServiceSearch() {
                                             <div className="flex items-center space-x-3 text-[10px] text-gray-600 mt-2 font-medium">
                                                 <div><span className="font-bold text-gray-800 block text-xs">{serviceData.capacity}</span> Seating Capacity</div>
                                                 <div><span className="font-bold text-gray-800 block text-xs">{serviceData.number_of_rooms}</span> Rooms</div>
-                                                <div className="flex items-center text-gray-500"><FiWind className="w-3 h-3 mr-1" /> {serviceData?.ac_available ? 'AC Hall' : 'Non-AC Hall'}</div>
                                             </div>
 
                                             <p className="text-[10px] text-gray-500 mt-2 line-clamp-2">{serviceData.service_description}</p>

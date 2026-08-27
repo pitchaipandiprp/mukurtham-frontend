@@ -2,6 +2,8 @@
 const ratingStars = [1, 2, 3, 4, 5];
 
 const capitalizeFirst = (value: string) => value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+const firstLetter = (value: string) => value.charAt(0).toUpperCase();
+
 
 const formatAmount = (amount: number | null) => {
     if (amount === null || Number.isNaN(amount)) {
@@ -103,9 +105,63 @@ export const formatDateTime = (
     );
 };
 
+export const timeAgo = (date: string | Date | null | undefined): string => {
+    if (!date) {
+        return "";
+    }
+
+    const now = new Date();
+    const past = new Date(date);
+
+    const diffInSeconds = Math.floor(
+        (now.getTime() - past.getTime()) / 1000
+    );
+
+    if (diffInSeconds < 60) {
+        return `${Math.max(diffInSeconds, 1)} min ago`;
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+
+    if (diffInMinutes < 60) {
+        return `${diffInMinutes} min ago`;
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+
+    if (diffInHours < 24) {
+        return `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"} ago`;
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays < 7) {
+        return `${diffInDays} ${diffInDays === 1 ? "day" : "days"} ago`;
+    }
+
+    const diffInWeeks = Math.floor(diffInDays / 7);
+
+    if (diffInWeeks < 4) {
+        return `${diffInWeeks} ${diffInWeeks === 1 ? "week" : "weeks"} ago`;
+    }
+
+    const diffInMonths = Math.floor(diffInDays / 30);
+
+    if (diffInMonths < 12) {
+        return `${diffInMonths} ${diffInMonths === 1 ? "month" : "months"} ago`;
+    }
+
+    const diffInYears = Math.floor(diffInDays / 365);
+
+    return `${diffInYears} ${diffInYears === 1 ? "year" : "years"} ago`;
+};
+
+
 export const common = {
     ratingStars,
     capitalizeFirst,
+    firstLetter,
     formatAmount,
     formatDateTime,
+    timeAgo
 };

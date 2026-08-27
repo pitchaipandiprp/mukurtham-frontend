@@ -14,6 +14,8 @@ import { CategoryServiceGallery } from "./category-service-gallery";
 import { CategoryServiceCalendar } from "./category-service-calendar";
 import { CategoryServicePackage } from "./category-service-package";
 import { Building, FileText, Info, Sparkles, UserRound } from "lucide-react";
+import { common as commonUtils } from "@/utils/common";
+import { helperUtils } from "@/utils/helpers";
 
 const tabs = [
     { key: "overview", label: "Overview" },
@@ -84,7 +86,7 @@ export function CategoryServiceDetails() {
                             alt=""
                             className="h-20 md:h-64 w-full object-cover transition-transform duration-700 ease-out hover:scale-110"
                         />
-                        <div className="absolute right-4 top-4 flex gap-2">
+                        {/* <div className="absolute right-4 top-4 flex gap-2">
                             <button type="button" className="rounded-full bg-white/80 p-2 text-xs text-gray-700 backdrop-blur hover:bg-white" aria-label="Share">
                                 <FiArrowUpRight />
                             </button>
@@ -94,11 +96,11 @@ export function CategoryServiceDetails() {
                             <button type="button" className="rounded-full bg-white/80 p-2 text-xs text-gray-700 backdrop-blur hover:bg-white" aria-label="More">
                                 <FiMoreHorizontal />
                             </button>
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="relative flex flex-col items-start justify-between gap-4 p-6 pt-0 md:flex-row md:items-end">
-                        <div className="md:flex items-end gap-6 -mt-16 md:-mt-32">
+                        <div className="md:flex items-end gap-6 -mt-16 md:-mt-25">
                             <div className="hidden md:flex h-32 w-32 flex-col items-center justify-center rounded-2xl border-4 border-white bg-primary p-3 text-center text-amber-300 shadow-lg sm:h-36 sm:w-36">
                                 <span className="mb-1 text-2xl">♛</span>
                                 <span className="font-serif text-xl font-bold leading-tight tracking-widest text-white">{serviceRecord?.service_name?.trim().split(/\s+/)[0]}</span>
@@ -126,7 +128,7 @@ export function CategoryServiceDetails() {
                         </div>
 
                         <div className="flex w-full items-center gap-3 md:w-auto">
-                            <button
+                            {/* <button
                                 type="button"
                                 className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-xs font-medium text-primary transition hover:bg-[#FDF2F7] md:flex-none"
                             >
@@ -137,7 +139,7 @@ export function CategoryServiceDetails() {
                                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-xs font-medium text-white transition hover:bg-[#80003B] md:flex-none"
                             >
                                 <FiMessageCircle /> Message
-                            </button>
+                            </button> */}
                         </div>
                     </div>
 
@@ -151,12 +153,12 @@ export function CategoryServiceDetails() {
                             <div className="text-[11px] text-gray-500">Rating</div>
                         </div>
                         <div className="p-4 border-gray-200">
-                            <div className="text-sm font-bold text-gray-800">95%</div>
+                            <div className="text-sm font-bold text-gray-800">Good</div>
                             <div className="text-[11px] text-gray-500">Response Rate</div>
                         </div>
                         <div className="p-4 border-gray-200">
                             <div className="text-sm font-bold text-gray-800">Verified</div>
-                            <div className="text-[11px] text-gray-500">{serviceRecord?.verification_status?.business ? "Business" : "-"}</div>
+                            <div className="text-[11px] text-gray-500">{serviceRecord?.verification_status?.aadhar ? "Business" : "-"}</div>
                         </div>
                     </div>
 
@@ -255,79 +257,41 @@ export function CategoryServiceDetails() {
                         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                             <h3 className="mb-4 text-sm font-bold text-gray-900">Timeline</h3>
 
-                            <div className="mb-6 flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-2">
+                            {/* <div className="mb-6 flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-2">
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">R</div>
                                 <input type="text" placeholder="Write something..." className="flex-1 bg-transparent text-xs outline-none" />
                                 <button type="button" className="px-2 text-xs font-medium text-primary">Post</button>
-                            </div>
+                            </div> */}
 
                             <div className="space-y-6">
-                                <div className="border-b border-gray-200 pb-4">
-                                    <div className="mb-2 flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">R</div>
-                                            <div>
-                                                <h5 className="text-xs font-bold text-gray-900">Royal Decorators</h5>
-                                                <span className="text-[10px] text-gray-400">2 days ago</span>
+                                {serviceRecord?.service_timelines && (
+                                    serviceRecord.service_timelines.map((item: any) => (
+                                        <div key={`timelines-record-${item.id}`}>
+                                            <div className="border-b border-gray-200 pb-4">
+                                                <div className="mb-2 flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">{commonUtils.firstLetter(serviceRecord?.service_name)}</div>
+                                                        <div>
+                                                            <h5 className="text-xs font-bold text-gray-900">{serviceRecord?.service_name ?? ''}</h5>
+                                                            <span className="text-[10px] text-gray-400">{commonUtils.timeAgo(item?.updated_at)}</span>
+                                                        </div>
+                                                    </div>
+                                                    {/* <button type="button" className="text-gray-400 hover:text-gray-600" aria-label="Post options">
+                                                        <FiMoreHorizontal />
+                                                    </button> */}
+                                                </div>
+
+                                                <div className="mb-3 text-xs text-gray-700">
+                                                    {helperUtils.hashtagContent(item?.timeline_content)}
+                                                </div>
+                                                {/* <div className="flex items-center gap-4 text-xs text-gray-500">
+                                                    <button type="button" className="flex items-center gap-1 hover:text-primary"><FiHeart /> 128</button>
+                                                    <button type="button" className="flex items-center gap-1 hover:text-primary"><FiMessageCircle /> 12</button>
+                                                </div> */}
                                             </div>
                                         </div>
-                                        <button type="button" className="text-gray-400 hover:text-gray-600" aria-label="Post options">
-                                            <FiMoreHorizontal />
-                                        </button>
-                                    </div>
-
-                                    <p className="mb-3 text-xs text-gray-700">
-                                        A magical evening setup for a royal wedding in Chennai. <br />
-                                        <span className="text-primary hover:underline">#RoyalDecorators</span>
-                                    </p>
-
-                                    <div className="mb-3 grid grid-cols-2 gap-1.5 overflow-hidden rounded-lg">
-
-                                    </div>
-
-                                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                                        <button type="button" className="flex items-center gap-1 hover:text-primary"><FiHeart /> 128</button>
-                                        <button type="button" className="flex items-center gap-1 hover:text-primary"><FiMessageCircle /> 12</button>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div className="mb-2 flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">R</div>
-                                            <div>
-                                                <h5 className="text-xs font-bold text-gray-900">Royal Decorators</h5>
-                                                <span className="text-[10px] text-gray-400">5 days ago</span>
-                                            </div>
-                                        </div>
-                                        <button type="button" className="text-gray-400 hover:text-gray-600" aria-label="Post options">
-                                            <FiMoreHorizontal />
-                                        </button>
-                                    </div>
-
-                                    <p className="mb-3 text-xs text-gray-700">
-                                        When flowers meet creativity, memories are created. <br />
-                                        <span className="text-primary hover:underline">#Decoration #WeddingVibes</span>
-                                    </p>
-
-                                    <div className="relative mb-3 overflow-hidden rounded-lg">
-                                        <img
-                                            src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=600&q=80"
-                                            alt="Video preview"
-                                            className="h-48 w-full object-cover"
-                                        />
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 pl-0.5 text-sm text-primary shadow-md">
-                                                <FiPlay />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                                        <button type="button" className="flex items-center gap-1 hover:text-primary"><FiHeart /> 96</button>
-                                        <button type="button" className="flex items-center gap-1 hover:text-primary"><FiMessageCircle /> 8</button>
-                                    </div>
-                                </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                     </aside>

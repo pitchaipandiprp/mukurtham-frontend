@@ -81,6 +81,22 @@ const getServiceCertificate = async (payload: any) => {
     return await apiService.post<any>("/vendors/get-service-certificate", payload);
 };
 
+/////Service Timeline/////
+const createTimeline = async (payload: any) => {
+    return await apiService.post<any>("/vendors/create-timeline", payload);
+};
+
+const updateTimelineStatus = async (payload: any) => {
+    return await apiService.post<any>("/vendors/update-timeline-status", payload);
+};
+
+const getTimeline = async (payload: any) => {
+    return await apiService.post<any>("/vendors/get-timeline", payload);
+};
+
+const serviceTimelineList = async (payload: any) => {
+    return await apiService.post<any>("/vendors/timeline-list", payload);
+};
 
 export const vendorRoutes = {
     createCategoryService,
@@ -102,4 +118,8 @@ export const vendorRoutes = {
     serviceDateForcalendar,
     createServiceCertificate,
     getServiceCertificate,
+    createTimeline,
+    updateTimelineStatus,
+    getTimeline,
+    serviceTimelineList,
 };
