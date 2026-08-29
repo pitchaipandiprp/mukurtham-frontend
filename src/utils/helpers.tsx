@@ -1,4 +1,7 @@
 const hashtagContent = (content: string) => {
+    if (!content) {
+        return;
+    }
     return content.split(/(#[\w]+)/g).map((part, index) => {
         if (part.startsWith("#")) {
             return (

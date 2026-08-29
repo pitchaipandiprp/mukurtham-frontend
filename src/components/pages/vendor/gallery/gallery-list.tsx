@@ -12,6 +12,7 @@ import TablePagination from "@/components/common/datatable/pagination";
 import { vendorRoutes } from "@/services/api/vendor.routes";
 import { constants } from "@/utils/constants";
 import { sweetalert } from "@/utils/sweetalert";
+import { helperUtils } from "@/utils/helpers";
 import { apiConfig } from "@/environments/api";
 
 
@@ -145,6 +146,12 @@ export default function GalleryList() {
                         </div>
                     );
                 },
+            },
+            {
+                accessorKey: "gallery_description",
+                header: "Timeline",
+                size: 10,
+                cell: ({ row }) => helperUtils.hashtagContent(row?.original?.gallery_description) || '-',
             },
             {
                 accessorKey: "status",

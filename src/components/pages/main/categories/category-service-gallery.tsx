@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { FiPlay } from "react-icons/fi";
-
+import { useEffect, useState } from "react";
+import { Play } from "lucide-react";
 import MediaViewer from "@/components/common/gallery-viewer/media-viewer";
-import MediaGalleryViewer from "@/components/common/gallery-viewer/media-gallery-viewer";
 import mainRoutes from "@/services/api/main.routes";
 import { apiConfig } from "@/environments/api";
+import { common as commonUtils } from "@/utils/common";
+import { helperUtils } from "@/utils/helpers";
 
 type GalleryRecord = {
     id: number;
     gallery_type: "image" | "video";
     gallery_image: string | null;
     gallery_video: string | null;
+    gallery_description?: string | null;
+    updated_at: any;
 };
 
 type GalleryMedia = {
@@ -32,18 +33,9 @@ export function CategoryServiceGallery({
     serviceRecord,
 }: Props) {
     const BACKEND_BASE_URL = apiConfig.baseUrl;
-
     const [galleryRecords, setGalleryRecords] = useState<GalleryRecord[]>([]);
-    const [isGalleryTypeTabOpen, setIsGalleryTypeTabOpen] = useState("all");
-    const [galleryFilterRecords, setGalleryFilterRecords] = useState<GalleryRecord[]>([]);
-
-    const [selectedGallery, setSelectedGallery] =
-        useState<GalleryMedia | null>(null);
-
-    const [allGalleryMedia, setAllGalleryMedia] =
-        useState<GalleryMedia[]>([]);
-
-    const [showMediaGalleryViewer, setShowMediaGalleryViewer] = useState(false);
+    const [selectedMedia, setSelectedMedia] = useState<GalleryMedia | null>(null);
+    const [timelineExpanded, setTimelineExpanded] = useState<number | null>(null);
 
     useEffect(() => {
         if (categoryServiceId) {
@@ -57,251 +49,183 @@ export function CategoryServiceGallery({
                 return;
             }
 
-            const result = await mainRoutes.galleryRecords({
-                category_service_id: categoryServiceId,
-            });
+            const result =
+                await mainRoutes.galleryRecords({
+                    category_service_id:
+                        categoryServiceId,
+                });
 
             if (!result?.success) {
                 return;
             }
 
-            const records: GalleryRecord[] = result.data ?? [];
-
-            setGalleryRecords(records);
-            setGalleryFilterRecords(records);
-
-            /*
-             * Prepare image + video data for viewer
-             */
-            const mediaRecords: GalleryMedia[] = records
-                .filter((record) => record.gallery_image)
-                .map((record) => ({
-                    type: record.gallery_type,
-                    image: `${BACKEND_BASE_URL}/${record.gallery_image}`,
-                    video: record.gallery_video
-                        ? `${BACKEND_BASE_URL}/${record.gallery_video}`
-                        : undefined,
-                }));
-
-            setAllGalleryMedia(mediaRecords);
-
-        } catch (caughtError) {
+            setGalleryRecords(
+                result.data ?? []
+            );
+        } catch (error) {
             console.error(
                 "Failed to load gallery records:",
-                caughtError
+                error
             );
         }
     };
 
-    const galleryTypeChange = (type: string) => {
-        setIsGalleryTypeTabOpen(type);
-
-        if (type === "all") {
-            setGalleryFilterRecords(galleryRecords);
-            return;
+    const getImageUrl = (
+        image: string | null
+    ) => {
+        if (!image) {
+            return "";
         }
 
-        const filteredRecords = galleryRecords.filter(
-            (record) => record.gallery_type === type
-        );
-
-        setGalleryFilterRecords(filteredRecords);
+        return `${BACKEND_BASE_URL}/${image}`;
     };
 
-    const getImageUrl = (record: GalleryRecord) => {
-        if (!record.gallery_image) {
-            return undefined;
+    const getVideoUrl = (
+        video: string | null
+    ) => {
+        if (!video) {
+            return "";
         }
 
-        return `${BACKEND_BASE_URL}/${record.gallery_image}`;
-    };
-
-    const getVideoUrl = (record: GalleryRecord) => {
-        if (!record.gallery_video) {
-            return undefined;
-        }
-
-        return `${BACKEND_BASE_URL}/${record.gallery_video}`;
+        return `${BACKEND_BASE_URL}/${video}`;
     };
 
     return (
         <>
-            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+            <div className="mx-auto w-full max-w-122122">
 
-                {/* Tabs */}
-                <div className="mb-4 flex items-center justify-between">
+                {/* Header */}
+                <div className="mb-4 flex items-center">
+                    <h2 className="text-lg font-semibold text-gray-800">
+                        Gallery
+                    </h2>
+                </div>
 
-                    <div className="flex items-center">
+                {/* Instagram Feed */}
+                <div className="max-h-[500px] overflow-y-auto space-y-5 pr-2">
 
-                        <button
-                            type="button"
-                            className={`cursor-pointer rounded px-3 py-1 mr-2 text-[11px] ${isGalleryTypeTabOpen === "all"
-                                ? "bg-primary text-white"
-                                : "bg-gray-300 text-gray-600 hover:bg-pink-50"
-                                }`}
-                            onClick={() =>
-                                galleryTypeChange("all")
+                    {galleryRecords.map(
+                        (record) => {
+
+                            const imageUrl =
+                                getImageUrl(
+                                    record.gallery_image
+                                );
+
+                            const videoUrl =
+                                getVideoUrl(
+                                    record.gallery_video
+                                );
+
+                            if (!imageUrl) {
+                                return null;
                             }
-                        >
-                            All
-                        </button>
 
-                        <button
-                            type="button"
-                            className={`cursor-pointer rounded px-3 py-1 mr-2 text-[11px] ${isGalleryTypeTabOpen === "image"
-                                ? "bg-primary text-white"
-                                : "bg-gray-300 text-gray-600 hover:bg-pink-50"
-                                }`}
-                            onClick={() =>
-                                galleryTypeChange("image")
-                            }
-                        >
-                            Photo
-                        </button>
+                            return (
+                                <div
+                                    key={`galery-records-${record.id}`}
+                                    className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+                                >
 
-                        <button
-                            type="button"
-                            className={`cursor-pointer rounded px-3 py-1 mr-2 text-[11px] ${isGalleryTypeTabOpen === "video"
-                                ? "bg-primary text-white"
-                                : "bg-gray-300 text-gray-600 hover:bg-pink-50"
-                                }`}
-                            onClick={() =>
-                                galleryTypeChange("video")
-                            }
-                        >
-                            Video
-                        </button>
+                                    {/* Header */}
+                                    <div className="flex items-center gap-3 px-4 py-3">
 
-                    </div>
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
+                                            {serviceRecord?.service_name
+                                                ?.charAt(0)
+                                                ?.toUpperCase() ??
+                                                "M"}
+                                        </div>
 
-                    <button
-                        type="button"
-                        className="cursor-pointer text-xs font-medium text-primary hover:underline"
-                        onClick={() =>
-                            setShowMediaGalleryViewer(true)
+                                        <div>
+                                            <div className="text-sm font-semibold text-gray-800">
+                                                {serviceRecord?.service_name ??
+                                                    "Gallery"}
+                                            </div>
+                                            <span className="text-xs text-gray-400">{commonUtils.timeAgo(record?.updated_at)}</span>
+                                        </div>
+
+                                    </div>
+
+                                    {/* Media */}
+                                    <div
+                                        className="relative mx-auto w-full max-w-[450px] cursor-pointer overflow-hidden bg-black"
+                                        onClick={() =>
+                                            setSelectedMedia({
+                                                type: record.gallery_type,
+                                                image: imageUrl,
+                                                video: videoUrl || undefined,
+                                            })
+                                        }
+                                    >
+                                        <img
+                                            src={imageUrl}
+                                            alt="Gallery"
+                                            className="h-[250px] w-full object-cover"
+                                        />
+
+                                        {record.gallery_type === "video" && (
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-black/60 text-white shadow-xl backdrop-blur-sm">
+                                                    <Play
+                                                        size={26}
+                                                        className="ml-1 fill-current"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Bottom */}
+                                    <div className="px-4 py-3">
+                                        {record.gallery_description && (
+                                            <>
+                                                <div
+                                                    className={`text-xs leading-5 text-gray-500 ${timelineExpanded === record.id
+                                                        ? ""
+                                                        : "line-clamp-2"
+                                                        }`}
+                                                >
+                                                    {helperUtils.hashtagContent(
+                                                        record.gallery_description
+                                                    )}
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setTimelineExpanded(
+                                                            timelineExpanded === record.id
+                                                                ? null
+                                                                : record.id
+                                                        )
+                                                    }
+                                                    className="mt-1 text-xs font-medium text-primary hover:underline cursor-pointer"
+                                                >
+                                                    {timelineExpanded === record.id
+                                                        ? "Read less"
+                                                        : "Read more"}
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+
+                                </div>
+                            );
                         }
-                    >
-                        View All
-                    </button>
+                    )}
 
                 </div>
 
-                {/* Gallery */}
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={isGalleryTypeTabOpen}
-                        initial={{
-                            opacity: 0,
-                            y: 15,
-                        }}
-                        animate={{
-                            opacity: 1,
-                            y: 0,
-                        }}
-                        exit={{
-                            opacity: 0,
-                            y: -15,
-                        }}
-                        transition={{
-                            duration: 0.3,
-                        }}
-                        className="grid grid-cols-2 gap-3 sm:grid-cols-5"
-                    >
-
-                        {galleryFilterRecords.map(
-                            (record, index) => {
-
-                                const imageUrl =
-                                    getImageUrl(record);
-
-                                const videoUrl =
-                                    getVideoUrl(record);
-
-                                if (!imageUrl) {
-                                    return null;
-                                }
-
-                                return (
-                                    <motion.div
-                                        key={`gallery-${record.id ?? index}`}
-                                        className="relative h-24 w-full cursor-pointer overflow-hidden rounded-lg"
-                                        initial={{
-                                            opacity: 0,
-                                            scale: 0.9,
-                                        }}
-                                        animate={{
-                                            opacity: 1,
-                                            scale: 1,
-                                        }}
-                                        transition={{
-                                            duration: 0.25,
-                                            delay: index * 0.05,
-                                        }}
-                                        whileHover={{
-                                            scale: 1.05,
-                                        }}
-                                        onClick={() => {
-                                            setSelectedGallery({
-                                                type: record.gallery_type,
-                                                image: imageUrl,
-                                                video: videoUrl,
-                                            });
-                                        }}
-                                    >
-
-                                        {/* Thumbnail */}
-                                        <img
-                                            src={imageUrl}
-                                            alt={
-                                                record.gallery_type ===
-                                                    "video"
-                                                    ? "Video thumbnail"
-                                                    : "Gallery"
-                                            }
-                                            className="h-full w-full object-cover"
-                                        />
-
-                                        {/* Video Play Icon */}
-                                        {record.gallery_type ===
-                                            "video" && (
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-lg">
-                                                        <FiPlay
-                                                            size={20}
-                                                            className="ml-0.5 fill-current"
-                                                        />
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                    </motion.div>
-                                );
-                            }
-                        )}
-
-                    </motion.div>
-                </AnimatePresence>
-
-                {/* Single Image / Video Viewer */}
-                <MediaViewer
-                    media={selectedGallery}
-                    onClose={() =>
-                        setSelectedGallery(null)
-                    }
-                />
-
-                {/* View All */}
-                {showMediaGalleryViewer && (
-                    <MediaGalleryViewer
-                        media={allGalleryMedia}
-                        initialIndex={0}
-                        onClose={() =>
-                            setShowMediaGalleryViewer(false)
-                        }
-                    />
-                )}
-
             </div>
+
+            {/* Viewer */}
+            <MediaViewer
+                media={selectedMedia}
+                onClose={() =>
+                    setSelectedMedia(null)
+                }
+            />
         </>
     );
 }
