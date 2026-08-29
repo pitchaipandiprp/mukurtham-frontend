@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Pencil, Trash2, CheckCircle2, XCircle, ArrowRight, ChevronRight, } from "lucide-react";
+import { Pencil, Trash2, CheckCircle2, XCircle, Play, ChevronRight, } from "lucide-react";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import DataTable from "@/components/common/datatable/datatable";
 import TableSearch from "@/components/common/datatable/searchbox";
@@ -116,12 +116,33 @@ export default function GalleryList() {
                 header: "Image/Video",
                 cell: ({ row }) => {
                     const BACKEND_BASE_URL = apiConfig.baseUrl;
-                    return row.original.gallery_image ? (
-                        <img src={row.original.gallery_image ? `${BACKEND_BASE_URL}/${row.original.gallery_image}` : undefined} alt="Gallery" className="h-25 w-35 object-cover" />
-                    ) : row.original.gallery_video ? (
-                        <video src={row.original.gallery_video} className="h-10 w-10 object-cover" controls />
-                    ) : (
-                        "-"
+
+                    const isVideo = row.original.gallery_type === "video";
+
+                    const fileUrl = isVideo
+                        ? `${BACKEND_BASE_URL}/${row.original.gallery_video}`
+                        : `${BACKEND_BASE_URL}/${row.original.gallery_image}`;
+
+                    const thumbnailUrl = isVideo
+                        ? `${BACKEND_BASE_URL}/${row.original.gallery_image}`
+                        : fileUrl;
+
+                    return (
+                        <div className="relative h-25 w-35 overflow-hidden rounded">
+                            <img
+                                src={thumbnailUrl}
+                                alt={isVideo ? "Video thumbnail" : "Gallery"}
+                                className="h-full w-full object-cover"
+                            />
+
+                            {isVideo && (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white">
+                                        <Play className="h-5 w-5 fill-current" />
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                     );
                 },
             },
