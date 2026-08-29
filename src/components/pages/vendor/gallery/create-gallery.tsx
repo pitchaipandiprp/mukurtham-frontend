@@ -12,9 +12,7 @@ import { ChevronRight } from "lucide-react";
 
 type GalleryForm = {
     category_service_id: string;
-    gallery_type: string;
-    gallery_image: string;
-    gallery_video: string;
+    gallery_file: string;
     status: string;
 };
 
@@ -28,22 +26,18 @@ export default function CreateGallery() {
 
     const initialForm: GalleryForm = {
         category_service_id: String(categoryServiceId),
-        gallery_type: "",
-        gallery_image: "",
-        gallery_video: "",
+        gallery_file: "",
         status: "1",
     };
 
     const router = useRouter();
     const [form, setForm] = useState<GalleryForm>(initialForm);
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [galleryImagePreview, setGalleryImagePreview] = useState<string | null>(null);
     const isEditMode = Boolean(galleryId);
-    const inputClass = constants.inputClass;
     const buttonClass = constants.buttonClass;
-    const buttonClassSubmit = constants.buttonClassSubmit;
     const [categoryServiceData, setCategoryServiceData] = useState<any>(null);
+    const [galleryData, setGalleryData] = useState<any>(null);
+    const BACKEND_BASE_URL = apiConfig.baseUrl;
 
     useEffect(() => {
         if (categoryServiceId) {
@@ -53,7 +47,7 @@ export default function CreateGallery() {
 
     useEffect(() => {
         if (galleryId) {
-            loadGallery();
+            getGallery();
         }
     }, [galleryId]);
 
@@ -65,12 +59,11 @@ export default function CreateGallery() {
         setCategoryServiceData(response?.data ?? null);
     };
 
-    const loadGallery = async () => {
-        setError("");
+    const getGallery = async () => {
 
         try {
             if (!galleryId) {
-                setError("Invalid gallery ID");
+                sweetalert.toastError("Invalid gallery ID");
                 return;
             }
 
@@ -83,96 +76,58 @@ export default function CreateGallery() {
             if (!result.data || result.data.length === 0) {
                 const swalConfirm = await sweetalert.warning("Something went wrong");
                 if (swalConfirm.isConfirmed) {
-                    router.push("/panel/gallery-list");
+                    router.push("/panel/gallery-list?serviceId=" + categoryServiceId);
                 }
             }
 
-            const galleryData = result.data;
-            const BACKEND_BASE_URL = apiConfig.baseUrl;
+            const resultData = result.data;
+            setGalleryData(resultData);
 
             setForm({
-                category_service_id: galleryData.category_service_id ?? "",
-                gallery_type: galleryData.gallery_type ?? "",
-                gallery_image: galleryData.gallery_image ?? "",
-                gallery_video: galleryData.gallery_video ?? "",
-                status: galleryData.status,
+                category_service_id: resultData.category_service_id ?? "",
+                gallery_file: resultData.gallery_file ?? "",
+                status: resultData.status,
             });
 
-            setGalleryImagePreview(galleryData.gallery_image ? `${BACKEND_BASE_URL}/${galleryData.gallery_image}` : null);
+            // setGalleryImagePreview(resultData.gallery_image ? `${BACKEND_BASE_URL}/${resultData.gallery_image}` : null);
         } catch (caughtError) {
             console.error("Failed to load category service:", caughtError);
         } finally {
         }
     };
 
-    const handleGalleryImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0] || null;
+    const handleGalleryFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
 
         if (!file) {
             return;
         }
 
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-            setError("Please select a valid image");
+        if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+            sweetalert.toastError("Please select a valid image or video");
+            event.target.value = "";
             return;
         }
-
-        // Validate file size - 5MB
-        if (file.size > 5 * 1024 * 1024) {
-            setError("Banner image must be less than 5MB");
-            return;
-        }
-
-        setError("");
 
         setForm((prev: any) => ({
             ...prev,
-            gallery_image: file,
+            gallery_file: file,
         }));
 
-        setGalleryImagePreview(URL.createObjectURL(file));
+        await handleSubmit(file);
     };
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        setError("");
-
-        if (!form.category_service_id) {
-            setError("Category Service is required");
-            return;
-        }
-
-        if (!form.gallery_type.trim()) {
-            setError("Gallery Type is required");
-            return;
-        }
-
-        if (!form.gallery_image) {
-            setError("Gallery Image is required");
-            return;
-        }
-
+    const handleSubmit = async (file: File) => {
         setLoading(true);
 
-        //Create a FormData object to send the data as multipart/form-data
         const formData = new FormData();
 
-        formData.append("category_service_id", form.category_service_id);
-        formData.append("gallery_type", form.gallery_type);
-        // formData.append("gallery_video", form.gallery_video);
+        formData.append("category_service_id", String(form.category_service_id));
+        formData.append("gallery_file", file);
+        formData.append("status", String(form.status));
 
-        if (form.gallery_image) {
-            formData.append(
-                "gallery_image",
-                form.gallery_image
-            );
-        }
-
-
-        formData.append("status", form.status);
         if (isEditMode) {
-            formData.append("id", galleryId!);
+            formData.append("id", String(galleryId));
         }
 
         try {
@@ -180,19 +135,14 @@ export default function CreateGallery() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
+                router.push("/panel/gallery-list?serviceId=" + categoryServiceId);
             }
         } catch (caughtError) {
             console.error("Create gallery failed:", caughtError);
+            sweetalert.toastError("Gallery upload failed");
         } finally {
             setLoading(false);
         }
-    }
-
-    const updateField = (field: keyof GalleryForm, value: string) => {
-        setForm((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
     };
 
     return (
@@ -213,69 +163,48 @@ export default function CreateGallery() {
             </div>
 
             <div className="min-h-full px-4 py-4 rounded-xl border border-primary/10 bg-white shadow-sm">
-                <form onSubmit={handleSubmit}>
+                <form>
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
-
-                        <div className="md:col-span-4">
-                            <label htmlFor="galleryType" className="mb-2 block text-sm font-medium text-gray-700">
-                                Gallery Type
+                        <div className="md:col-span-12">
+                            <label htmlFor="galleryFile" className="mb-2 block text-sm font-medium text-gray-700">
+                                Upload Image / Video
                             </label>
-                            <select
-                                id="galleryType"
-                                value={form.gallery_type}
-                                onChange={(event) => updateField("gallery_type", event.target.value)}
-                                className={inputClass}
-                            >
-                                <option value="">Select Gallery Type</option>
-                                <option value="image">Image</option>
-                                <option value="video">Video</option>
-                            </select>
-                        </div>
 
-                        <div className="md:col-span-4">
-                            <label htmlFor="galleryImage" className="mb-2 block text-sm font-medium text-gray-700">
-                                Gallery Image
-                            </label>
                             <div className="flex items-center gap-3">
                                 <label
-                                    htmlFor="galleryImage"
-                                    className={buttonClass}
+                                    htmlFor="galleryFile"
+                                    className={`${buttonClass} ${loading ? "pointer-events-none opacity-50" : ""}`}
                                 >
-                                    Browse
+                                    {loading ? "Uploading..." : "Browse"}
                                 </label>
 
                                 <input
-                                    id="galleryImage"
+                                    id="galleryFile"
                                     type="file"
-                                    accept="image/jpeg,image/png,image/webp"
-                                    onChange={handleGalleryImageChange}
+                                    accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+                                    onChange={handleGalleryFileChange}
                                     className="hidden"
+                                    disabled={loading}
                                 />
-
-                                <span className="text-sm text-slate-500">
-                                    {form.gallery_image ? '' : "No image selected"}
-                                </span>
                             </div>
-                            {galleryImagePreview && (
-                                <div className="mt-5">
-                                    <img
-                                        src={galleryImagePreview}
-                                        alt="Gallery Image Preview"
-                                        className="h-15 w-50 rounded-xl object-cover shadow-md"
-                                    />
-                                </div>
+                        </div>
+                        <div className="md:col-span-12">
+                            {galleryData?.gallery_type === "image" && galleryData?.gallery_image && (
+                                <img
+                                    src={`${BACKEND_BASE_URL}/${galleryData.gallery_image}`}
+                                    alt="Gallery"
+                                    className="h-56 w-56 rounded-lg object-cover"
+                                />
+                            )}
+
+                            {galleryData?.gallery_type === "video" && galleryData?.gallery_video && (
+                                <video
+                                    src={`${BACKEND_BASE_URL}/${galleryData.gallery_video}`}
+                                    controls
+                                    className="h-56 w-56 rounded-lg object-cover"
+                                />
                             )}
                         </div>
-
-                        <div className="md:col-span-4">
-                            <button type="submit" className={`mt-8 ${buttonClassSubmit}`} disabled={loading}>
-                                {loading ? "Saving..." : "Save"}
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
-                        {error && <div className="md:col-span-12 text-sm text-rose-600">{error}</div>}
                     </div>
                 </form>
             </div>

@@ -25,19 +25,20 @@ export function MainFooter() {
                         <h4 className="mb-3 text-sm font-semibold">Quick Links</h4>
                         <ul className="space-y-2 text-sm text-white/90">
                             <li><Link href="/" className="transition hover:text-yellow-200">Home</Link></li>
-                            <li><Link href="/new-design" className="transition hover:text-yellow-200">Vendors</Link></li>
-                            <li><Link href="/new-design" className="transition hover:text-yellow-200">Venues</Link></li>
-                            <li><Link href="/new-design" className="transition hover:text-yellow-200">Planner</Link></li>
+                            <li><Link href="/about-us" className="transition hover:text-yellow-200">About</Link></li>
+                            <li><Link href="/service-search" className="transition hover:text-yellow-200">Venues</Link></li>
+                            <li><Link href="/service-search" className="transition hover:text-yellow-200">Categories</Link></li>
+                            <li><Link href="/contact-us" className="transition hover:text-yellow-200">Contact</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="mb-3 text-sm font-semibold">Services</h4>
                         <ul className="space-y-2 text-sm text-white/90">
-                            <li><Link href="/new-design" className="transition hover:text-yellow-200">Wedding Decor</Link></li>
-                            <li><Link href="/new-design" className="transition hover:text-yellow-200">Photography</Link></li>
-                            <li><Link href="/new-design" className="transition hover:text-yellow-200">Catering</Link></li>
-                            <li><Link href="/new-design" className="transition hover:text-yellow-200">Bridal Makeup</Link></li>
+                            <li><Link href="/service-search?search=Wedding" className="transition hover:text-yellow-200">Wedding Decor</Link></li>
+                            <li><Link href="/service-search?search=Photography" className="transition hover:text-yellow-200">Photography</Link></li>
+                            <li><Link href="/service-search?search=Catering" className="transition hover:text-yellow-200">Catering</Link></li>
+                            <li><Link href="/service-search?search=Decoration" className="transition hover:text-yellow-200">Bridal Makeup</Link></li>
                         </ul>
                     </div>
 

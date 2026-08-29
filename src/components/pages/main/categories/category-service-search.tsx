@@ -325,7 +325,7 @@ export default function CategoryServiceSearch() {
                             onChange={handleCategoryChange}
                             className="w-full bg-transparent py-2 border-none focus:outline-none"
                         >
-                            <option value="">Select Category</option>
+                            <option value="">All</option>
                             {categoryList.map((item) => (
                                 <option key={`category-${item.id}`} value={item.id}>
                                     {item.name}

@@ -55,9 +55,14 @@ export default function PanelSidebar({
                 }`}
         >
             <div className="w-20 bg-primary border-r border-primary-darker/60 flex flex-col justify-between items-center py-5 shrink-0 z-20">
-                <div className="h-10 w-10 rounded-2xl bg-white text-primary flex items-center justify-center shadow-lg shadow-black/20 font-black">
+                {/* <div className="h-10 w-10 rounded-2xl bg-white text-primary flex items-center justify-center shadow-lg shadow-black/20 font-black">
                     <Sparkles className="w-6 h-6 text-primary" />
+                </div> */}
+
+                <div className="h-12 w-12 bg-white rounded-lg">
+                    <img src="/images/logo-sm.jpg" className="rounded-lg" />
                 </div>
+
 
                 <nav className="space-y-4 my-auto w-full px-2 py-5 h-full">
                     {items.map((item) => {
