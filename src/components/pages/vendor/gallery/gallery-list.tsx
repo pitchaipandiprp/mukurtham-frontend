@@ -150,7 +150,9 @@ export default function GalleryList() {
             {
                 accessorKey: "gallery_description",
                 header: "Timeline",
-                size: 10,
+                size: 300,
+                minSize: 300,
+                maxSize: 300,
                 cell: ({ row }) => helperUtils.hashtagContent(row?.original?.gallery_description) || '-',
             },
             {
@@ -257,6 +259,7 @@ export default function GalleryList() {
                     table={table}
                     loading={loading}
                     emptyMessage="No Records Found"
+                    tableClass="table-fixed"
                 />
 
                 <TablePagination

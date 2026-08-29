@@ -12,6 +12,7 @@ interface DataTableProps<TData> {
     loading?: boolean;
     emptyMessage?: string;
     loadingMessage?: string;
+    tableClass?: string;
 }
 
 export default function DataTable<TData>({
@@ -19,13 +20,14 @@ export default function DataTable<TData>({
     loading = false,
     emptyMessage = "No records found.",
     loadingMessage = "Loading...",
+    tableClass = "",
 }: DataTableProps<TData>) {
     const columnCount = table.getAllColumns().length;
 
     return (
         <div className="overflow-hidden rounded-b rounded-xl border border-slate-200 bg-white shadow-sm mb-0">
             <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className={`w-full text-sm ${tableClass}`}>
                     <thead className="bg-primary-light text-white">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <tr key={headerGroup.id}>
