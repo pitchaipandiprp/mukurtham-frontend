@@ -11,7 +11,7 @@ import TableSearch from "@/components/common/datatable/searchbox";
 import TablePagination from "@/components/common/datatable/pagination";
 import { constants } from "@/utils/constants";
 import { sweetalert } from "@/utils/sweetalert";
-
+import { prefixUrl } from "@/utils/constants"
 
 
 const PAGE_SIZE = 10;
@@ -136,7 +136,7 @@ export default function VendorList() {
                     const isApproved = Number(row.original.status) === 1;
                     return (
                         <>
-                            <Link href={`/panel/vendor-business-list?vendorId=${row.original.id}`}>
+                            <Link href={`${prefixUrl.admin}/vendor-business-list?vendorId=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Vendor Business List"
@@ -165,7 +165,7 @@ export default function VendorList() {
                                 </button>
                             )}
 
-                            <Link href={`/panel/create-vendor?id=${row.original.id}`}>
+                            <Link href={`${prefixUrl.admin}/create-vendor?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -208,7 +208,6 @@ export default function VendorList() {
                         onChange={setSearchInput}
                         placeholder="Search..."
                     />
-                    {/* <Link href="/panel/create-vendor" className={buttonClass}> Add Vendor </Link> */}
                 </div>
 
 

@@ -14,7 +14,7 @@ import { constants } from "@/utils/constants";
 import { sweetalert } from "@/utils/sweetalert";
 import { helperUtils } from "@/utils/helpers";
 import { apiConfig } from "@/environments/api";
-
+import { prefixUrl } from "@/utils/constants"
 
 
 const PAGE_SIZE = 10;
@@ -200,7 +200,7 @@ export default function GalleryList() {
                                 </button>
                             )}
 
-                            <Link href={`/panel/create-gallery?serviceId=${categoryServiceId ?? ""}&id=${row.original.id}`}>
+                            <Link href={`${prefixUrl.vendor}/create-gallery?serviceId=${categoryServiceId ?? ""}&id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -240,7 +240,7 @@ export default function GalleryList() {
 
                     <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 mt-2" />
 
-                    <Link href={`/panel/category-service-list`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
+                    <Link href={`${prefixUrl.vendor}/category-service-list`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
                 </div>
             </div>
 
@@ -251,7 +251,7 @@ export default function GalleryList() {
                         onChange={setSearchInput}
                         placeholder="Search..."
                     />
-                    <Link href={`/panel/create-gallery?serviceId=${categoryServiceId ?? ""}`} className={buttonClass}> Add Gallery </Link>
+                    <Link href={`${prefixUrl.vendor}/create-gallery?serviceId=${categoryServiceId ?? ""}`} className={buttonClass}> Add Gallery </Link>
                 </div>
 
 

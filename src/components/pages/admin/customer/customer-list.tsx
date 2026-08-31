@@ -11,7 +11,7 @@ import TableSearch from "@/components/common/datatable/searchbox";
 import TablePagination from "@/components/common/datatable/pagination";
 import { constants } from "@/utils/constants";
 import { sweetalert } from "@/utils/sweetalert";
-
+import { prefixUrl } from "@/utils/constants"
 
 
 const PAGE_SIZE = 10;
@@ -156,7 +156,7 @@ export default function CustomerList() {
                                 </button>
                             )}
 
-                            <Link href={`/panel/create-customer?id=${row.original.id}`}>
+                            <Link href={`${prefixUrl.admin}/create-customer?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -199,7 +199,6 @@ export default function CustomerList() {
                         onChange={setSearchInput}
                         placeholder="Search..."
                     />
-                    {/* <Link href="/panel/create-customer" className={buttonClass}> Add Customer </Link> */}
                 </div>
 
 

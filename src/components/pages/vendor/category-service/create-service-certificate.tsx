@@ -9,6 +9,7 @@ import { constants } from "@/utils/constants";
 import { vendorRoutes } from "@/services/api/vendor.routes";
 import { apiConfig } from "@/environments/api";
 import { ChevronRight } from "lucide-react";
+import { prefixUrl } from "@/utils/constants"
 
 type CertificateForm = {
     category_service_id: string;
@@ -315,7 +316,7 @@ export default function CreateServiceCertificate() {
 
                     <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 mt-2" />
 
-                    <Link href={`/panel/category-service-list`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
+                    <Link href={`${prefixUrl.vendor}/category-service-list`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
                 </div>
             </div>
 

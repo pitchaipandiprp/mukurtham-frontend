@@ -140,7 +140,7 @@ export default function CustomerDashboard() {
                         </div>
 
                         <Link
-                            href="/panel/bookings"
+                            href="#"
                             className="text-xs font-semibold text-primary transition hover:text-primary-dark"
                         >
                             View All
@@ -237,7 +237,7 @@ export default function CustomerDashboard() {
 
 
                     <Link
-                        href="/panel/profile"
+                        href="#"
                         className="mt-6 flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
                     >
                         View Profile

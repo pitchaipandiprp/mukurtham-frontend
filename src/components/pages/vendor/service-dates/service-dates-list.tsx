@@ -12,6 +12,7 @@ import { vendorRoutes } from "@/services/api/vendor.routes";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
+import { prefixUrl } from "@/utils/constants"
 
 const PAGE_SIZE = 10;
 
@@ -128,7 +129,7 @@ export default function ServiceDatesList() {
                     ) : (
                         <button type="button" onClick={() => handleStatusUpdate(row.original, "approve")} title="Approve" className={`mr-4 ${buttonClassGreen}`}><CheckCircle2 className="h-4 w-4" /></button>
                     )}
-                    <Link href={`/panel/create-service-dates?serviceId=${categoryServiceId ?? ""}&id=${row.original.id}`} className={`mr-4 inline-flex ${buttonClassBlue}`} title="Edit"><Pencil className="h-4 w-4" /></Link>
+                    <Link href={`${prefixUrl.admin}/create-service-dates?serviceId=${categoryServiceId ?? ""}&id=${row.original.id}`} className={`mr-4 inline-flex ${buttonClassBlue}`} title="Edit"><Pencil className="h-4 w-4" /></Link>
                     <button type="button" className={buttonClassRed} title="Delete" onClick={() => handleStatusUpdate(row.original, "delete")}><Trash2 className="h-4 w-4" /></button>
                 </>;
             },
@@ -147,13 +148,13 @@ export default function ServiceDatesList() {
 
                     <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 mt-2" />
 
-                    <Link href={`/panel/category-service-list`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
+                    <Link href={`${prefixUrl.vendor}/category-service-list`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
                 </div>
             </div>
             <section className="space-y-5">
                 <div className="mb-0 flex items-center justify-between gap-4">
                     <TableSearch value={searchInput} onChange={setSearchInput} placeholder="Search Date..." />
-                    <Link href={`/panel/create-service-dates?serviceId=${categoryServiceId ?? ""}`} className={buttonClass}>Add Date</Link>
+                    <Link href={`${prefixUrl.admin}/create-service-dates?serviceId=${categoryServiceId ?? ""}`} className={buttonClass}>Add Date</Link>
                 </div>
                 <DataTable table={table} loading={loading} emptyMessage="No Records Found" />
                 <TablePagination page={page} totalPages={totalPages} totalRecords={totalRecords} loading={loading} onPageChange={setPage} />

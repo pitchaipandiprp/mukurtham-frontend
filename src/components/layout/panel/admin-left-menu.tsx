@@ -5,6 +5,7 @@ import { ShoppingBag, Settings, LayoutDashboard, CreditCard, ShieldCheck, Calend
 import { usePathname } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import PanelSidebar, { type SidebarNavItem, } from "@/components/layout/panel/panel-sidebar";
+import { prefixUrl } from "@/utils/constants"
 
 const navItems: SidebarNavItem[] = [
     {
@@ -12,9 +13,9 @@ const navItems: SidebarNavItem[] = [
         title: "Dashboards",
         icon: LayoutDashboard,
         subItems: [
-            { title: "Dashboard", href: "/panel/dashboard" },
-            { title: "Vendors", href: "/panel/vendor-list" },
-            { title: "Customer", href: "/panel/customer-list" },
+            { title: "Dashboard", href: `${prefixUrl.admin}/dashboard` },
+            { title: "Vendors", href: `${prefixUrl.admin}/vendor-list` },
+            { title: "Customer", href: `${prefixUrl.admin}/customer-list` },
         ],
     },
     {
@@ -22,8 +23,8 @@ const navItems: SidebarNavItem[] = [
         title: "Service",
         icon: CalendarDays,
         subItems: [
-            { title: "Service Date List", href: "/panel/service-date-list" },
-            { title: "Add Service Date", href: "/panel/create-service-date" },
+            { title: "Service Date List", href: `${prefixUrl.admin}/service-date-list` },
+            { title: "Add Service Date", href: `${prefixUrl.admin}/create-service-date` },
         ],
     },
 ];

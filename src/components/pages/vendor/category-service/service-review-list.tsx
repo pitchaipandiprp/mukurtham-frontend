@@ -15,6 +15,7 @@ import { common as commonUtils } from "@/utils/common";
 
 import ReviewSection from "@/components/common/review/review-section";
 import { FiStar } from "react-icons/fi";
+import { prefixUrl } from "@/utils/constants"
 
 const PAGE_SIZE = 10;
 const ratingStars = commonUtils.ratingStars;
@@ -172,7 +173,7 @@ export default function ServiceReviewList() {
                         ))}
                     </div>
 
-                    <Link href="/panel/category-service-list" className={buttonClass}> Service List</Link>
+                    <Link href={`${prefixUrl.vendor}/category-service-list`} className={buttonClass}> Service List</Link>
                 </div>
 
 
@@ -194,8 +195,8 @@ export default function ServiceReviewList() {
                     loading={loading}
                     onPageChange={setPage}
                 />
-            </section>
-        </div>
+            </section >
+        </div >
 
     );
 }

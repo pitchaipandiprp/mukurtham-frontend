@@ -7,6 +7,7 @@ import { ChevronRight } from "lucide-react";
 import { vendorRoutes } from "@/services/api/vendor.routes";
 import { constants } from "@/utils/constants";
 import { sweetalert } from "@/utils/sweetalert";
+import { prefixUrl } from "@/utils/constants"
 
 type ServiceTimelineForm = {
     category_service_id: string;
@@ -67,7 +68,7 @@ export default function CreateServiceTimeline() {
             if (!result.data || result.data.length === 0) {
                 const swalConfirm = await sweetalert.warning("Something went wrong");
                 if (swalConfirm.isConfirmed) {
-                    router.push("/panel/service-timeline-list");
+                    router.push(`${prefixUrl.vendor}/service-timeline-list`);
                 }
                 return;
             }
@@ -111,7 +112,7 @@ export default function CreateServiceTimeline() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
-                router.push("/panel/service-timeline-list?serviceId=" + categoryServiceId);
+                router.push(`${prefixUrl.vendor}/service-timeline-list?serviceId=` + categoryServiceId);
             }
         } catch (caughtError) {
             console.error("Save service timeline failed:", caughtError);
@@ -134,7 +135,7 @@ export default function CreateServiceTimeline() {
                         {categoryServiceData?.service_name ?? ""}
                     </span>
                 </div>
-                <Link href={`/panel/service-timeline-list?serviceId=${categoryServiceId}`} className={buttonClass}> Back</Link>
+                <Link href={`${prefixUrl.vendor}/service-timeline-list?serviceId=${categoryServiceId}`} className={buttonClass}> Back</Link>
             </div>
 
             <div className="min-h-full rounded-xl border border-primary/10 bg-white px-4 py-4 shadow-sm">

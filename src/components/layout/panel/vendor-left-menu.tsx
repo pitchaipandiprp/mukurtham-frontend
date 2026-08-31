@@ -5,32 +5,53 @@ import { ShoppingBag, Settings, LayoutDashboard, } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import PanelSidebar, { type SidebarNavItem, } from "@/components/layout/panel/panel-sidebar";
+import { prefixUrl } from "@/utils/constants"
 
 const navItems: SidebarNavItem[] = [
     {
         id: "dashboard",
         title: "Dashboards",
         icon: LayoutDashboard,
-        href: "/panel/dashboard",
+        href: `/users/dashboard`,
     },
+
     {
         id: "business",
         title: "Business",
         icon: ShoppingBag,
         subItems: [
-            { title: "Business List", href: "/panel/category-service-list" },
-            { title: "Add Business", href: "/panel/create-category-service" },
+            {
+                title: "Business List",
+                href: `${prefixUrl.vendor}/category-service-list`,
+            },
+            {
+                title: "Add Business",
+                href: `${prefixUrl.vendor}/create-category-service`,
+            },
         ],
     },
+
     {
         id: "settings",
         title: "Settings",
         icon: Settings,
         subItems: [
-            { title: "Profile Settings", href: "/panel/change-profile" },
-            { title: "Security & Auth", href: "/panel/change-password" },
-            { title: "Business Profile", href: "/panel/business-profile" },
-            { title: "Verification Documents", href: "/panel/upload-verification-documents" },
+            {
+                title: "Profile Settings",
+                href: `${prefixUrl.vendor}/change-profile`,
+            },
+            {
+                title: "Security & Auth",
+                href: `${prefixUrl.vendor}/change-password`,
+            },
+            {
+                title: "Business Profile",
+                href: `${prefixUrl.vendor}/business-profile`,
+            },
+            {
+                title: "Verification Documents",
+                href: `${prefixUrl.vendor}/upload-verification-documents`,
+            },
         ],
     },
 ];

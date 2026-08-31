@@ -8,9 +8,10 @@ export default function AppHeader() {
 
     const dashboardRoutes = [
         "/panel",
-        "/users",
-        "/vendors",
         "/admin",
+        "/vendor",
+        "/customer",
+        "/users",
         "/login",
     ];
 

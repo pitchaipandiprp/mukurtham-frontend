@@ -10,6 +10,7 @@ import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
 import "react-datepicker/dist/react-datepicker.css";
+import { prefixUrl } from "@/utils/constants"
 
 type ServiceDateForm = {
     date_type: string;
@@ -56,7 +57,7 @@ export default function CreateServiceDate() {
             if (!result.data || result.data.length === 0) {
                 const swalConfirm = await sweetalert.warning("Something went wrong");
                 if (swalConfirm.isConfirmed) {
-                    router.push("/panel/service-date-list");
+                    router.push(`${prefixUrl.admin}/service-date-list`);
                 }
                 return;
             }
@@ -108,7 +109,7 @@ export default function CreateServiceDate() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
-                router.push("/panel/service-date-list");
+                router.push(`${prefixUrl.admin}/service-date-list`);
             }
         } catch (caughtError) {
             console.error("Save service date failed:", caughtError);
@@ -136,7 +137,7 @@ export default function CreateServiceDate() {
                 <span className="text-2xl font-semibold leading-none text-slate-600">
                     {serviceDateId ? "Edit Service Date" : "Service Date"}
                 </span>
-                <Link href="/panel/service-date-list" className={buttonClass}>
+                <Link href={`${prefixUrl.admin}/service-date-list`} className={buttonClass}>
                     Service Date Lists
                 </Link>
             </div>

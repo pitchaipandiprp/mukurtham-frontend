@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { authRoutes } from "@/services/api/auth.routes";
 import { setAuthData } from "@/utils/auth";
 
-export function useLogin(redirectTo = "/panel/dashboard") {
+export function useLogin(redirectTo = "/users/dashboard") {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [sendingOtp, setSendingOtp] = useState(false);

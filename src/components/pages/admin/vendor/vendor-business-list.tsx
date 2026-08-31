@@ -15,6 +15,7 @@ import { common as commonUtils } from "@/utils/common";
 import { apiConfig } from "@/environments/api";
 import { adminRoutes } from "@/services/api/admin.routes";
 import { userRoutes } from "@/services/api/users.routes";
+import { prefixUrl } from "@/utils/constants"
 
 
 
@@ -146,7 +147,7 @@ export default function VendorBusinessList() {
                                 className={`mr-4 ${buttonClassBlue}`}
                                 title="Service Certificate Upload"
                             >
-                                <Link href={`/panel/service-certificates?serviceId=${row.original.id}`}>
+                                <Link href={`${prefixUrl.vendor}/service-certificates?serviceId=${row.original.id}`}>
                                     <FiFileText className="h-4 w-4" />
                                 </Link>
                             </button>
@@ -177,7 +178,7 @@ export default function VendorBusinessList() {
 
                                 <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 mt-2" />
 
-                                <Link href={`/panel/vendor-list`} className="text-base font-medium leading-none text-primary mt-2"> {vendorProfileData?.name} </Link>
+                                <Link href={`${prefixUrl.admin}/vendor-list`} className="text-base font-medium leading-none text-primary mt-2"> {vendorProfileData?.name} </Link>
                             </div>
                         </div>
                     </div>
@@ -283,7 +284,7 @@ export default function VendorBusinessList() {
 
                                         {/* Actions */}
                                         <div className="mt-4 border-t border-gray-200 pt-3">
-                                            <Link href={`/panel/update-service-certificates?vendorId=${vendorId}&serviceId=${item.id}`}>
+                                            <Link href={`${prefixUrl.admin}/update-service-certificates?vendorId=${vendorId}&serviceId=${item.id}`}>
                                                 <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Service Certificate Upload">
                                                     <FiFileText className="h-4 w-4" />
                                                 </button>

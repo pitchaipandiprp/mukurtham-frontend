@@ -13,17 +13,17 @@ export default function MobileBottomNav() {
                     <span className="text-[10px] font-medium">Home</span>
                 </Link>
 
-                <Link href="/panel/bookings" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
+                <Link href="#" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
                     <FiCalendar className="h-5 w-5" />
                     <span className="text-[10px] font-medium">Bookings</span>
                 </Link>
 
-                <Link href="/panel/wishlist" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
+                <Link href="#" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
                     <FiHeart className="h-5 w-5" />
                     <span className="text-[10px] font-medium">Wishlist</span>
                 </Link>
 
-                <Link href="/panel/dashboard" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
+                <Link href="/users/dashboard" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
                     <FiMenu className="h-5 w-5" />
                     <span className="text-[10px] font-medium">Dashboard</span>
                 </Link>

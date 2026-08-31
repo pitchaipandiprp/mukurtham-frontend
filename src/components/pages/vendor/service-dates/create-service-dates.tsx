@@ -10,6 +10,7 @@ import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
 import "react-datepicker/dist/react-datepicker.css";
 import { ChevronRight } from "lucide-react";
+import { prefixUrl } from "@/utils/constants"
 
 type ServiceDateForm = {
     category_service_id: string;
@@ -75,7 +76,7 @@ export default function CreateServiceDates() {
             if (!result.data || result.data.length === 0) {
                 const swalConfirm = await sweetalert.warning("Something went wrong");
                 if (swalConfirm.isConfirmed) {
-                    router.push("/panel/service-dates-list");
+                    router.push(`${prefixUrl.vendor}/service-dates-list`);
                 }
                 return;
             }
@@ -134,7 +135,7 @@ export default function CreateServiceDates() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
-                router.push("/panel/service-dates-list?serviceId=" + categoryServiceId);
+                router.push(`${prefixUrl.vendor}/service-dates-list?serviceId=` + categoryServiceId);
             }
         } catch (caughtError) {
             console.error("Save service date failed:", caughtError);
@@ -157,7 +158,7 @@ export default function CreateServiceDates() {
                         {categoryServiceData?.service_name ?? ""}
                     </span>
                 </div>
-                <Link href={`/panel/service-dates-list?serviceId=${categoryServiceId}`} className={buttonClass}> Back</Link>
+                <Link href={`${prefixUrl.vendor}/service-dates-list?serviceId=${categoryServiceId}`} className={buttonClass}> Back</Link>
             </div>
 
             <div className="min-h-full rounded-xl border border-primary/10 bg-white px-4 py-4 shadow-sm">

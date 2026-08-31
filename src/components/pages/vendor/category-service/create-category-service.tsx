@@ -12,6 +12,7 @@ import commonRoutes from "@/services/api/common.routes";
 import LocalitySelect, { LocalityOption } from "@/components/common/selectbox/locality-select";
 import { apiConfig } from "@/environments/api";
 import LocationPicker from "@/components/common/map/openstreetmap/location-picker";
+import { prefixUrl } from "@/utils/constants"
 
 type CategoryServiceForm = {
     category_id: string;
@@ -147,7 +148,7 @@ export default function CreateCategoryService() {
             if (!result.data || result.data.length === 0) {
                 const swalConfirm = await sweetalert.warning("Something went wrong");
                 if (swalConfirm.isConfirmed) {
-                    router.push("/panel/category-service-list");
+                    router.push(`${prefixUrl.vendor}/category-service-list`);
                 }
             }
 
@@ -480,7 +481,7 @@ export default function CreateCategoryService() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
-                // router.push("/panel/category-service-list");
+                router.push(`${prefixUrl.vendor}/category-service-list`);
             }
         } catch (caughtError) {
             console.error("Create category service failed:", caughtError);
@@ -494,7 +495,7 @@ export default function CreateCategoryService() {
         <div className="d-block">
             <div className="mb-6 ml-1 flex items-center justify-between">
                 <span className="text-2xl font-semibold leading-none text-slate-600">Business / Service</span>
-                <Link href="/panel/category-service-list" className={buttonClass}> Business Lists</Link>
+                <Link href={`${prefixUrl.vendor}/category-service-list`} className={buttonClass}> Business Lists</Link>
             </div>
 
             <div className="min-h-full px-4 py-4 rounded-xl border border-primary/10 bg-white shadow-sm">

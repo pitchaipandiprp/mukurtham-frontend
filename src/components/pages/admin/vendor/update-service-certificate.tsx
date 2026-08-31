@@ -10,6 +10,7 @@ import { adminRoutes } from "@/services/api/admin.routes";
 import { apiConfig } from "@/environments/api";
 import { ChevronRight } from "lucide-react";
 import { userRoutes } from "@/services/api/users.routes";
+import { prefixUrl } from "@/utils/constants"
 
 type CertificateForm = {
     category_service_id: string;
@@ -204,9 +205,9 @@ export default function UpdateServiceCertificate() {
                     </span>
 
                     <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 mt-2" />
-                    <Link href={`/panel/vendor-list`} className="text-base font-medium leading-none text-primary mt-2"> {vendorProfileData?.name ?? ""} </Link>
+                    <Link href={`${prefixUrl.admin}/vendor-list`} className="text-base font-medium leading-none text-primary mt-2"> {vendorProfileData?.name ?? ""} </Link>
                     <ChevronRight className="h-5 w-5 shrink-0 text-slate-400 mt-2" />
-                    <Link href={`/panel/vendor-business-list?vendorId=${vendorId}`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
+                    <Link href={`${prefixUrl.admin}/vendor-business-list?vendorId=${vendorId}`} className="text-base font-medium leading-none text-primary mt-2"> {categoryServiceData?.service_name ?? ""} </Link>
                 </div>
             </div>
 

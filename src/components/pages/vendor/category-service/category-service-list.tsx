@@ -14,6 +14,7 @@ import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
 import { apiConfig } from "@/environments/api";
 import { vendorRoutes } from "@/services/api/vendor.routes";
+import { prefixUrl } from "@/utils/constants"
 
 
 
@@ -173,7 +174,7 @@ export default function CategoryServiceList() {
                                 </button>
                             )}
 
-                            <Link href={`/panel/create-category-service?id=${row.original.id}`}>
+                            <Link href={`${prefixUrl.vendor}/create-category-service?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -186,7 +187,7 @@ export default function CategoryServiceList() {
                                 className={`mr-4 ${buttonClassBlue}`}
                                 title="Gallery"
                             >
-                                <Link href={`/panel/service-dates-list?serviceId=${row.original.id}`}>
+                                <Link href={`${prefixUrl.vendor}/service-dates-list?serviceId=${row.original.id}`}>
                                     <FiCalendar className="h-4 w-4" />
                                 </Link>
                             </button>
@@ -195,7 +196,7 @@ export default function CategoryServiceList() {
                                 className={`mr-4 ${buttonClassBlue}`}
                                 title="Gallery"
                             >
-                                <Link href={`/panel/gallery-list?serviceId=${row.original.id}`}>
+                                <Link href={`${prefixUrl.vendor}/gallery-list?serviceId=${row.original.id}`}>
                                     <FiImage className="h-4 w-4" />
                                 </Link>
                             </button>
@@ -204,7 +205,7 @@ export default function CategoryServiceList() {
                                 className={`mr-4 ${buttonClassBlue}`}
                                 title="Service Certificate Upload"
                             >
-                                <Link href={`/panel/service-certificates?serviceId=${row.original.id}`}>
+                                <Link href={`${prefixUrl.vendor}/service-certificates?serviceId=${row.original.id}`}>
                                     <FiFileText className="h-4 w-4" />
                                 </Link>
                             </button>
@@ -213,7 +214,7 @@ export default function CategoryServiceList() {
                                 className={`mr-4 ${buttonClassBlue}`}
                                 title="Timeline"
                             >
-                                <Link href={`/panel/service-timeline-list?serviceId=${row.original.id}`}>
+                                <Link href={`${prefixUrl.vendor}/service-timeline-list?serviceId=${row.original.id}`}>
                                     <Milestone className="h-4 w-4" />
                                 </Link>
                             </button>
@@ -222,7 +223,7 @@ export default function CategoryServiceList() {
                                 className={`mr-4 ${buttonClassBlue}`}
                                 title="Reviews"
                             >
-                                <Link href={`/panel/service-review-list?serviceId=${row.original.id}`}>
+                                <Link href={`${prefixUrl.vendor}/service-review-list?serviceId=${row.original.id}`}>
                                     <FiStar className="h-4 w-4" />
                                 </Link>
                             </button> */}
@@ -288,7 +289,7 @@ export default function CategoryServiceList() {
                             >
                                 <Grid3X3 className="h-4 w-4" />
                             </button>
-                            <Link href="/panel/create-category-service" className={buttonClass}> Add Business </Link>
+                            <Link href={`${prefixUrl.vendor}/create-category-service`} className={buttonClass}> Add Business </Link>
                         </div>
                     </div>
                 </div>
@@ -388,29 +389,29 @@ export default function CategoryServiceList() {
                                                 </button>
                                             )}
 
-                                            <Link href={`/panel/create-category-service?id=${item.id}`}>
+                                            <Link href={`${prefixUrl.vendor}/create-category-service?id=${item.id}`}>
                                                 <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Edit">                                                     <Pencil className="h-4 w-4" />                                                 </button>
                                             </Link>
 
-                                            <Link href={`/panel/service-dates-list?serviceId=${item.id}`}>
+                                            <Link href={`${prefixUrl.vendor}/service-dates-list?serviceId=${item.id}`}>
                                                 <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Service Dates">
                                                     <FiCalendar className="h-4 w-4" />
                                                 </button>
                                             </Link>
 
-                                            <Link href={`/panel/gallery-list?serviceId=${item.id}`}>
+                                            <Link href={`${prefixUrl.vendor}/gallery-list?serviceId=${item.id}`}>
                                                 <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Gallery">
                                                     <FiImage className="h-4 w-4" />
                                                 </button>
                                             </Link>
 
-                                            <Link href={`/panel/service-certificates?serviceId=${item.id}`}>
+                                            <Link href={`${prefixUrl.vendor}/service-certificates?serviceId=${item.id}`}>
                                                 <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Service Certificate Upload">
                                                     <FiFileText className="h-4 w-4" />
                                                 </button>
                                             </Link>
 
-                                            <Link href={`/panel/service-timeline-list?serviceId=${item.id}`}>
+                                            <Link href={`${prefixUrl.vendor}/service-timeline-list?serviceId=${item.id}`}>
                                                 <button type="button" className={`mr-3 mb-3 ${buttonClassBlue}`} title="Timeline">
                                                     <Milestone className="h-4 w-4" />
                                                 </button>

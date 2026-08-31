@@ -5,5 +5,6 @@ import { useGuestRedirect } from "@/hooks/useGuestRedirect";
 
 export default function VendorLoginPage() {
     useGuestRedirect();
+
     return <LoginFormPage role="vendor" />;
 }

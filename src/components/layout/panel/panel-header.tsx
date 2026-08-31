@@ -3,7 +3,7 @@
 import { LogOut, Menu, Search, Bell, Home } from "lucide-react";
 import Link from "next/link";
 import { useLogout } from "@/hooks/useLogout";
-import { authUser, } from "@/utils/auth";
+import { authUser, authUserRole } from "@/utils/auth";
 import { useEffect, useState } from "react";
 
 
@@ -12,8 +12,13 @@ interface HeaderProps {
 }
 
 export default function PanelHeader({ setIsMobileOpen }: HeaderProps) {
+    const roleName = authUserRole()?.toLowerCase();
+    let redirect = '/login';
+    if (roleName && roleName == 'admin' || roleName == 'vendor') {
+        redirect = `/${roleName}-login`;
+    }
+    const { logout } = useLogout(redirect);
 
-    const { logout } = useLogout();
     const [autoProfile, setAutoProfile] = useState<any>(null);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 

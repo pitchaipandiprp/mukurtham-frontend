@@ -22,7 +22,7 @@ export function MainHeader() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { isAuthenticated } = useAuthUser();
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-    const { logout } = useLogout();
+    const { logout } = useLogout('/');
 
     const [autoProfile, setAutoProfile] = useState<any>(null);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);

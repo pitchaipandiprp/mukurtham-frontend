@@ -160,7 +160,7 @@ export default function UserList({
                                 </button>
                             )}
 
-                            <Link href={`/panel/edit-user?id=${row.original.id}`}>
+                            <Link href={`/users/edit-user?id=${row.original.id}`}>
                                 <button
                                     className={`mr-4 ${buttonClassBlue}`}
                                     title="Edit"
@@ -203,7 +203,6 @@ export default function UserList({
                         onChange={setSearchInput}
                         placeholder="Search..."
                     />
-                    {/* <Link href="/panel/add-user" className={buttonClass}> Add {roleTitle} </Link> */}
                 </div>
 
 

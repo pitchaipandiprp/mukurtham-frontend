@@ -8,9 +8,10 @@ export default function AppFooter() {
 
     const dashboardRoutes = [
         "/panel",
-        "/users",
-        "/vendors",
         "/admin",
+        "/vendor",
+        "/customer",
+        "/users",
         "/login",
     ];
 

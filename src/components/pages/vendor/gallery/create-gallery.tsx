@@ -9,6 +9,7 @@ import { constants } from "@/utils/constants";
 import { vendorRoutes } from "@/services/api/vendor.routes";
 import { apiConfig } from "@/environments/api";
 import { ChevronRight } from "lucide-react";
+import { prefixUrl } from "@/utils/constants"
 
 type GalleryForm = {
     category_service_id: string;
@@ -81,7 +82,7 @@ export default function CreateGallery() {
             if (!result.data || result.data.length === 0) {
                 const swalConfirm = await sweetalert.warning("Something went wrong");
                 if (swalConfirm.isConfirmed) {
-                    router.push("/panel/gallery-list?serviceId=" + categoryServiceId);
+                    router.push(`${prefixUrl.vendor}/gallery-list?serviceId=` + categoryServiceId);
                 }
             }
 
@@ -154,7 +155,7 @@ export default function CreateGallery() {
 
             if (result?.success) {
                 await sweetalert.success(result.message);
-                router.push("/panel/gallery-list?serviceId=" + categoryServiceId);
+                router.push(`${prefixUrl.vendor}/gallery-list?serviceId=` + categoryServiceId);
             }
         } catch (caughtError) {
             console.error("Create gallery failed:", caughtError);
@@ -182,7 +183,7 @@ export default function CreateGallery() {
                         {categoryServiceData?.service_name ?? ""}
                     </span>
                 </div>
-                <Link href={`/panel/gallery-list?serviceId=${categoryServiceId}`} className={buttonClass}> Gallery Lists</Link>
+                <Link href={`${prefixUrl.vendor}/gallery-list?serviceId=${categoryServiceId}`} className={buttonClass}> Gallery Lists</Link>
             </div>
 
             <div className="min-h-full px-4 py-4 rounded-xl border border-primary/10 bg-white shadow-sm">
