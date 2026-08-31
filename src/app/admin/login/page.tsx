@@ -3,7 +3,7 @@
 import { LoginFormPage } from "@/components/pages/users/login-form-page";
 import { useGuestRedirect } from "@/hooks/useGuestRedirect";
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
     useGuestRedirect();
-    return <LoginFormPage role="customer" />;
+    return <LoginFormPage role="admin" />;
 }

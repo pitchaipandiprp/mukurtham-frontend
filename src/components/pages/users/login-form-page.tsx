@@ -7,11 +7,12 @@ import { useLogin } from "@/hooks/useLogin";
 type LoginTab = "otp" | "email";
 
 type LoginFormProps = {
+    role: "admin" | "vendor" | "customer";
     onSwitchToRegister?: () => void;
     onLoginSuccess?: () => void;
 };
 
-export function LoginFormPage({ onSwitchToRegister, onLoginSuccess }: LoginFormProps) {
+export function LoginFormPage({ role, onSwitchToRegister, onLoginSuccess }: LoginFormProps) {
     const [activeTab, setActiveTab] = useState<LoginTab>("otp");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -50,7 +51,7 @@ export function LoginFormPage({ onSwitchToRegister, onLoginSuccess }: LoginFormP
         event.preventDefault();
 
         if (activeTab === "email") {
-            const success = await loginWithEmail(email, password, 'vendor');
+            const success = await loginWithEmail(email, password, role);
 
             if (success) {
                 setEmail("");
@@ -65,7 +66,7 @@ export function LoginFormPage({ onSwitchToRegister, onLoginSuccess }: LoginFormP
             return;
         }
 
-        const success = await loginWithOtp(mobile, otp, 'vendor');
+        const success = await loginWithOtp(mobile, otp, role);
 
         if (success) {
             setMobile("");
@@ -100,7 +101,7 @@ export function LoginFormPage({ onSwitchToRegister, onLoginSuccess }: LoginFormP
                             </div>
 
                             <p className="mb-15 text-center text-sm font-medium uppercase tracking-[0.25em] text-white/70">
-                                Mukurtham Admin
+                                Mukurtham {role.toUpperCase()}
                             </p>
 
                             <h1 className="max-w-sm text-4xl font-bold leading-tight text-white">
