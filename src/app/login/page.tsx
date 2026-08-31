@@ -1,9 +1,9 @@
 "use client"
 
-import { LoginForm } from "@/components/pages/users/login-form";
+import { LoginFormPage } from "@/components/pages/users/login-form-page";
 import { useGuestRedirect } from "@/hooks/useGuestRedirect";
 
 export default function LoginPage() {
     useGuestRedirect();
-    return <LoginForm />;
+    return <LoginFormPage />;
 }

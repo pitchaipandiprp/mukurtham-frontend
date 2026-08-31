@@ -11,6 +11,7 @@ export default function AppHeader() {
         "/users",
         "/vendors",
         "/admin",
+        "/login",
     ];
 
     const isDashboardRoute = dashboardRoutes.some((route) =>
