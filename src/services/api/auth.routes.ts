@@ -3,11 +3,13 @@ import { apiService } from "@/services/api/api.service";
 export type LoginPayload = {
     email: string;
     password: string;
+    role?: string;
 };
 
 export type OtpLoginPayload = {
     mobile: string;
     otp: string;
+    role?: string;
 };
 
 export type SendOtpPayload = {

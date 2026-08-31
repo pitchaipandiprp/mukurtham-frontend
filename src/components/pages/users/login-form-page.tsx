@@ -50,7 +50,7 @@ export function LoginFormPage({ onSwitchToRegister, onLoginSuccess }: LoginFormP
         event.preventDefault();
 
         if (activeTab === "email") {
-            const success = await loginWithEmail(email, password);
+            const success = await loginWithEmail(email, password, 'vendor');
 
             if (success) {
                 setEmail("");
@@ -65,7 +65,7 @@ export function LoginFormPage({ onSwitchToRegister, onLoginSuccess }: LoginFormP
             return;
         }
 
-        const success = await loginWithOtp(mobile, otp);
+        const success = await loginWithOtp(mobile, otp, 'vendor');
 
         if (success) {
             setMobile("");
@@ -372,11 +372,7 @@ export function LoginFormPage({ onSwitchToRegister, onLoginSuccess }: LoginFormP
                                                         disabled={sendingOtp || resendCountdown > 0}
                                                         className="cursor-pointer text-xs font-semibold text-primary transition hover:text-primary-light disabled:cursor-not-allowed disabled:text-slate-300"
                                                     >
-                                                        {sendingOtp
-                                                            ? "Sending..."
-                                                            : resendCountdown > 0
-                                                                ? `Resend in ${resendCountdown}s`
-                                                                : "Resend OTP"}
+                                                        {sendingOtp ? "Sending..." : resendCountdown > 0 ? `Resend in ${resendCountdown}s` : "Resend OTP"}
                                                     </button>
                                                 </div>
                                             </div>

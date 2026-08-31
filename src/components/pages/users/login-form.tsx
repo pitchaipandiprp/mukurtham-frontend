@@ -50,7 +50,7 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
         event.preventDefault();
 
         if (activeTab === "email") {
-            const success = await loginWithEmail(email, password);
+            const success = await loginWithEmail(email, password, 'customer');
 
             if (success) {
                 setEmail("");
@@ -65,7 +65,7 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
             return;
         }
 
-        const success = await loginWithOtp(mobile, otp);
+        const success = await loginWithOtp(mobile, otp, 'customer');
 
         if (success) {
             setMobile("");

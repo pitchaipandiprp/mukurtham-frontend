@@ -48,7 +48,7 @@ export function useLogin(redirectTo = "/panel/dashboard") {
         return true;
     }
 
-    async function loginWithEmail(email: string, password: string) {
+    async function loginWithEmail(email: string, password: string, role: string) {
         if (!email) {
             setError("Email is required");
             return false;
@@ -63,7 +63,7 @@ export function useLogin(redirectTo = "/panel/dashboard") {
         setError("");
 
         try {
-            const result = await authRoutes.loginUser({ email, password });
+            const result = await authRoutes.loginUser({ email, password, role });
             return await handleSuccessfulLogin(result);
         } catch (caughtError) {
             console.error("Email login failed:", caughtError);
@@ -73,7 +73,7 @@ export function useLogin(redirectTo = "/panel/dashboard") {
         }
     }
 
-    async function loginWithOtp(mobile: string, otp: string) {
+    async function loginWithOtp(mobile: string, otp: string, role: string) {
         if (!mobile) {
             setError("Mobile number is required");
             return false;
@@ -93,7 +93,7 @@ export function useLogin(redirectTo = "/panel/dashboard") {
         setError("");
 
         try {
-            const result = await authRoutes.otpLoginUser({ mobile, otp });
+            const result = await authRoutes.otpLoginUser({ mobile, otp, role });
             return await handleSuccessfulLogin(result);
         } catch (caughtError) {
             console.error("OTP login failed:", caughtError);

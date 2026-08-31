@@ -309,7 +309,7 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
                                     otpVerified ||
                                     resendCountdown > 0
                                 }
-                                className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-light disabled:cursor-not-allowed disabled:bg-slate-300"
+                                className="cursor-pointer shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-light disabled:cursor-not-allowed disabled:bg-slate-300"
                             >
                                 {sendingOtp ? "Sending..." : otpVerified ? "Verified" : resendCountdown > 0 ? `${resendCountdown}s` : otpSent ? "Resend" : "Send OTP"}
                             </button>
