@@ -12,6 +12,7 @@ export type OtpLoginPayload = {
 
 export type SendOtpPayload = {
     mobile: string;
+    purpose?: string;
 };
 
 const loginUser = async (payload: LoginPayload) => {
@@ -26,6 +27,10 @@ const sendOtp = async (payload: SendOtpPayload) => {
     return await apiService.post<any>("/auth/send-otp", payload);
 }
 
+const verifyOtp = async (payload: any) => {
+    return await apiService.post<any>("/auth/verify-otp", payload);
+}
+
 const logoutUser = async (payload: any) => {
     return await apiService.post<any>("/auth/logout", payload);
 }
@@ -34,5 +39,6 @@ export const authRoutes = {
     loginUser,
     otpLoginUser,
     sendOtp,
+    verifyOtp,
     logoutUser,
 };

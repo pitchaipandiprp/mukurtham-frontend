@@ -2,7 +2,9 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Check } from "lucide-react";
 import { userRoutes } from "@/services/api/users.routes";
+import { authRoutes } from "@/services/api/auth.routes";
 import { sweetalert } from "@/utils/sweetalert";
 
 type UserType = "customer" | "vendor";
@@ -19,10 +21,118 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
     const [email, setEmail] = useState("");
     const [mobile, setMobile] = useState("");
     const [password, setPassword] = useState("");
+    const [otp, setOtp] = useState("");
+    const [otpSent, setOtpSent] = useState(false);
+    const [otpVerified, setOtpVerified] = useState(false);
+    const [sendingOtp, setSendingOtp] = useState(false);
+    const [verifyingOtp, setVerifyingOtp] = useState(false);
+    const [resendCountdown, setResendCountdown] = useState(0);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const mobileRegex = /^[6-9]\d{9}$/;
+
+    function handleMobileChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = event.target.value.replace(/\D/g, "").slice(0, 10);
+
+        setMobile(value);
+        setOtpSent(false);
+        setOtpVerified(false);
+        setOtp("");
+    }
+
+    async function handleSendOtp() {
+        setError("");
+
+        if (!mobile.trim()) {
+            setError("Mobile is required");
+            return;
+        }
+
+        if (!mobileRegex.test(mobile)) {
+            setError("Invalid mobile number");
+            return;
+        }
+
+        setSendingOtp(true);
+
+        try {
+            const result = await authRoutes.sendOtp({
+                mobile,
+                purpose: "register",
+            });
+
+            if (!result.success) {
+                setError(result.message || "Unable to send OTP");
+                return;
+            }
+
+            setOtpSent(true);
+            setOtpVerified(false);
+            setOtp("");
+
+            setResendCountdown(60);
+
+            const interval = setInterval(() => {
+                setResendCountdown((previous) => {
+                    if (previous <= 1) {
+                        clearInterval(interval);
+                        return 0;
+                    }
+
+                    return previous - 1;
+                });
+            }, 1000);
+
+            await sweetalert.success(
+                result.message || "OTP sent successfully"
+            );
+
+        } catch (caughtError) {
+            console.error("Send OTP failed:", caughtError);
+        } finally {
+            setSendingOtp(false);
+        }
+    }
+
+    async function handleVerifyOtp() {
+        setError("");
+
+        if (!otp.trim()) {
+            setError("Please enter the OTP");
+            return;
+        }
+
+        if (otp.length !== 6) {
+            setError("Please enter a valid 6-digit OTP");
+            return;
+        }
+
+        setVerifyingOtp(true);
+
+        try {
+            const result = await authRoutes.verifyOtp({
+                mobile: mobile,
+                otp: otp,
+            });
+
+            if (!result.success) {
+                setError(result.message || "Invalid OTP");
+                return;
+            }
+
+            setOtpVerified(true);
+
+            await sweetalert.success(
+                result.message || "Mobile number verified successfully"
+            );
+
+        } catch (caughtError) {
+            console.error("Verify OTP failed:", caughtError);
+        } finally {
+            setVerifyingOtp(false);
+        }
+    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -57,6 +167,17 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
             return;
         }
 
+        if (!otpSent) {
+            setError("Please verify your mobile number");
+            return;
+        }
+
+        if (!otpVerified) {
+            setError("Please verify the OTP before registering");
+            return;
+        }
+
+
         if (!password) {
             setError("Password is required");
             return;
@@ -75,7 +196,7 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
             });
 
             if (!result.success) {
-                // setError(result.message || "Registration failed");
+                setError(result.message || "Registration failed");
                 return;
             }
 
@@ -85,6 +206,9 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
             setEmail("");
             setMobile("");
             setPassword("");
+            setOtp("");
+            setOtpSent(false);
+            setOtpVerified(false);
 
             if (onRegisterSuccess) {
                 onRegisterSuccess();
@@ -110,7 +234,7 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
             </div>
 
             <div className="px-6 py-1">
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-4">
                     <fieldset className="rounded-xl border border-slate-300 p-3">
                         <legend className="px-2 text-sm font-medium text-slate-700">User Type</legend>
                         <div className="flex gap-6">
@@ -160,16 +284,85 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
                         />
                     </label>
 
-                    <label className="block text-sm font-medium text-slate-700">
-                        Mobile
-                        <input
-                            type="tel"
-                            value={mobile}
-                            onChange={(event) => setMobile(event.target.value)}
-                            className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-primary-light"
-                            placeholder="Enter your mobile number"
-                        />
-                    </label>
+                    <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">
+                            Mobile
+                        </label>
+
+                        <div className="flex gap-2">
+                            <input
+                                type="tel"
+                                value={mobile}
+                                maxLength={10}
+                                disabled={otpVerified}
+                                onChange={handleMobileChange}
+                                className="min-w-0 flex-1 rounded-xl border border-slate-300 px-3 py-2 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-slate-100"
+                                placeholder="Enter your mobile number"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={handleSendOtp}
+                                disabled={
+                                    sendingOtp ||
+                                    !mobile ||
+                                    otpVerified ||
+                                    resendCountdown > 0
+                                }
+                                className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-light disabled:cursor-not-allowed disabled:bg-slate-300"
+                            >
+                                {sendingOtp ? "Sending..." : otpVerified ? "Verified" : resendCountdown > 0 ? `${resendCountdown}s` : otpSent ? "Resend" : "Send OTP"}
+                            </button>
+                        </div>
+                    </div>
+
+                    {otpSent && !otpVerified ? (
+                        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+
+                            <p className="text-sm font-semibold text-slate-700">
+                                Verify mobile number
+                            </p>
+
+                            <p className="mt-1 text-xs text-slate-500">
+                                Enter the 6-digit OTP sent to {mobile}
+                            </p>
+
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                autoComplete="one-time-code"
+                                maxLength={6}
+                                value={otp}
+                                onChange={(event) => {
+                                    const value = event.target.value
+                                        .replace(/\D/g, "")
+                                        .slice(0, 6);
+
+                                    setOtp(value);
+                                }}
+                                className="mt-3 w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-center text-lg font-semibold tracking-[0.5em] outline-none focus:border-primary focus:ring-4 focus:ring-primary/10"
+                                placeholder="Enter OTP"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={handleVerifyOtp}
+                                disabled={verifyingOtp || otp.length !== 6}
+                                className="cursor-pointer mt-3 w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light disabled:cursor-not-allowed disabled:bg-slate-300"
+                            >
+                                {verifyingOtp ? "Verifying..." : "Verify OTP"}
+                            </button>
+
+                        </div>
+                    ) : null}
+
+                    {otpVerified ? (
+                        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                            <p className="text-sm font-medium text-emerald-700">
+                                <Check className="h-5 w-5 text-emerald-600" /> Mobile number verified successfully
+                            </p>
+                        </div>
+                    ) : null}
 
                     <label className="block text-sm font-medium text-slate-700">
                         Password
@@ -186,7 +379,7 @@ export function RegisterForm({ onSwitchToLogin, onRegisterSuccess }: RegisterFor
 
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || !otpVerified}
                         className="mb-6 w-full cursor-pointer rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-light disabled:cursor-not-allowed disabled:bg-secondary-light"
                     >
                         {loading ? "Creating account..." : "Register"}

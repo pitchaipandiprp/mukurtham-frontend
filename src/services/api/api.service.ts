@@ -166,7 +166,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
       }
     }
 
-    await sweetalert.error(message, title);
+    await sweetalert.toastError(message, title);
     // throw new Error(message);
   }
 
