@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { FiMenu, FiX, FiBell, FiChevronDown, FiHeart, FiMapPin, FiMessageCircle, FiSearch, } from "react-icons/fi";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useRouter, useSearchParams } from "next/navigation";
+import { authUser, } from "@/utils/auth";
 import commonRoutes from "@/services/api/common.routes";
 
 const navLinks = [
@@ -23,6 +24,9 @@ export function MainHeader() {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { logout } = useLogout();
 
+    const [autoProfile, setAutoProfile] = useState<any>(null);
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
     const [cityList, setCityList] = useState<any[]>([]);
 
     const [headerSearchInput, setHeaderSearchInput] = useState("");
@@ -31,6 +35,11 @@ export function MainHeader() {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get("search") ?? "";
     const cityQuery = searchParams.get("city") ?? "";
+
+    useEffect(() => {
+        const profile = authUser();
+        setAutoProfile(profile);
+    }, []);
 
     useEffect(() => {
         loadCity();
@@ -144,34 +153,6 @@ export function MainHeader() {
 
                     {/* Desktop Actions */}
                     <div className="hidden items-center gap-4 text-gray-600 md:flex">
-                        <button
-                            type="button"
-                            className="hover:text-primary"
-                            aria-label="Wishlist"
-                        >
-                            <FiHeart />
-                        </button>
-
-                        <button
-                            type="button"
-                            className="hover:text-primary"
-                            aria-label="Messages"
-                        >
-                            <FiMessageCircle />
-                        </button>
-
-                        <button
-                            type="button"
-                            className="relative hover:text-primary"
-                            aria-label="Notifications"
-                        >
-                            <FiBell />
-
-                            <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[9px] text-white">
-                                2
-                            </span>
-                        </button>
-
                         {!isAuthenticated && (
                             <button
                                 onClick={goToLogin}
@@ -183,16 +164,104 @@ export function MainHeader() {
                         )}
 
                         {isAuthenticated && (
-                            <Link href="/panel/dashboard"
-                                type="button"
-                                className="group cursor-pointer rounded-lg bg-white p-3 transition hover:bg-primary"
-                            >
-                                <img
-                                    src="/images/profile.svg"
-                                    alt="User Profile"
-                                    className="h-6 w-6 rounded-lg object-cover transition group-hover:brightness-0 group-hover:invert"
-                                />
-                            </Link>
+                            <>
+                                <button
+                                    type="button"
+                                    className="relative hover:text-primary"
+                                    aria-label="Notifications"
+                                >
+                                    <FiBell />
+
+                                    <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[9px] text-white">
+                                        2
+                                    </span>
+                                </button>
+
+                                <div className="flex justify-center gap-2 w-30 items-center">
+                                    <div className="relative">
+                                        {/* Profile Button */}
+                                        <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="cursor-pointer flex items-center gap-2">
+                                            {/* Profile Image */}
+                                            <img
+                                                src="/images/profile.svg"
+                                                alt="Profile"
+                                                className="h-9 w-9 rounded-full object-cover"
+                                            />
+
+                                            {/* Name */}
+                                            <span className="max-w-[120px] truncate text-sm font-semibold text-gray-700">
+                                                {autoProfile?.name ?? "My Account"}
+                                            </span>
+
+                                            {/* Arrow */}
+                                            <svg
+                                                className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isProfileMenuOpen ? "rotate-180" : ""
+                                                    }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M19 9l-7 7-7-7"
+                                                />
+                                            </svg>
+                                        </button>
+
+                                        {/* Dropdown */}
+                                        <div className={`absolute right-0 z-50 mt-2 w-56 origin-top-right overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all duration-200 ${isProfileMenuOpen ? "visible scale-100 opacity-100" : "invisible scale-95 opacity-0"}`}>
+                                            {/* Profile Header */}
+                                            <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
+                                                <img src="/images/profile.svg" alt="Profile" className="h-10 w-10 rounded-full object-cover" />
+
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-sm font-semibold text-gray-800">
+                                                        {autoProfile?.name ?? "My Account"}
+                                                    </p>
+
+                                                    <p className="text-xs text-gray-400">
+                                                        Welcome back!
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* My Profile */}
+                                            <div className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50">
+                                                <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={1.8}
+                                                        d="M5.121 17.804A9 9 0 1118.88 17.8M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                                    />
+                                                </svg>
+
+                                                <span className="font-medium">
+                                                    My Profile
+                                                </span>
+                                            </div>
+
+                                            {/* Logout */}
+                                            <div onClick={logout} className="flex cursor-pointer items-center gap-3 border-t border-gray-100 px-4 py-3 text-sm text-red-600 transition-colors hover:bg-red-50">
+                                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={1.8}
+                                                        d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"
+                                                    />
+                                                </svg>
+
+                                                <span className="font-medium">
+                                                    Logout
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </div>
 

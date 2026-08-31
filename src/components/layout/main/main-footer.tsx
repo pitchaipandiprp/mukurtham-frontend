@@ -6,8 +6,11 @@ import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 export function MainFooter() {
 
     return (
-        <footer className="bg-gradient-to-br from-red-600 via-pink-700 to-amber-600 text-white mt-5">
-            <div className="mx-auto max-w-7xl px-4 py-10">
+        <footer className="relative mt-5 overflow-hidden bg-primary text-white">
+            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10" />
+            <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-white/10" />
+
+            <div className="relative z-10 mx-auto max-w-7xl px-4 py-10">
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                         <div className="mb-3 flex items-center gap-2">
@@ -39,6 +42,7 @@ export function MainFooter() {
                             <li><Link href="/service-search?search=Photography" className="transition hover:text-yellow-200">Photography</Link></li>
                             <li><Link href="/service-search?search=Catering" className="transition hover:text-yellow-200">Catering</Link></li>
                             <li><Link href="/service-search?search=Decoration" className="transition hover:text-yellow-200">Bridal Makeup</Link></li>
+                            <li><Link href="/register" className="transition rounded bg-white text-primary px-1 py-1">Become a Vendor</Link></li>
                         </ul>
                     </div>
 
