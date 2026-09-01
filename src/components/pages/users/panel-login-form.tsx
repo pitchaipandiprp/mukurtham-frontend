@@ -12,7 +12,7 @@ type LoginFormProps = {
     onLoginSuccess?: () => void;
 };
 
-export function LoginFormPage({ role, onSwitchToRegister, onLoginSuccess }: LoginFormProps) {
+export function PanelLoginForm({ role, onSwitchToRegister, onLoginSuccess }: LoginFormProps) {
     const [activeTab, setActiveTab] = useState<LoginTab>("otp");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -20,6 +20,11 @@ export function LoginFormPage({ role, onSwitchToRegister, onLoginSuccess }: Logi
     const [otp, setOtp] = useState("");
     const [otpCursor, setOtpCursor] = useState(0);
     const otpInputRef = useRef<HTMLInputElement>(null);
+
+    let redirectTo = '/panel/dashboard';
+    if (role === 'customer') {
+        redirectTo = '/user/dashboard';
+    }
 
     const {
         loginWithEmail,
@@ -32,7 +37,7 @@ export function LoginFormPage({ role, onSwitchToRegister, onLoginSuccess }: Logi
         otpSent,
         setOtpSent,
         resendCountdown,
-    } = useLogin();
+    } = useLogin(redirectTo);
 
     useEffect(() => {
         if (otpSent) {

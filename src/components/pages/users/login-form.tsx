@@ -31,7 +31,7 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
         otpSent,
         setOtpSent,
         resendCountdown,
-    } = useLogin();
+    } = useLogin('/user/dashboard');
 
     useEffect(() => {
         if (otpSent) {
