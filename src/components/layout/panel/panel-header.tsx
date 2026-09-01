@@ -1,10 +1,11 @@
 "use client";
 
-import { LogOut, Menu, Search, Bell, Home } from "lucide-react";
+import { LogOut, Menu, Search, Bell, Home, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useLogout } from "@/hooks/useLogout";
 import { authUser, authUserRole } from "@/utils/auth";
 import { useEffect, useState } from "react";
+import { prefixUrl } from "@/utils/constants";
 
 
 interface HeaderProps {
@@ -121,22 +122,15 @@ export default function PanelHeader({ setIsMobileOpen }: HeaderProps) {
                             </div>
 
                             {/* My Profile */}
-                            <div className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50">
-                                <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={1.8}
-                                        d="M5.121 17.804A9 9 0 1118.88 17.8M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                </svg>
+                            <Link href={`${prefixUrl.panel}/change-profile`}>
+                                <div className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50">
+                                    <UserRound className="h-5 w-5 text-primary" />
 
-                                <Link href={`/panel/change-profile`}>
                                     <span className="font-medium">
                                         My Profile
                                     </span>
-                                </Link>
-                            </div>
+                                </div>
+                            </Link>
 
                             {/* Logout */}
                             <div onClick={logout} className="flex cursor-pointer items-center gap-3 border-t border-gray-100 px-4 py-3 text-sm text-red-600 transition-colors hover:bg-red-50">

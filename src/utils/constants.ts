@@ -2,6 +2,7 @@ export const prefixUrl = {
     admin: "/admin",
     vendor: "/vendor",
     customer: "/customer",
+    user: "/user",
     panel: "/panel",
 }
 
