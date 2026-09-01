@@ -11,7 +11,7 @@ export default function AppFooter() {
         "/admin",
         "/vendor",
         "/customer",
-        "/users",
+        // "/user",
         "/login",
     ];
 

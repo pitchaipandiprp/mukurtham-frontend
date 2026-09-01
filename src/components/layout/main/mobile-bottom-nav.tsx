@@ -23,7 +23,7 @@ export default function MobileBottomNav() {
                     <span className="text-[10px] font-medium">Wishlist</span>
                 </Link>
 
-                <Link href="/users/dashboard" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
+                <Link href="/panel/dashboard" className="flex flex-col items-center gap-1 text-gray-500 cursor-pointer">
                     <FiMenu className="h-5 w-5" />
                     <span className="text-[10px] font-medium">Dashboard</span>
                 </Link>

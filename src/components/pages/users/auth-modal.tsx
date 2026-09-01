@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LoginForm } from "@/components/pages/user/login-form";
-import { RegisterForm } from "@/components/pages/user/register-form";
+import { LoginForm } from "@/components/pages/users/login-form";
+import { RegisterForm } from "@/components/pages/users/register-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiX } from "react-icons/fi";
 

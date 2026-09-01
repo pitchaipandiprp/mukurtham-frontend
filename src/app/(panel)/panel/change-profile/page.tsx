@@ -1,4 +1,4 @@
-import { ChangeProfile } from "@/components/pages/user/change-profile";
+import { ChangeProfile } from "@/components/pages/users/change-profile";
 
 export default function ChangeProfilePage() {
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { RegisterForm } from "@/components/pages/user/register-form";
+import { RegisterForm } from "@/components/pages/users/register-form";
 import { useGuestRedirect } from "@/hooks/useGuestRedirect";
 
 export default function RegisterPage() {

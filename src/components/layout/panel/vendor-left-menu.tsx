@@ -12,7 +12,7 @@ const navItems: SidebarNavItem[] = [
         id: "dashboard",
         title: "Dashboards",
         icon: LayoutDashboard,
-        href: `/users/dashboard`,
+        href: `/panel/dashboard`,
     },
 
     {

@@ -11,7 +11,7 @@ export default function AppHeader() {
         "/admin",
         "/vendor",
         "/customer",
-        "/users",
+        // "/user",
         "/login",
     ];
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function useGuestRedirect(redirectTo = "/users/dashboard") {
+export function useGuestRedirect(redirectTo = "/panel/dashboard") {
     const router = useRouter();
     const [isChecking, setIsChecking] = useState(true);
 

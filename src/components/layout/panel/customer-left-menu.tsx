@@ -12,7 +12,7 @@ const navItems: SidebarNavItem[] = [
         title: "Dashboards",
         icon: LayoutDashboard,
         subItems: [
-            { title: "Dashboard", href: "/users/dashboard" },
+            { title: "Dashboard", href: "/panel/dashboard" },
         ],
     },
 ];

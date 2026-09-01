@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AuthModal } from "@/components/pages/user/auth-modal";
+import { AuthModal } from "@/components/pages/users/auth-modal";
 import { useLogout } from "@/hooks/useLogout";
 import { useEffect, useState } from "react";
 import { FiMenu, FiX, FiBell, FiChevronDown, FiHeart, FiMapPin, FiMessageCircle, FiSearch, } from "react-icons/fi";
