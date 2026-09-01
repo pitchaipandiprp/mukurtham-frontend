@@ -2,6 +2,7 @@ export const prefixUrl = {
     admin: "/admin",
     vendor: "/vendor",
     customer: "/customer",
+    panel: "/panel",
 }
 
 const inputClass = 'w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/5 shadow-sm outline-none transition-all duration-300 hover:border-slate-300 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed';

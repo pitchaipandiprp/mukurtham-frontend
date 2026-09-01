@@ -131,9 +131,11 @@ export default function PanelHeader({ setIsMobileOpen }: HeaderProps) {
                                     />
                                 </svg>
 
-                                <span className="font-medium">
-                                    My Profile
-                                </span>
+                                <Link href={`/panel/change-profile`}>
+                                    <span className="font-medium">
+                                        My Profile
+                                    </span>
+                                </Link>
                             </div>
 
                             {/* Logout */}

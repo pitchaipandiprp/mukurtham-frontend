@@ -12,34 +12,32 @@ export function ChangePassword() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         if (!currentPassword) {
-            setError("Current password is required");
+            sweetalert.toastError("Current password is required");
             return;
         }
 
         if (!newPassword) {
-            setError("New password is required");
+            sweetalert.toastError("New password is required");
             return;
         }
 
         if (!confirmPassword) {
-            setError("Please confirm your password");
+            sweetalert.toastError("Please confirm your password");
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            setError("New password and confirm password do not match");
+            sweetalert.toastError("New password and confirm password do not match");
             return;
         }
 
         setLoading(true);
-        setError("");
 
         try {
             const result = await userRoutes.changePassword({
@@ -51,7 +49,7 @@ export function ChangePassword() {
                 setCurrentPassword("");
                 setNewPassword("");
                 setConfirmPassword("");
-                await sweetalert.success(result.message);
+                sweetalert.toastSuccess(result.message);
             }
         } catch (caughtError) {
             console.error("Change password failed:", caughtError);
@@ -66,10 +64,10 @@ export function ChangePassword() {
                 <span className="text-2xl font-semibold leading-none text-slate-600">Change Password</span>
             </div>
 
-            <div className="min-h-full px-4 py-12 rounded-lg border border-primary/10 bg-white shadow-sm">
-                <div className="max-w-xl justify-center mx-auto">
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                        <div className="mb-5">
+            <div className="min-h-full px-4 py-4 rounded-xl border border-primary/10 bg-white shadow-sm">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-y-5 mb-5">
+                        <div className="md:col-start-5 md:col-span-4 mb-3">
                             <label htmlFor="currentPassword" className="mb-2 block text-sm font-medium text-gray-700">
                                 Current Password
                             </label>
@@ -83,7 +81,7 @@ export function ChangePassword() {
                             />
                         </div>
 
-                        <div className="mb-5">
+                        <div className="md:col-start-5 md:col-span-4 mb-3">
                             <label htmlFor="newPassword" className="mb-2 block text-sm font-medium text-gray-700">
                                 New Password
                             </label>
@@ -97,7 +95,7 @@ export function ChangePassword() {
                             />
                         </div>
 
-                        <div className="mb-5">
+                        <div className="md:col-start-5 md:col-span-4 mb-3">
                             <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-gray-700">
                                 Confirm Password
                             </label>
@@ -110,21 +108,18 @@ export function ChangePassword() {
                                 onChange={(event) => setConfirmPassword(event.target.value)}
                             />
                         </div>
+                    </div>
 
-                        {error && (
-                            <div className="text-sm text-rose-600">
-                                {error}
-                            </div>
-                        )}
-                        <button
-                            type="submit"
-                            className={buttonClassSubmit}
-                            disabled={loading}
-                        >
-                            Change Password
-                        </button>
-                    </form>
-                </div>
+
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
+                        <div className="md:col-start-5 md:col-span-4">
+                            <button type="submit" className={`${buttonClassSubmit}`} disabled={loading}>
+                                {loading ? "Saving..." : "Save"}
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     );

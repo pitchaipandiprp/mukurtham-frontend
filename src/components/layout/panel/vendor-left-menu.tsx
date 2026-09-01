@@ -38,19 +38,11 @@ const navItems: SidebarNavItem[] = [
         subItems: [
             {
                 title: "Profile Settings",
-                href: `${prefixUrl.vendor}/change-profile`,
+                href: `${prefixUrl.panel}/change-profile`,
             },
             {
                 title: "Security & Auth",
-                href: `${prefixUrl.vendor}/change-password`,
-            },
-            {
-                title: "Business Profile",
-                href: `${prefixUrl.vendor}/business-profile`,
-            },
-            {
-                title: "Verification Documents",
-                href: `${prefixUrl.vendor}/upload-verification-documents`,
+                href: `${prefixUrl.panel}/change-password`,
             },
         ],
     },

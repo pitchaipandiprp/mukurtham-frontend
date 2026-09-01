@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { ChangeProfile } from "@/components/pages/customer/profile/change-profile";
+import { CustomerProfile } from "@/components/pages/customer/profile/customer-profile";
 
 export const metadata: Metadata = {
     title: "Mukurtham - User Profile",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function UserProfilePage() {
-    return <ChangeProfile />;
+    return <CustomerProfile />;
 }
