@@ -13,7 +13,7 @@ import { CategoryServiceOverview } from "./category-service-overview";
 import { CategoryServiceGallery } from "./category-service-gallery";
 import { CategoryServiceCalendar } from "./category-service-calendar";
 import { CategoryServicePackage } from "./category-service-package";
-import { Building, FileText, Info, Sparkles, UserRound } from "lucide-react";
+import { Building, CircleAlert, FileText, Info, ListX, Sparkles, UserRound } from "lucide-react";
 import { common as commonUtils } from "@/utils/common";
 import { helperUtils } from "@/utils/helpers";
 
@@ -158,7 +158,7 @@ export function CategoryServiceDetails() {
                         </div>
                         <div className="p-4 border-gray-200">
                             <div className="text-sm font-bold text-gray-800">Verified</div>
-                            <div className="text-[11px] text-gray-500">{serviceRecord?.verification_status?.aadhar ? "Business" : "-"}</div>
+                            <div className="text-[11px] text-gray-500">{serviceRecord?.verification_status?.aadhar ? "Business" : "Pending"}</div>
                         </div>
                     </div>
 
@@ -209,6 +209,12 @@ export function CategoryServiceDetails() {
                                                 ))}
                                         </>
                                     )}
+                                    {!serviceRecord?.verification_status && (
+                                        <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
+                                            <CircleAlert className="h-3.5 w-3.5" />
+                                            Not Verified
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
@@ -224,6 +230,13 @@ export function CategoryServiceDetails() {
                                         serviceRecord.service_highlights.map((item: any) => (
                                             <div key={`highlight-record-${item.id}`}>{item.highlight}</div>
                                         ))
+                                    )}
+
+                                    {!serviceRecord?.service_highlights?.length && (
+                                        <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+                                            <ListX className="h-3.5 w-3.5" />
+                                            No Highlights Found
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -291,6 +304,13 @@ export function CategoryServiceDetails() {
                                             </div>
                                         </div>
                                     ))
+                                )}
+
+                                {!serviceRecord?.service_timelines?.length && (
+                                    <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+                                        <ListX className="h-3.5 w-3.5" />
+                                        No Timeline Found
+                                    </div>
                                 )}
                             </div>
                         </div>

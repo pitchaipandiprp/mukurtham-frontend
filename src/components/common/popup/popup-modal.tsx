@@ -49,14 +49,14 @@ export default function PopupModal({
 
     const positionClass =
         position === "center"
-            ? "items-center"
-            : "items-start pt-10";
+            ? "items-center py-6"
+            : "items-start pt-10 pb-6";
 
     return (
         <AnimatePresence>
             {show && (
                 <motion.div
-                    className={`fixed inset-0 z-[60] flex justify-center bg-black/50 ${blurBackground
+                    className={`fixed inset-0 z-[1000] flex justify-center bg-black/50 ${blurBackground
                         ? "backdrop-blur-sm"
                         : ""
                         } p-4 ${positionClass}`}
@@ -70,7 +70,7 @@ export default function PopupModal({
                     }}
                 >
                     <motion.div
-                        className={`relative w-full ${widthClass} max-h-[calc(100vh-2rem)] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 shadow-2xl`}
+                        className={`relative w-full ${widthClass} max-h-[calc(100vh-4rem)] overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 shadow-2xl`}
                         initial={{
                             opacity: 0,
                             scale: 0.9,

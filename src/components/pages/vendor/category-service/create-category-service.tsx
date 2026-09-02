@@ -462,10 +462,7 @@ export default function CreateCategoryService() {
         formData.append("pricing_type", form.pricing_type);
         formData.append("amount", form.amount);
         formData.append("discount", form.discount);
-        formData.append(
-            "tax_percentage",
-            form.tax_percentage
-        );
+        formData.append("tax_percentage", form.tax_percentage);
         formData.append("status", form.status);
 
         validHighlights.forEach((highlight) => {

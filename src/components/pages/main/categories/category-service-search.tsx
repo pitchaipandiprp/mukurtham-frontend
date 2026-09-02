@@ -1,6 +1,6 @@
 "use client";
 
-import { FiChevronsDown, FiCalendar, FiChevronDown, FiCrosshair, FiHeart, FiLock, FiMapPin, FiMinus, FiPlus, FiSearch, FiSliders, FiStar, FiUsers, FiWind, } from "react-icons/fi";
+import { FiChevronsDown, FiCalendar, FiChevronDown, FiCrosshair, FiHeart, FiLock, FiMapPin, FiMinus, FiPlus, FiSearch, FiSliders, FiStar, FiUsers, FiWind, FiHome, } from "react-icons/fi";
 import { FaBuilding } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -17,6 +17,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Loading from "@/components/common/loading/loading";
 import LocationPicker from "@/components/common/map/openstreetmap/location-picker";
+import { sweetalert } from "@/utils/sweetalert";
+import { CategoryServiceCompare } from '@/components/pages/main/categories/category-service-compare';
+import { GitCompareArrows } from "lucide-react";
 
 const initialSearch = {
     search_text: "",
@@ -57,6 +60,7 @@ export default function CategoryServiceSearch() {
 
     const btnClass = constants.btnClass;
     const buttonClassWhite = constants.buttonClassWhite;
+    const buttonClassOrange = constants.buttonClassOrange;
 
     const [loading, setLoading] = useState(false);
     const [pageNumber, setPageNumber] = useState(1);
@@ -84,6 +88,9 @@ export default function CategoryServiceSearch() {
     const searchQuery = searchParams.get("search") ?? "";
     const cityQuery = searchParams.get("city") ?? "";
     const categoryQuery = searchParams.get("category") ?? "";
+
+    const [selectedCompareServices, setSelectedCompareServices] = useState<any[]>([]);
+    const [isCompareModalOpen, setIsCompareModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         loadCategories();
@@ -313,6 +320,39 @@ export default function CategoryServiceSearch() {
         });
     };
 
+    const handleCompareToggle = (service: any) => {
+        setSelectedCompareServices((prev) => {
+
+            const alreadySelected = prev.some(
+                (item) => item.id === service.id
+            );
+
+            // Remove
+            if (alreadySelected) {
+                return prev.filter(
+                    (item) => item.id !== service.id
+                );
+            }
+
+            // Maximum 3
+            if (prev.length >= 3) {
+                sweetalert.error('You can compare a maximum of 3 services at a time.', 'Maximum 3 Services');
+                return prev;
+            }
+
+            // Add
+            return [...prev, service];
+        });
+    };
+
+    const handleCompare = async () => {
+        if (selectedCompareServices.length < 2) {
+            sweetalert.error('Please select at least 2 services to compare.');
+            return;
+        }
+        setIsCompareModalOpen(true);
+    };
+
     return (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4">
             <div className="hidden md:flex bg-white p-2 rounded-2xl shadow-sm border border-gray-200 items-center justify-between mb-4">
@@ -375,6 +415,9 @@ export default function CategoryServiceSearch() {
                 <button onClick={handleReset} type="button" className={`${buttonClassWhite} ml-5`}>
                     Reset
                 </button>
+                <button onClick={handleCompare} type="button" className={`${buttonClassOrange} ml-15`}>
+                    Compare
+                </button>
             </div>
 
             <div className="md:hidden space-y-3 mb-4">
@@ -429,6 +472,9 @@ export default function CategoryServiceSearch() {
                 <div className="flex justify-center items-center gap-2">
                     <button onClick={handleSubmit} type="button" className={`${btnClass}`}>Search</button>
                     <button onClick={handleReset} type="button" className={`${buttonClassWhite}`}>Reset</button>
+                    <button onClick={handleCompare} type="button" className={`${buttonClassOrange}`}>
+                        Compare
+                    </button>
                 </div>
 
                 {/* <div className="flex justify-between items-center pt-2">
@@ -604,13 +650,13 @@ export default function CategoryServiceSearch() {
                                     <div className="sm:w-3/5 space-y-2 flex flex-col justify-between">
                                         <div>
                                             <div className="flex justify-between items-start">
-                                                <h3 className="font-bold text-sm text-gray-800">{serviceData.service_name}</h3>
+                                                <h3 className="font-bold text-sm text-gray-800">{serviceData?.service_name}</h3>
                                                 <div className="flex items-center text-xs font-semibold text-amber-600">
                                                     <button type="button" className="cursor-pointer mr-2 p-1 text-gray-400 hover:text-pink-700">
                                                         <FiHeart className="w-4 h-4" />
                                                     </button>
                                                     <FiStar className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
-                                                    <span>4.5</span> <span className="text-gray-400 text-[10px] ml-0.5">(100)</span>
+                                                    <span>{serviceData?.averageRating ?? '0'}</span> <span className="text-gray-400 text-[10px] ml-0.5">({serviceData?.totalReviews ?? '0'})</span>
                                                 </div>
                                             </div>
                                             <p className="text-[11px] text-gray-500 flex items-center mt-0.5">
@@ -637,6 +683,16 @@ export default function CategoryServiceSearch() {
                                                 <span className="text-[9px] text-gray-400 block">Starting from</span>
                                                 <span className="font-bold text-sm text-gray-900">{commonUtils.formatAmount(serviceData.final_amount)}</span>
                                             </div>
+
+                                            <button
+                                                type="button"
+                                                className={selectedCompareServices.some((item) => item.id === serviceData.id) ? buttonClassOrange : buttonClassWhite}
+                                                onClick={() => handleCompareToggle(serviceData)}
+                                                title={selectedCompareServices.some((item) => item.id === serviceData.id) ? "Remove from Compare" : "Add to Compare"}
+                                            >
+                                                <GitCompareArrows className="w-4 h-4" />
+                                            </button>
+
                                             <button type="button" className={btnClass}>
                                                 <Link href={`/service-details?serviceId=${serviceData.id}`}>
                                                     View Details
@@ -673,6 +729,8 @@ export default function CategoryServiceSearch() {
                     />
                 </aside>
             </div>
+
+            <CategoryServiceCompare isCompareModalOpen={isCompareModalOpen} compareModalClose={() => setIsCompareModalOpen(false)} categoryId={categoryId} categoryServiceIds={[]} selectedCompareServices={selectedCompareServices} />
         </div>
     );
 }

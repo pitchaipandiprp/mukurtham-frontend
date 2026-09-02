@@ -121,7 +121,7 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
         try {
             const result = await mainRoutes.createServiceReview(form);
             if (result?.success) {
-                await sweetalert.success(result.message);
+                await sweetalert.toastSuccess(result.message);
                 setForm(initialForm);
                 setSelectedRating("5");
                 setShowPopup(false);
