@@ -80,9 +80,9 @@ export default function CategoryServiceSearch() {
     const [searchServiceData, setSearchServiceData] = useState<any>([]);
     const [searchDate, setSearchDate] = useState<Date | null>(null);
 
-    const [mapLocations, setMapLocations] = useState<any>([]);
-    const [selectedLatitude, setSelectedLatitude] = useState<any>([]);
-    const [selectedLongitude, setSelectedLongitude] = useState<any>([]);
+    const [mapLocations, setMapLocations] = useState<any[]>([]);
+    const [selectedLatitude, setSelectedLatitude] = useState<number | undefined>(undefined);
+    const [selectedLongitude, setSelectedLongitude] = useState<number | undefined>(undefined);
 
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get("search") ?? "";
@@ -167,24 +167,36 @@ export default function CategoryServiceSearch() {
             setTotalPages(responData?.totalPages ?? 0);
             setTotalRecords(responData?.total ?? 0);
 
-            const locations = (responData.rows || [])
+            const locations = responData.rows
+                .map((item: any) => {
+                    const latitude = Number(item.latitude);
+                    const longitude = Number(item.longitude);
+
+                    return {
+                        id: item.id,
+                        name: item.name,
+                        latitude,
+                        longitude,
+                    };
+                })
                 .filter(
                     (item: any) =>
-                        item.latitude != null &&
-                        item.longitude != null
-                )
-                .map((item: any) => ({
-                    id: item.id,
-                    name: item.name,
-                    latitude: Number(item.latitude),
-                    longitude: Number(item.longitude),
-                }));
+                        Number.isFinite(item.latitude) &&
+                        Number.isFinite(item.longitude) &&
+                        item.latitude >= -90 &&
+                        item.latitude <= 90 &&
+                        item.longitude >= -180 &&
+                        item.longitude <= 180
+                );
 
             setMapLocations(locations);
 
             if (locations.length > 0) {
                 setSelectedLatitude(locations[0].latitude);
                 setSelectedLongitude(locations[0].longitude);
+            } else {
+                setSelectedLatitude(undefined);
+                setSelectedLongitude(undefined);
             }
         } catch (error) {
             console.error("Search Error:", error);
