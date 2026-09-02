@@ -60,7 +60,7 @@ export default function PanelSidebar({
                 </div> */}
 
                 <div className="h-12 w-12 bg-white rounded-lg">
-                    <img src="/images/logo-sm.jpg" className="rounded-lg" />
+                    <img src="/images/logo-sm.png" className="rounded-lg" />
                 </div>
 
 

@@ -158,8 +158,8 @@ export function CategoryServiceCalendar({
     return (
         <>
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                <h3 className="mb-3 text-sm font-bold text-gray-900 text-center">Availability Calendar</h3>
-                <div className="mb-10 flex items-center justify-between">
+                <h3 className="mb-3 text-lg font-bold text-gray-900 text-center py-5">Availability Calendar</h3>
+                <div className="mb-10 flex items-center justify-center">
                     <div className="flex items-center gap-2">
                         <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-green-500 text-white">
                             Waxing Crescent

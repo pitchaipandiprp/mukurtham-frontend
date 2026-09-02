@@ -56,7 +56,7 @@ export default function PopupModal({
         <AnimatePresence>
             {show && (
                 <motion.div
-                    className={`fixed inset-0 z-[1000] flex justify-center bg-black/50 ${blurBackground
+                    className={`fixed inset-0 z-[2000] flex justify-center bg-black/50 ${blurBackground
                         ? "backdrop-blur-sm"
                         : ""
                         } p-4 ${positionClass}`}

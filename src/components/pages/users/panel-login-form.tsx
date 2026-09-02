@@ -96,9 +96,9 @@ export function PanelLoginForm({ role, onSwitchToRegister, onLoginSuccess }: Log
 
                         <div className="relative z-10">
                             <div className="mb-3 flex w-full justify-center">
-                                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-white p-2 shadow-lg">
+                                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-lg">
                                     <img
-                                        src="/images/logo-sm.jpg"
+                                        src="/images/logo-sm.png"
                                         alt="Mukurtham"
                                         className="h-full w-full object-contain"
                                     />
@@ -141,9 +141,9 @@ export function PanelLoginForm({ role, onSwitchToRegister, onLoginSuccess }: Log
                             <div className="mb-8 flex items-center gap-3 lg:hidden">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white shadow-lg shadow-primary/20">
                                     <img
-                                        src="/images/logo-sm.jpg"
+                                        src="/images/logo-sm.png"
                                         alt="Mukurtham"
-                                        className="h-full w-full object-contain p-1 rounded-xl"
+                                        className="h-full w-full object-contain rounded-xl"
                                     />
                                 </div>
 

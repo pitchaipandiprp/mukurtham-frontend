@@ -339,7 +339,7 @@ function LocationSearch({
     return (
         <div
             ref={searchRef}
-            className="absolute top-0 right-0 w-full md:w-[400px] z-[100]"
+            className="absolute top-0 right-0 w-full md:w-[400px] z-[500]"
         >
             <div className="relative">
                 {/* Search input */}

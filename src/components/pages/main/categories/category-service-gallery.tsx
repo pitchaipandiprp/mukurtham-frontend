@@ -104,6 +104,12 @@ export function CategoryServiceGallery({
                 {/* Instagram Feed */}
                 <div className="max-h-[500px] overflow-y-auto space-y-5 pr-2">
 
+                    {!galleryRecords.length && (
+                        <div className="flex item-center justify-center text-gray-500 rounded-xl border border-gray-200 bg-white shadow-sm py-5">
+                            No Records Found
+                        </div>
+                    )}
+
                     {galleryRecords.map(
                         (record) => {
                             const imageUrl = getImageUrl(record.gallery_image);

@@ -105,7 +105,7 @@ export default function PanelHeader({ setIsMobileOpen }: HeaderProps) {
                         </button>
 
                         {/* Dropdown */}
-                        <div className={`absolute right-0 z-50 mt-2 w-56 origin-top-right overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all duration-200 ${isProfileMenuOpen ? "visible scale-100 opacity-100" : "invisible scale-95 opacity-0"}`}>
+                        <div className={`absolute right-0 z-1000 mt-2 w-56 origin-top-right overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl transition-all duration-200 ${isProfileMenuOpen ? "visible scale-100 opacity-100" : "invisible scale-95 opacity-0"}`}>
                             {/* Profile Header */}
                             <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
                                 <img src="/images/profile.svg" alt="Profile" className="h-10 w-10 rounded-full object-cover" />
@@ -122,7 +122,9 @@ export default function PanelHeader({ setIsMobileOpen }: HeaderProps) {
                             </div>
 
                             {/* My Profile */}
-                            <Link href={`${prefixUrl.panel}/change-profile`}>
+                            <Link
+                                href={`${prefixUrl.panel}/change-profile`}
+                                onClick={() => setIsProfileMenuOpen(false)}>
                                 <div className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50">
                                     <UserRound className="h-5 w-5 text-primary" />
 
@@ -133,7 +135,12 @@ export default function PanelHeader({ setIsMobileOpen }: HeaderProps) {
                             </Link>
 
                             {/* Logout */}
-                            <div onClick={logout} className="flex cursor-pointer items-center gap-3 border-t border-gray-100 px-4 py-3 text-sm text-red-600 transition-colors hover:bg-red-50">
+                            <div
+                                onClick={() => {
+                                    setIsProfileMenuOpen(false);
+                                    logout();
+                                }}
+                                className="flex cursor-pointer items-center gap-3 border-t border-gray-100 px-4 py-3 text-sm text-red-600 transition-colors hover:bg-red-50">
                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path
                                         strokeLinecap="round"

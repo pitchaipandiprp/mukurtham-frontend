@@ -90,7 +90,7 @@ export function MainHeader() {
 
     return (
         <>
-            <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
+            <header className="sticky top-0 z-1000 border-b border-gray-200 bg-white">
                 <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
 
                     {/* Logo + Location */}
@@ -231,7 +231,7 @@ export function MainHeader() {
                                             </div>
 
                                             {/* My Profile */}
-                                            <Link href={`${prefixUrl.user}/profile`}>
+                                            <Link href={`${prefixUrl.user}/profile`} onClick={() => setIsProfileMenuOpen(false)}>
                                                 <div className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50">
                                                     <UserRound className="h-5 w-5 text-primary" />
                                                     <span className="font-medium">
@@ -240,7 +240,7 @@ export function MainHeader() {
                                                 </div>
                                             </Link>
 
-                                            <Link href={`${prefixUrl.user}/change-password`}>
+                                            <Link href={`${prefixUrl.user}/change-password`} onClick={() => setIsProfileMenuOpen(false)}>
                                                 <div className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50">
                                                     <KeyRound className="h-5 w-5 text-primary" />
                                                     <span className="font-medium">
@@ -250,7 +250,12 @@ export function MainHeader() {
                                             </Link>
 
                                             {/* Logout */}
-                                            <div onClick={logout} className="flex cursor-pointer items-center gap-3 border-t border-gray-100 px-4 py-3 text-sm text-red-600 transition-colors hover:bg-red-50">
+                                            <div
+                                                onClick={() => {
+                                                    setIsProfileMenuOpen(false);
+                                                    logout();
+                                                }}
+                                                className="flex cursor-pointer items-center gap-3 border-t border-gray-100 px-4 py-3 text-sm text-red-600 transition-colors hover:bg-red-50">
                                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path
                                                         strokeLinecap="round"

@@ -185,9 +185,6 @@ export default function CategoryServiceSearch() {
             if (locations.length > 0) {
                 setSelectedLatitude(locations[0].latitude);
                 setSelectedLongitude(locations[0].longitude);
-            } else {
-                setSelectedLatitude(9.9252);
-                setSelectedLongitude(78.1198);
             }
         } catch (error) {
             console.error("Search Error:", error);
@@ -718,8 +715,8 @@ export default function CategoryServiceSearch() {
 
                 <aside className="col-span-1 md:col-span-4 relative min-h-[500px] md:min-h-full overflow-hidden border border-gray-200">
                     <LocationPicker
-                        latitude={selectedLatitude || 9.9252}
-                        longitude={selectedLongitude || 78.1198}
+                        latitude={selectedLatitude}
+                        longitude={selectedLongitude}
                         locations={mapLocations}
                         multipleMarkers={true}
                         onChange={(lat, lng) => {
