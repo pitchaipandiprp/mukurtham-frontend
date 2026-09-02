@@ -16,6 +16,8 @@ import { CategoryServicePackage } from "./category-service-package";
 import { Building, CircleAlert, FileText, Info, ListX, Sparkles, UserRound } from "lucide-react";
 import { common as commonUtils } from "@/utils/common";
 import { helperUtils } from "@/utils/helpers";
+import { sweetalert } from "@/utils/sweetalert";
+import { authUserId } from "@/utils/auth";
 
 const tabs = [
     { key: "overview", label: "Overview" },
@@ -29,6 +31,8 @@ const tabs = [
 
 
 export function CategoryServiceDetails() {
+    const userId = authUserId();
+
     const [serviceNotFound, setServiceNotFound] = useState(false);
     const [serviceRecord, setServiceRecord] = useState<any>(null);
     const [isTabOpen, setIsTabOpen] = useState("");
@@ -73,6 +77,29 @@ export function CategoryServiceDetails() {
         }
     };
 
+    const addToWishlists = async (categoryServiceId: number, purpose: "create" | "remove") => {
+        try {
+            if (!userId) {
+                sweetalert.toastError("Please log in to your account");
+                return;
+            }
+            const response = await mainRoutes.addToWishlist({
+                user_id: userId,
+                category_service_id: categoryServiceId,
+                purpose,
+            });
+
+            if (response?.success) {
+                setServiceRecord((prev: any) => ({
+                    ...prev,
+                    is_wishlisted: purpose === "create",
+                }));
+                sweetalert.toastSuccess(response?.message);
+            }
+        } catch (error) {
+            console.error("Wishlist Error:", error);
+        }
+    };
 
     return (
         <>
@@ -86,17 +113,25 @@ export function CategoryServiceDetails() {
                             alt=""
                             className="h-20 md:h-64 w-full object-cover transition-transform duration-700 ease-out hover:scale-110"
                         />
-                        {/* <div className="absolute right-4 top-4 flex gap-2">
-                            <button type="button" className="rounded-full bg-white/80 p-2 text-xs text-gray-700 backdrop-blur hover:bg-white" aria-label="Share">
-                                <FiArrowUpRight />
+                        <div className="absolute right-4 top-4 flex gap-2">
+                            <button
+                                type="button"
+                                onClick={() => addToWishlists(serviceRecord.id, serviceRecord?.is_wishlisted ? "remove" : "create")}
+                                className={`cursor-pointer rounded-full p-2 text-xs backdrop-blur transition-all duration-200 ${serviceRecord?.is_wishlisted
+                                    ? "bg-white text-primary hover:bg-white"
+                                    : "bg-white/80 text-gray-700 hover:bg-white hover:text-primary"
+                                    }`}
+
+                            >
+                                <FiHeart className={`h-4 w-4 transition-all duration-200 ${serviceRecord?.is_wishlisted ? "fill-current" : ""}`} />
                             </button>
-                            <button type="button" className="rounded-full bg-white/80 p-2 text-xs text-gray-700 backdrop-blur hover:bg-white" aria-label="Favorite">
-                                <FiHeart />
+                            {/* <button type="button" className="rounded-full bg-white/80 p-2 text-xs text-gray-700 backdrop-blur hover:bg-white" aria-label="Share">
+                                <FiArrowUpRight />
                             </button>
                             <button type="button" className="rounded-full bg-white/80 p-2 text-xs text-gray-700 backdrop-blur hover:bg-white" aria-label="More">
                                 <FiMoreHorizontal />
-                            </button>
-                        </div> */}
+                            </button> */}
+                        </div>
                     </div>
 
                     <div className="relative flex flex-col items-start justify-between gap-4 p-6 pt-0 md:flex-row md:items-end">

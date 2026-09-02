@@ -29,6 +29,10 @@ const serviceDateForcalendar = async (payload: any) => {
     return await apiService.post<any>("/service-date-for-calendar", payload);
 };
 
+const addToWishlist = async (payload: any) => {
+    return await apiService.post<any>("/add-to-wishlist", payload);
+};
+
 const mainRoutes = {
     categoryServiceSearch,
     getCategoryService,
@@ -37,6 +41,7 @@ const mainRoutes = {
     serviceReviewList,
     serviceReviewRecords,
     serviceDateForcalendar,
+    addToWishlist,
 };
 
 export default mainRoutes;

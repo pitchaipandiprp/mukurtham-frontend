@@ -20,6 +20,7 @@ import LocationPicker from "@/components/common/map/openstreetmap/location-picke
 import { sweetalert } from "@/utils/sweetalert";
 import { CategoryServiceCompare } from '@/components/pages/main/categories/category-service-compare';
 import { GitCompareArrows } from "lucide-react";
+import { authUserId } from "@/utils/auth";
 
 const initialSearch = {
     search_text: "",
@@ -55,6 +56,8 @@ const capacities = [
 
 export default function CategoryServiceSearch() {
     const router = useRouter();
+
+    const userId = authUserId();
 
     const BACKEND_BASE_URL = apiConfig.baseUrl;
 
@@ -362,6 +365,33 @@ export default function CategoryServiceSearch() {
         setIsCompareModalOpen(true);
     };
 
+
+    const addToWishlists = async (categoryServiceId: number, purpose: "create" | "remove") => {
+        try {
+            if (!userId) {
+                sweetalert.toastError("Please log in to your account");
+                return;
+            }
+            const response = await mainRoutes.addToWishlist({
+                user_id: userId,
+                category_service_id: categoryServiceId,
+                purpose,
+            });
+
+            if (response?.success) {
+                setSearchServiceData((prev: any[]) =>
+                    prev.map((item) =>
+                        item.id === categoryServiceId ? { ...item, is_wishlisted: purpose === "create", } : item
+                    )
+                );
+                // fetchServiceData(searchFields);
+                sweetalert.toastSuccess(response?.message);
+            }
+        } catch (error) {
+            console.error("Wishlist Error:", error);
+        }
+    };
+
     return (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4">
             <div className="hidden md:flex bg-white p-2 rounded-2xl shadow-sm border border-gray-200 items-center justify-between mb-4">
@@ -654,22 +684,26 @@ export default function CategoryServiceSearch() {
                                             className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:opacity-90"
                                             alt={serviceData.service_name}
                                         />
-                                        <span className="absolute top-2 left-2 bg-pink-700 text-white text-[9px] uppercase font-bold px-2 py-0.5 rounded">Popular</span>
+                                        <span className="absolute top-2 left-2 bg-primary text-white text-[9px] uppercase font-bold px-2 py-0.5 rounded">Popular</span>
                                     </div>
                                     <div className="sm:w-3/5 space-y-2 flex flex-col justify-between">
                                         <div>
                                             <div className="flex justify-between items-start">
                                                 <h3 className="font-bold text-sm text-gray-800">{serviceData?.service_name}</h3>
                                                 <div className="flex items-center text-xs font-semibold text-amber-600">
-                                                    <button type="button" className="cursor-pointer mr-2 p-1 text-gray-400 hover:text-pink-700">
-                                                        <FiHeart className="w-4 h-4" />
+                                                    <button
+                                                        type="button"
+                                                        className={`cursor-pointer mr-2 p-1 transition-colors duration-200 ${serviceData.is_wishlisted ? "text-primary" : "text-gray-400 hover:text-primary"}`}
+                                                        onClick={() => addToWishlists(serviceData.id, serviceData.is_wishlisted ? "remove" : "create")}
+                                                    >
+                                                        <FiHeart className={`w-4 h-4 ${serviceData.is_wishlisted ? "fill-current" : ""}`} />
                                                     </button>
                                                     <FiStar className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
                                                     <span>{serviceData?.averageRating ?? '0'}</span> <span className="text-gray-400 text-[10px] ml-0.5">({serviceData?.totalReviews ?? '0'})</span>
                                                 </div>
                                             </div>
                                             <p className="text-[11px] text-gray-500 flex items-center mt-0.5">
-                                                <FiMapPin className="w-3 h-3 mr-1 text-pink-700" /> {serviceData?.locality_name}, {serviceData?.city_name}
+                                                <FiMapPin className="w-3 h-3 mr-1 text-primary" /> {serviceData?.locality_name}, {serviceData?.city_name}
                                             </p>
 
                                             <div className="flex items-center space-x-3 text-[10px] text-gray-600 mt-2 font-medium">
@@ -683,7 +717,7 @@ export default function CategoryServiceSearch() {
                                                 {facilityList.slice(0, 5).map((tag) => (
                                                     <span key={`facility-tag-${tag.id}`} className="bg-gray-100 px-1.5 py-0.5 rounded">{tag.name}</span>
                                                 ))}
-                                                {/* <span className="text-pink-700 font-semibold">More</span> */}
+                                                {/* <span className="text-primary font-semibold">More</span> */}
                                             </div>
                                         </div>
 
