@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { authRoutes } from "@/services/api/auth.routes";
 import { setAuthData } from "@/utils/auth";
 
-export function useLogin(redirectTo = "/panel/dashboard") {
+export function useLogin(redirectTo: string | null = "/panel/dashboard") {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [sendingOtp, setSendingOtp] = useState(false);
@@ -44,7 +44,9 @@ export function useLogin(redirectTo = "/panel/dashboard") {
 
         window.dispatchEvent(new Event("auth-change"));
 
-        router.replace(redirectTo);
+        if (redirectTo) {
+            router.replace(redirectTo);
+        }
         return true;
     }
 

@@ -21,6 +21,7 @@ import { sweetalert } from "@/utils/sweetalert";
 import { CategoryServiceCompare } from '@/components/pages/main/categories/category-service-compare';
 import { GitCompareArrows } from "lucide-react";
 import { authUserId } from "@/utils/auth";
+import { useAuthModalStore } from "@/stores/auth-modal-store";
 
 const initialSearch = {
     search_text: "",
@@ -94,6 +95,8 @@ export default function CategoryServiceSearch() {
 
     const [selectedCompareServices, setSelectedCompareServices] = useState<any[]>([]);
     const [isCompareModalOpen, setIsCompareModalOpen] = useState<boolean>(false);
+
+    const { openAuthModal } = useAuthModalStore();
 
     useEffect(() => {
         loadCategories();
@@ -369,7 +372,7 @@ export default function CategoryServiceSearch() {
     const addToWishlists = async (categoryServiceId: number, purpose: "create" | "remove") => {
         try {
             if (!userId) {
-                sweetalert.toastError("Please log in to your account");
+                openAuthModal();
                 return;
             }
             const response = await mainRoutes.addToWishlist({

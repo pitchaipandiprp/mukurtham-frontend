@@ -19,6 +19,7 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
     const [otp, setOtp] = useState("");
     const [otpCursor, setOtpCursor] = useState(0);
     const otpInputRef = useRef<HTMLInputElement>(null);
+    const currentUrl = window.location.href;
 
     const {
         loginWithEmail,
@@ -31,7 +32,7 @@ export function LoginForm({ onSwitchToRegister, onLoginSuccess }: LoginFormProps
         otpSent,
         setOtpSent,
         resendCountdown,
-    } = useLogin('/user/dashboard');
+    } = useLogin(currentUrl);
 
     useEffect(() => {
         if (otpSent) {

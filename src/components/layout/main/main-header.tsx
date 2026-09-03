@@ -11,7 +11,7 @@ import { authUser, } from "@/utils/auth";
 import commonRoutes from "@/services/api/common.routes";
 import { KeyRound, UserRound } from "lucide-react";
 import { prefixUrl } from "@/utils/constants"
-
+import { useAuthModalStore } from "@/stores/auth-modal-store";
 
 const navLinks = [
     { label: "Home", href: "/" },
@@ -24,7 +24,7 @@ export function MainHeader() {
     const router = useRouter();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { isAuthenticated } = useAuthUser();
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const { isAuthModalOpen, openAuthModal, closeAuthModal, } = useAuthModalStore();
     const { logout } = useLogout('/');
 
     const [autoProfile, setAutoProfile] = useState<any>(null);
@@ -55,7 +55,7 @@ export function MainHeader() {
     }, [searchQuery, cityQuery]);
 
     function goToLogin() {
-        setIsAuthModalOpen(true);
+        openAuthModal();
     }
 
     const loadCity = async () => {
@@ -421,7 +421,7 @@ export function MainHeader() {
                     </div>
                 )}
             </header>
-            <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} defaultView="login" />
+            <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} defaultView="login" />
         </>
     );
 }
