@@ -1,21 +1,11 @@
 "use client";
-
-import { useEffect, useState, useRef } from "react";
-import { Play } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import MediaViewer from "@/components/common/gallery-viewer/media-viewer";
+import MediaGalleryViewer from "@/components/common/gallery-viewer/media-gallery-viewer";
 import mainRoutes from "@/services/api/main.routes";
 import { apiConfig } from "@/environments/api";
-import { common as commonUtils } from "@/utils/common";
-import { helperUtils } from "@/utils/helpers";
-
-type GalleryRecord = {
-    id: number;
-    gallery_type: "image" | "video";
-    gallery_image: string | null;
-    gallery_video: string | null;
-    gallery_description?: string | null;
-    updated_at: any;
-};
+import { Play } from "lucide-react";
 
 type GalleryMedia = {
     type: "image" | "video";
@@ -33,11 +23,12 @@ export function CategoryServiceGallery({
     serviceRecord,
 }: Props) {
     const BACKEND_BASE_URL = apiConfig.baseUrl;
-    const [galleryRecords, setGalleryRecords] = useState<GalleryRecord[]>([]);
-    const [selectedMedia, setSelectedMedia] = useState<GalleryMedia | null>(null);
-    const [timelineExpanded, setTimelineExpanded] = useState<number | null>(null);
-    const [timelineHasMore, setTimelineHasMore] = useState<Record<number, boolean>>({});
-    const timelineRefs = useRef<Record<number, HTMLDivElement | null>>({});
+    const [galleryRecords, setGalleryRecords] = useState<any[]>([]);
+    const [isGalleryTypeTabOpen, setIsGalleryTypeTabOpen] = useState("all");
+    const [galleryFilterRecords, setGalleryFilterRecords] = useState<any[]>([]);
+    const [selectedGalleryMedia, setSelectedGalleryMedia] = useState<GalleryMedia | null>(null);
+    const [allGalleryMedia, setAllGalleryMedia] = useState<GalleryMedia[]>([]);
+    const [showMediaGalleryViewer, setShowMediaGalleryViewer] = useState(false);
 
     useEffect(() => {
         if (categoryServiceId) {
@@ -45,122 +36,198 @@ export function CategoryServiceGallery({
         }
     }, [categoryServiceId]);
 
-    useEffect(() => {
-        const result: Record<number, boolean> = {};
-
-        Object.entries(timelineRefs.current).forEach(([id, element]) => {
-            if (element) {
-                const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
-                result[Number(id)] = element.scrollHeight > lineHeight * 2;
-            }
-        });
-
-        setTimelineHasMore(result);
-    }, [galleryRecords]);
-
     const loadGalleryRecords = async () => {
         try {
             if (!categoryServiceId) {
                 return;
             }
 
-            const result = await mainRoutes.galleryRecords({ category_service_id: categoryServiceId, });
+            const result = await mainRoutes.galleryRecords({
+                category_service_id: categoryServiceId,
+            });
 
             if (!result?.success) {
                 return;
             }
 
-            setGalleryRecords(result.data ?? []);
-        } catch (error) {
-            console.error("Failed to load gallery records:", error);
+            const records = result.data || [];
+
+            setGalleryRecords(records);
+            setGalleryFilterRecords(records);
+
+            const media = records
+                .filter((record: any) => record?.gallery_image || record?.gallery_video)
+                .map((record: any) => {
+                    const imageUrl = record?.gallery_image ? `${BACKEND_BASE_URL}/${record.gallery_image}` : "";
+                    const videoUrl = record?.gallery_video ? `${BACKEND_BASE_URL}/${record.gallery_video}` : undefined;
+
+                    return {
+                        type: record.gallery_type === "video" ? ("video" as const) : ("image" as const),
+                        // Thumbnail / poster
+                        image: imageUrl,
+                        // Actual video
+                        video: videoUrl,
+                    };
+                });
+
+            setAllGalleryMedia(media);
+        } catch (caughtError) {
+            console.error("Failed to load gallery records:", caughtError);
         }
     };
 
-    const getImageUrl = (image: string | null) => {
-        if (!image) {
-            return "";
+    const galleryTypeChange = (type: string) => {
+        setIsGalleryTypeTabOpen(type);
+
+        if (type === "all") {
+            setGalleryFilterRecords(galleryRecords);
+            return;
         }
-        return `${BACKEND_BASE_URL}/${image}`;
+
+        const filteredRecords = galleryRecords.filter(
+            (record) => record.gallery_type === type
+        );
+
+        setGalleryFilterRecords(filteredRecords);
     };
 
-    const getVideoUrl = (video: string | null) => {
-        if (!video) {
-            return "";
+    const getMediaData = (record: any) => {
+        if (!record?.gallery_image && !record?.gallery_video) {
+            return null;
         }
-        return `${BACKEND_BASE_URL}/${video}`;
+
+        const imageUrl = record?.gallery_image ? `${BACKEND_BASE_URL}/${record.gallery_image}` : "";
+        const videoUrl = record?.gallery_video ? `${BACKEND_BASE_URL}/${record.gallery_video}` : undefined;
+
+        return {
+            type: record.gallery_type === "video" ? ("video" as const) : ("image" as const),
+            // Thumbnail / poster image
+            image: imageUrl,
+            // Actual video URL
+            video: videoUrl,
+        };
     };
 
     return (
         <>
-            <div className="mx-auto w-full max-w-122122">
-
+            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                 {/* Header */}
-                <div className="mb-4 flex items-center">
-                    <h2 className="text-lg font-semibold text-gray-800">
-                        Gallery
-                    </h2>
+                <div className="mb-4 flex items-center justify-between">
+                    <div className="flex items-center">
+                        {/* All */}
+                        <button
+                            type="button"
+                            className={`mr-2 cursor-pointer rounded-full px-3 py-1 text-[11px] ${isGalleryTypeTabOpen === "all"
+                                ? "bg-primary text-white"
+                                : "bg-gray-300 text-gray-600 hover:bg-pink-50"
+                                }`}
+                            onClick={() => galleryTypeChange("all")}
+                        >
+                            All
+                        </button>
+
+                        {/* Photo */}
+                        <button
+                            type="button"
+                            className={`mr-2 cursor-pointer rounded-full px-3 py-1 text-[11px] ${isGalleryTypeTabOpen === "image"
+                                ? "bg-primary text-white"
+                                : "bg-gray-300 text-gray-600 hover:bg-pink-50"
+                                }`}
+                            onClick={() => galleryTypeChange("image")}
+                        >
+                            Photo
+                        </button>
+
+                        {/* Video */}
+                        <button
+                            type="button"
+                            className={`mr-2 cursor-pointer rounded-full px-3 py-1 text-[11px] ${isGalleryTypeTabOpen === "video"
+                                ? "bg-primary text-white"
+                                : "bg-gray-300 text-gray-600 hover:bg-pink-50"
+                                }`}
+                            onClick={() => galleryTypeChange("video")}
+                        >
+                            Video
+                        </button>
+                    </div>
+
+                    {/* View All */}
+                    <button
+                        type="button"
+                        className="cursor-pointer rounded-full px-3 py-1 text-[11px] bg-white border border-primary text-primary"
+                        onClick={() => setShowMediaGalleryViewer(true)}
+                    >
+                        View All
+                    </button>
                 </div>
 
-                {/* Instagram Feed */}
-                <div className="max-h-[500px] overflow-y-auto space-y-5 pr-2">
+                {/* Gallery */}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={isGalleryTypeTabOpen}
+                        initial={{
+                            opacity: 0,
+                            y: 15,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            y: 0,
+                        }}
+                        exit={{
+                            opacity: 0,
+                            y: -15,
+                        }}
+                        transition={{
+                            duration: 0.3,
+                        }}
+                        className="grid grid-cols-2 gap-3 sm:grid-cols-5"
+                    >
+                        {galleryFilterRecords.map(
+                            (record, index) => {
+                                const media = getMediaData(record);
 
-                    {!galleryRecords.length && (
-                        <div className="flex item-center justify-center text-gray-500 rounded-xl border border-gray-200 bg-white shadow-sm py-5">
-                            No Records Found
-                        </div>
-                    )}
+                                if (!media) {
+                                    return null;
+                                }
 
-                    {galleryRecords.map(
-                        (record) => {
-                            const imageUrl = getImageUrl(record.gallery_image);
-                            const videoUrl = getVideoUrl(record.gallery_video);
+                                return (
+                                    <motion.div
+                                        key={`gallery-media-${record.id ?? index}`}
+                                        className="relative h-24 w-full cursor-pointer overflow-hidden rounded-lg"
+                                        initial={{
+                                            opacity: 0,
+                                            scale: 0.9,
+                                        }}
+                                        animate={{
+                                            opacity: 1,
+                                            scale: 1,
+                                        }}
+                                        transition={{
+                                            duration: 0.25,
+                                            delay:
+                                                index * 0.05,
+                                        }}
+                                        whileHover={{
+                                            scale: 1.05,
+                                        }}
+                                        onClick={() =>
+                                            setSelectedGalleryMedia(
+                                                media
+                                            )
+                                        }
+                                    >
+                                        {/* Image */}
+                                        <img
+                                            src={media.image}
+                                            alt="Gallery"
+                                            className="h-full w-full object-cover"
+                                        />
 
-                            // if (!imageUrl) {
-                            //     return null;
-                            // }
-
-                            return (
-                                <div
-                                    key={`galery-records-${record.id}`}
-                                    className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-                                >
-
-                                    {/* Header */}
-                                    <div className="flex items-center gap-3 px-4 py-3">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
-                                            {serviceRecord?.service_name?.charAt(0)?.toUpperCase() ?? ""}
-                                        </div>
-
-                                        <div>
-                                            <div className="text-sm font-semibold text-gray-800">
-                                                {serviceRecord?.service_name ?? "Gallery"}
-                                            </div>
-                                            <span className="text-xs text-gray-400">{commonUtils.timeAgo(record?.updated_at)}</span>
-                                        </div>
-
-                                    </div>
-
-                                    {/* Media */}
-                                    {imageUrl && (
-                                        <div
-                                            className="relative mx-auto w-full max-w-[450px] cursor-pointer overflow-hidden bg-black"
-                                            onClick={() =>
-                                                setSelectedMedia({
-                                                    type: record.gallery_type,
-                                                    image: imageUrl,
-                                                    video: videoUrl || undefined,
-                                                })
-                                            }
-                                        >
-                                            <img
-                                                src={imageUrl}
-                                                alt="Gallery"
-                                                className="h-[250px] w-full object-cover"
-                                            />
-
-                                            {record.gallery_type === "video" && (
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-black/60 text-white shadow-xl backdrop-blur-sm">
+                                        {/* Video Play Indicator */}
+                                        {media.type ===
+                                            "video" && (
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-lg">
                                                         <Play
                                                             size={26}
                                                             className="ml-1 fill-current"
@@ -168,43 +235,28 @@ export function CategoryServiceGallery({
                                                     </div>
                                                 </div>
                                             )}
-                                        </div>
-                                    )}
+                                    </motion.div>
+                                );
+                            }
+                        )}
+                    </motion.div>
+                </AnimatePresence>
 
-                                    {/* Bottom */}
-                                    <div className="px-4 py-3">
-                                        {record.gallery_description && (
-                                            <>
-                                                <div
-                                                    ref={(element) => { timelineRefs.current[record.id] = element; }}
-                                                    className={`text-xs leading-5 text-gray-500 ${timelineExpanded === record.id ? "" : "line-clamp-2"}`}
-                                                >
-                                                    {helperUtils.hashtagContent(record.gallery_description)}
-                                                </div>
+                {/* Single Media Viewer */}
+                <MediaViewer
+                    media={selectedGalleryMedia}
+                    onClose={() => setSelectedGalleryMedia(null)}
+                />
 
-                                                {timelineHasMore[record.id] && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setTimelineExpanded(timelineExpanded === record.id ? null : record.id)}
-                                                        className="mt-1 cursor-pointer text-xs font-medium text-primary hover:underline"
-                                                    >
-                                                        {timelineExpanded === record.id ? "Read less" : "Read more"}
-                                                    </button>
-                                                )}
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        }
-                    )}
-
-                </div>
-
+                {/* View All Media Gallery Viewer */}
+                {showMediaGalleryViewer && (
+                    <MediaGalleryViewer
+                        media={allGalleryMedia}
+                        initialIndex={0}
+                        onClose={() => setShowMediaGalleryViewer(false)}
+                    />
+                )}
             </div>
-
-            {/* Viewer */}
-            <MediaViewer media={selectedMedia} onClose={() => setSelectedMedia(null)} />
         </>
     );
 }

@@ -18,6 +18,7 @@ import { common as commonUtils } from "@/utils/common";
 import { helperUtils } from "@/utils/helpers";
 import { sweetalert } from "@/utils/sweetalert";
 import { authUserId } from "@/utils/auth";
+import PopupModal from "@/components/common/popup/popup-modal";
 
 const tabs = [
     { key: "overview", label: "Overview" },
@@ -32,16 +33,18 @@ const tabs = [
 
 export function CategoryServiceDetails() {
     const userId = authUserId();
+    const BACKEND_BASE_URL = apiConfig.baseUrl;
 
     const [serviceNotFound, setServiceNotFound] = useState(false);
     const [serviceRecord, setServiceRecord] = useState<any>(null);
     const [isTabOpen, setIsTabOpen] = useState("");
 
-    const BACKEND_BASE_URL = apiConfig.baseUrl;
-
     const searchParams = useSearchParams();
     const categoryServiceId = Number(searchParams.get("serviceId"));
 
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupTitle, setPopupTitle] = useState("");
+    const [popupContent, setPopupContent] = useState("");
 
     useEffect(() => {
         setIsTabOpen("overview")
@@ -52,7 +55,6 @@ export function CategoryServiceDetails() {
             loadCategoryService();
         }
     }, [categoryServiceId]);
-
 
 
     const loadCategoryService = async () => {
@@ -105,13 +107,13 @@ export function CategoryServiceDetails() {
         <>
             <RecordNotFoundOverlay show={serviceNotFound} blurBackground={true} />
 
-            <main className="mx-auto max-w-screen-2xl space-y-12 px-4 py-6 sm:px-6 lg:px-8">
-                <div className="relative mb-6 overflow-hidden rounded-xl bg-white shadow-sm">
-                    <div className="relative w-full h-40 md:h-80">
+            <main className="mx-auto max-w-screen-2xl space-y-12 px-4 py-2 sm:px-6 lg:px-8">
+                <div className="relative mb-2 overflow-hidden rounded-xl bg-white shadow-sm">
+                    <div className="relative w-full h-40 md:h-60">
                         <img
                             src={serviceRecord?.service_banner_image ? `${BACKEND_BASE_URL}/${serviceRecord.service_banner_image}` : undefined}
                             alt=""
-                            className="h-20 md:h-64 w-full object-cover transition-transform duration-700 ease-out hover:scale-110"
+                            className="h-20 md:h-48 w-full object-cover transition-transform duration-700 ease-out hover:scale-110"
                         />
                         <div className="absolute right-4 top-4 flex gap-2">
                             <button
@@ -134,8 +136,8 @@ export function CategoryServiceDetails() {
                         </div>
                     </div>
 
-                    <div className="relative flex flex-col items-start justify-between gap-4 p-6 pt-0 md:flex-row md:items-end">
-                        <div className="md:flex items-end gap-6 -mt-16 md:-mt-25">
+                    <div className="relative flex flex-col items-start justify-between gap-4 p-6 pt-0 pb-2 md:flex-row md:items-end">
+                        <div className="md:flex items-end gap-6 -mt-16 md:-mt-32">
                             <div className="hidden md:flex h-32 w-32 flex-col items-center justify-center rounded-2xl border-4 border-white bg-primary p-3 text-center text-amber-300 shadow-lg sm:h-36 sm:w-36">
                                 <span className="mb-1 text-2xl">♛</span>
                                 <span className="font-serif text-xl font-bold leading-tight tracking-widest text-white">{serviceRecord?.service_name?.trim().split(/\s+/)[0]}</span>
@@ -163,7 +165,7 @@ export function CategoryServiceDetails() {
                         </div>
 
                         <div className="flex w-full items-center gap-3 md:w-auto">
-                            {/* <button
+                            <button
                                 type="button"
                                 className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-xs font-medium text-primary transition hover:bg-[#FDF2F7] md:flex-none"
                             >
@@ -174,11 +176,11 @@ export function CategoryServiceDetails() {
                                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-xs font-medium text-white transition hover:bg-[#80003B] md:flex-none"
                             >
                                 <FiMessageCircle /> Message
-                            </button> */}
+                            </button>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 divide-x border-t border-gray-200 bg-gray-50/50 text-center md:grid-cols-4">
+                    {/* <div className="grid grid-cols-2 divide-x border-t border-gray-200 bg-gray-50/50 text-center md:grid-cols-4">
                         <div className="p-4 border-gray-200">
                             <div className="text-sm font-bold text-gray-800">{serviceRecord?.completed_events}</div>
                             <div className="text-[11px] text-gray-500">Events Completed</div>
@@ -195,7 +197,7 @@ export function CategoryServiceDetails() {
                             <div className="text-sm font-bold text-gray-800">Verified</div>
                             <div className="text-[11px] text-gray-500">{serviceRecord?.verification_status?.aadhar ? "Business" : "Pending"}</div>
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="flex gap-8 overflow-x-auto border-t border-gray-200 px-6 text-xs font-medium text-gray-500">
                         {tabs.map(({ key, label }) => (
@@ -212,20 +214,39 @@ export function CategoryServiceDetails() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <aside className="order-2 md:order-1 md:col-span-3 space-y-6">
-                        <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                            <div>
-                                <div className="space-y-3 text-xs text-gray-600">
-                                    <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
-                                    {/* <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div> */}
-                                    {/* <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div> */}
-                                    <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> {serviceRecord?.service_mobile}</div>
-                                    <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> {serviceRecord?.service_email}</div>
-
-                                </div>
+                    <aside className="order-2 md:order-1 md:col-span-3 space-y-1">
+                        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+                            <div className="border-b border-gray-200 pb-3">
+                                <h3 className="mb-3 text-sm font-bold text-gray-900">About Us</h3>
+                                <p className="text-xs leading-relaxed text-gray-600 text-justify line-clamp-4">
+                                    {serviceRecord?.service_description || "No description available."}
+                                </p>
+                                <button
+                                    type="button"
+                                    className="mt-1 text-xs font-medium text-primary hover:underline cursor-pointer"
+                                    onClick={() => {
+                                        setShowPopup(true);
+                                        setPopupTitle("About Us");
+                                        setPopupContent(serviceRecord?.service_description || "No description available.");
+                                    }}
+                                >
+                                    Read more
+                                </button>
                             </div>
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
-                                <Building />
+                            <div className="flex items-center justify-between pt-3">
+                                <div>
+                                    <div className="space-y-3 text-xs text-gray-600">
+                                        <div className="flex items-center gap-2.5"><FiMapPin className="text-primary" /> {serviceRecord?.locality?.name}, {serviceRecord?.city?.name}</div>
+                                        {/* <div className="flex items-center gap-2.5"><FiClock className="text-primary" /> 10:00 AM - 8:00 PM</div> */}
+                                        {/* <div className="flex items-center gap-2.5"><FiGlobe className="text-primary" /> www.royaldecorators.com</div> */}
+                                        <div className="flex items-center gap-2.5"><FiPhone className="text-primary" /> {serviceRecord?.service_mobile}</div>
+                                        <div className="flex items-center gap-2.5"><FiMail className="text-primary" /> {serviceRecord?.service_email}</div>
+
+                                    </div>
+                                </div>
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
+                                    <Building />
+                                </div>
                             </div>
                         </div>
 
@@ -352,6 +373,17 @@ export function CategoryServiceDetails() {
                     </aside>
                 </div>
             </main>
+
+            <PopupModal
+                show={showPopup}
+                title={popupTitle}
+                onClose={() => setShowPopup(false)}
+                width="3xl"
+                position="top"
+                blurBackground={false}
+            >
+                {popupContent}
+            </PopupModal>
         </>
     );
 }

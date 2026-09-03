@@ -158,21 +158,45 @@ export function CategoryServiceCalendar({
     return (
         <>
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                <h3 className="mb-3 text-lg font-bold text-gray-900 text-center py-5">Availability Calendar</h3>
-                <div className="mb-10 flex items-center justify-center">
-                    <div className="flex items-center gap-2">
-                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-green-500 text-white">
-                            Waxing Crescent
-                        </span>
-                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-blue-500 text-white">
-                            Waning Crescent
-                        </span>
-                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-red-500 text-white">
-                            Booked
-                        </span>
-                        <span className="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold bg-gray-400 text-white">
-                            Unavailable
-                        </span>
+                <div className="mb-10">
+                    <div className="px-5 py-5">
+                        <div className="mb-4 flex items-center justify-center gap-2">
+                            <div className="h-1 w-8 rounded-full bg-primary/30" />
+                            <h3 className="text-lg font-bold text-gray-900">
+                                Availability Calendar
+                            </h3>
+                            <div className="h-1 w-8 rounded-full bg-primary/30" />
+                        </div>
+
+                        <div className="flex flex-wrap items-center justify-center gap-3 border-t border-gray-100 pt-4">
+                            <div className="flex items-center gap-2 rounded-lg border border-green-100 bg-green-50 px-3 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-lg bg-green-500" />
+                                <span className="text-xs font-semibold text-green-700">
+                                    Waxing Crescent
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-lg bg-blue-500" />
+                                <span className="text-xs font-semibold text-blue-700">
+                                    Waning Crescent
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-lg bg-red-500" />
+                                <span className="text-xs font-semibold text-red-700">
+                                    Booked
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-lg bg-gray-400" />
+                                <span className="text-xs font-semibold text-gray-600">
+                                    Unavailable
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
