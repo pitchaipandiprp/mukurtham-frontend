@@ -80,13 +80,13 @@ export function CategoryServiceDetails() {
                     .filter((entry) => entry.isIntersecting)
                     .sort(
                         (a, b) =>
-                            a.boundingClientRect.top - b.boundingClientRect.top
+                            a.boundingClientRect.top -
+                            b.boundingClientRect.top
                     );
 
                 if (visibleSections.length) {
-                    const activeSection = visibleSections[0].target.getAttribute(
-                        "data-section"
-                    );
+                    const activeSection =
+                        visibleSections[0].target.getAttribute("data-section");
 
                     if (activeSection) {
                         setIsTabOpen(activeSection);
@@ -95,8 +95,8 @@ export function CategoryServiceDetails() {
             },
             {
                 root: mainDivElement,
-                threshold: 0.15,
-                rootMargin: "-10% 0px -60% 0px",
+                threshold: 0.1,
+                rootMargin: "-5% 0px -70% 0px",
             }
         );
 
