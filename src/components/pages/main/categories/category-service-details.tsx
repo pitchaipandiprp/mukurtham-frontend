@@ -9,13 +9,11 @@ import mainRoutes from "@/services/api/main.routes";
 import RatingStars from "@/components/common/review/rating-stars";
 import RecordNotFoundOverlay from "@/components/common/not-found/record-not-found-overlay";
 import { CategoryServiceReview } from "./category-service-review";
-import { CategoryServiceOverview } from "./category-service-overview";
+import { CategoryServiceTimeline } from "./category-service-timeline";
 import { CategoryServiceGallery } from "./category-service-gallery";
 import { CategoryServiceCalendar } from "./category-service-calendar";
 import { CategoryServicePackage } from "./category-service-package";
 import { Building, CircleAlert, FileText, Info, ListX, Sparkles, UserRound } from "lucide-react";
-import { common as commonUtils } from "@/utils/common";
-import { helperUtils } from "@/utils/helpers";
 import { sweetalert } from "@/utils/sweetalert";
 import { authUserId } from "@/utils/auth";
 import PopupModal from "@/components/common/popup/popup-modal";
@@ -222,7 +220,7 @@ export function CategoryServiceDetails() {
 
                     <div className="relative flex flex-col items-start justify-between gap-4 p-6 pt-0 pb-2 md:flex-row md:items-end">
                         <div className="md:flex items-end gap-6 -mt-16 md:-mt-32">
-                            <div className="hidden md:flex h-32 w-32 flex-col items-center justify-center rounded-2xl border-4 border-white bg-primary p-3 text-center text-amber-300 shadow-lg sm:h-36 sm:w-36">
+                            <div className="hidden md:flex h-32 w-32 flex-col items-center justify-center rounded-2xl border-4 border-white bg-[#730536] p-3 text-center text-amber-300 shadow-lg sm:h-36 sm:w-36">
                                 <span className="mb-1 text-2xl">♛</span>
                                 <span className="font-serif text-xl font-bold leading-tight tracking-widest text-white">{serviceRecord?.service_name?.trim().split(/\s+/)[0]}</span>
                                 <span className="text-[9px] uppercase tracking-widest text-amber-200">{serviceRecord?.service_name?.trim().split(/\s+/).slice(1).join(" ")}</span>
@@ -443,53 +441,7 @@ export function CategoryServiceDetails() {
                     </div>
 
                     <aside className="order-3 md:order-3 md:col-span-3 space-y-6">
-                        <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                            <h3 className="mb-4 text-sm font-bold text-gray-900">Timeline</h3>
-
-                            {/* <div className="mb-6 flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">R</div>
-                                <input type="text" placeholder="Write something..." className="flex-1 bg-transparent text-xs outline-none" />
-                                <button type="button" className="px-2 text-xs font-medium text-primary">Post</button>
-                            </div> */}
-
-                            <div className="space-y-6">
-                                {serviceRecord?.service_timelines && (
-                                    serviceRecord.service_timelines.map((item: any) => (
-                                        <div key={`timelines-record-${item.id}`}>
-                                            <div className="border-b border-gray-200 pb-4">
-                                                <div className="mb-2 flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">{commonUtils.firstLetter(serviceRecord?.service_name)}</div>
-                                                        <div>
-                                                            <h5 className="text-xs font-bold text-gray-900">{serviceRecord?.service_name ?? ''}</h5>
-                                                            <span className="text-[10px] text-gray-400">{commonUtils.timeAgo(item?.updated_at)}</span>
-                                                        </div>
-                                                    </div>
-                                                    {/* <button type="button" className="text-gray-400 hover:text-gray-600" aria-label="Post options">
-                                                        <FiMoreHorizontal />
-                                                    </button> */}
-                                                </div>
-
-                                                <div className="mb-3 text-xs text-gray-700">
-                                                    {helperUtils.hashtagContent(item?.timeline_content)}
-                                                </div>
-                                                {/* <div className="flex items-center gap-4 text-xs text-gray-500">
-                                                    <button type="button" className="flex items-center gap-1 hover:text-primary"><FiHeart /> 128</button>
-                                                    <button type="button" className="flex items-center gap-1 hover:text-primary"><FiMessageCircle /> 12</button>
-                                                </div> */}
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-
-                                {!serviceRecord?.service_timelines?.length && (
-                                    <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
-                                        <ListX className="h-3.5 w-3.5" />
-                                        No Timeline Found
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        <CategoryServiceTimeline categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
                     </aside>
                 </div>
             </main>

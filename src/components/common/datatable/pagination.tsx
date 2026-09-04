@@ -8,6 +8,9 @@ interface TablePaginationProps {
     totalRecords?: number;
     size?: number;
     loading?: boolean;
+    showPageInfo?: boolean;
+    showTotalRecords?: boolean;
+    showBorder?: boolean;
     onPageChange: (page: number) => void;
 }
 
@@ -17,6 +20,9 @@ export default function TablePagination({
     totalRecords = 0,
     size = 5,
     loading = false,
+    showPageInfo = true,
+    showTotalRecords = true,
+    showBorder = true,
     onPageChange,
 }: TablePaginationProps) {
     if (totalPages <= 1 || totalRecords === 0) {
@@ -43,17 +49,19 @@ export default function TablePagination({
     const pageNumbers = getPageNumbers();
 
     return (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-t rounded-xl border border-slate-200 bg-white px-5 py-4 overflow-x-auto">
+        <div className={`flex flex-wrap items-center justify-between gap-4 rounded-t rounded-xl bg-white px-5 py-4 overflow-x-auto ${showBorder ? "border border-slate-200" : ""}`} >
 
-            <div className="text-sm text-slate-600">
-                <span className="text-slate-400">Page</span> <strong>{page}</strong> <span className="text-slate-400">of</span> <strong>{totalPages}</strong>
+            {showPageInfo && (
+                <div className="text-sm text-slate-600">
+                    <span className="text-slate-400">Page</span> <strong>{page}</strong> <span className="text-slate-400">of</span> <strong>{totalPages}</strong>
 
-                {totalRecords > 0 && (
-                    <span className="ml-3">
-                        | <span className="text-slate-400">Total Records :</span> <strong>{totalRecords}</strong>
-                    </span>
-                )}
-            </div>
+                    {showTotalRecords && totalRecords > 0 && (
+                        <span className="ml-3">
+                            | <span className="text-slate-400">Total Records :</span> <strong>{totalRecords}</strong>
+                        </span>
+                    )}
+                </div>
+            )}
 
             <div className="flex items-center gap-2">
 

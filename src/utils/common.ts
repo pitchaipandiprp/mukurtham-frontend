@@ -1,9 +1,15 @@
 
 const ratingStars = [1, 2, 3, 4, 5];
 
-const capitalizeFirst = (value: string) => value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-const firstLetter = (value: string) => value.charAt(0).toUpperCase();
+const capitalizeFirst = (value?: string | null) => {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+};
 
+const firstLetter = (value?: string | null) => {
+    if (!value) return "";
+    return value.charAt(0).toUpperCase();
+};
 
 const formatAmount = (amount: number | null) => {
     if (amount === null || Number.isNaN(amount)) {

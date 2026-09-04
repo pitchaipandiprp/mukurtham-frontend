@@ -25,6 +25,10 @@ const serviceReviewRecords = async (payload: any) => {
     return await apiService.post<any>("/service-review-records", payload);
 };
 
+const serviceTimelineList = async (payload: any) => {
+    return await apiService.post<any>("/service-timeline-list", payload);
+};
+
 const serviceDateForcalendar = async (payload: any) => {
     return await apiService.post<any>("/service-date-for-calendar", payload);
 };
@@ -40,6 +44,7 @@ const mainRoutes = {
     createServiceReview,
     serviceReviewList,
     serviceReviewRecords,
+    serviceTimelineList,
     serviceDateForcalendar,
     addToWishlist,
 };
