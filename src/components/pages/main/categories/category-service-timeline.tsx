@@ -107,82 +107,83 @@ export function CategoryServiceTimeline({
                 </div>
 
                 <div className="space-y-6">
-                    {timelineList && (
-                        timelineList.map((item: any) => {
-                            const timelineGallery = Array.isArray(item?.service_timeline_gallery) ? item.service_timeline_gallery : [];
-                            return (
-                                <div key={`timelines-record-${item.id}`}>
-                                    <div className="border-b border-gray-200 pb-4">
-                                        <div className="mb-2 flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
-                                                    {commonUtils.firstLetter(serviceRecord?.service_name)}
+                    <div className="max-h-[500px] overflow-y-auto pr-1 scrollbar-hidden">
+                        {timelineList && (
+                            timelineList.map((item: any) => {
+                                const timelineGallery = Array.isArray(item?.service_timeline_gallery) ? item.service_timeline_gallery : [];
+                                return (
+                                    <div key={`timelines-record-${item.id}`}>
+                                        <div className="border-b border-gray-200 pb-1 mb-3">
+                                            <div className="mb-2 flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+                                                        {commonUtils.firstLetter(serviceRecord?.service_name)}
+                                                    </div>
+
+                                                    <div>
+                                                        <h5 className="text-xs font-bold text-gray-900">
+                                                            {serviceRecord?.service_name ?? ''}
+                                                        </h5>
+
+                                                        <span className="text-[10px] text-gray-400">
+                                                            {commonUtils.timeAgo(item?.updated_at)}
+                                                        </span>
+                                                    </div>
                                                 </div>
 
-                                                <div>
-                                                    <h5 className="text-xs font-bold text-gray-900">
-                                                        {serviceRecord?.service_name ?? ''}
-                                                    </h5>
-
-                                                    <span className="text-[10px] text-gray-400">
-                                                        {commonUtils.timeAgo(item?.updated_at)}
-                                                    </span>
-                                                </div>
+                                                <button
+                                                    type="button"
+                                                    className="text-gray-400 hover:text-gray-600"
+                                                    aria-label="Post options"
+                                                >
+                                                    <FiMoreHorizontal />
+                                                </button>
                                             </div>
 
-                                            <button
-                                                type="button"
-                                                className="text-gray-400 hover:text-gray-600"
-                                                aria-label="Post options"
-                                            >
-                                                <FiMoreHorizontal />
-                                            </button>
-                                        </div>
+                                            <div className="mb-3 text-xs text-gray-700">
+                                                {helperUtils.hashtagContent(item?.timeline_content)}
+                                            </div>
 
-                                        <div className="mb-3 text-xs text-gray-700">
-                                            {helperUtils.hashtagContent(item?.timeline_content)}
-                                        </div>
+                                            {/* Timeline Gallery */}
+                                            {timelineGallery.length > 0 && (
+                                                <div className={`mb-3 grid grid-cols-1 gap-2 ${timelineGallery.length > 1 ? "md:grid-cols-2" : "md:grid-cols-1"}`} >
+                                                    {timelineGallery.map(
+                                                        (gallery: any, index: number) => {
+                                                            const imageUrl = gallery?.gallery_image ? `${BACKEND_BASE_URL}/${gallery.gallery_image.replace(/^\/+/, "")}` : "";
 
-                                        {/* Timeline Gallery */}
-                                        {timelineGallery.length > 0 && (
-                                            <div className={`mb-3 grid grid-cols-1 gap-2 ${timelineGallery.length > 1 ? "md:grid-cols-2" : "md:grid-cols-1"}`} >
-                                                {timelineGallery.map(
-                                                    (gallery: any, index: number) => {
-                                                        const imageUrl = gallery?.gallery_image ? `${BACKEND_BASE_URL}/${gallery.gallery_image.replace(/^\/+/, "")}` : "";
+                                                            return (
+                                                                <button
+                                                                    key={`timeline-gallery-${gallery.id}`}
+                                                                    type="button"
+                                                                    onClick={() => handleTimelineGalleryClick(timelineGallery, index)}
+                                                                    className="group relative aspect-video overflow-hidden rounded-lg bg-gray-100"
+                                                                >
+                                                                    {imageUrl && (
+                                                                        <img
+                                                                            src={imageUrl}
+                                                                            alt="Timeline gallery"
+                                                                            className="cursor-pointer h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                                        />
+                                                                    )}
 
-                                                        return (
-                                                            <button
-                                                                key={`timeline-gallery-${gallery.id}`}
-                                                                type="button"
-                                                                onClick={() => handleTimelineGalleryClick(timelineGallery, index)}
-                                                                className="group relative aspect-video overflow-hidden rounded-lg bg-gray-100"
-                                                            >
-                                                                {imageUrl && (
-                                                                    <img
-                                                                        src={imageUrl}
-                                                                        alt="Timeline gallery"
-                                                                        className="cursor-pointer h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                                    />
-                                                                )}
-
-                                                                {gallery.gallery_type === "video" && (
-                                                                    <div className="cursor-pointer absolute inset-0 flex items-center justify-center bg-black/20">
-                                                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-lg">
-                                                                            <Play
-                                                                                size={26}
-                                                                                className="ml-1 fill-current"
-                                                                            />
+                                                                    {gallery.gallery_type === "video" && (
+                                                                        <div className="cursor-pointer absolute inset-0 flex items-center justify-center bg-black/20">
+                                                                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white shadow-lg">
+                                                                                <Play
+                                                                                    size={26}
+                                                                                    className="ml-1 fill-current"
+                                                                                />
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                )}
-                                                            </button>
-                                                        )
-                                                    }
-                                                )}
-                                            </div>
-                                        )}
+                                                                    )}
+                                                                </button>
+                                                            )
+                                                        }
+                                                    )}
+                                                </div>
+                                            )}
 
-                                        {/* <div className="flex items-center gap-4 text-xs text-gray-500">
+                                            {/* <div className="flex items-center gap-4 text-xs text-gray-500">
                                             <button
                                                 type="button"
                                                 className="flex items-center gap-1 hover:text-primary"
@@ -197,11 +198,12 @@ export function CategoryServiceTimeline({
                                                 <FiMessageCircle /> 12
                                             </button>
                                         </div> */}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })
-                    )}
+                                );
+                            })
+                        )}
+                    </div>
 
                     {!timelineList?.length && (
                         <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
