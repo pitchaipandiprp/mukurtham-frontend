@@ -191,7 +191,7 @@ export function CategoryServiceDetails() {
         <>
             <RecordNotFoundOverlay show={serviceNotFound} blurBackground={true} />
 
-            <main className="mx-auto flex h-screen max-w-screen-2xl flex-col overflow-hidden px-4 py-2 sm:px-6 lg:px-8">
+            <main className="mx-auto flex max-w-screen-2xl flex-col px-4 py-2 sm:px-6 lg:px-8">
                 <div className="relative mb-2 shrink-0 overflow-hidden rounded-xl bg-white shadow-sm">
                     <div className="relative w-full h-40 md:h-60">
                         <img
@@ -392,53 +392,56 @@ export function CategoryServiceDetails() {
                             </div>
                         </div>
                     </aside>
-                    <main ref={mainDivRef} className="order-1 min-h-0 overflow-y-auto pr-1 scrollbar-hidden md:order-2 md:col-span-6">
-                        <div ref={sectionTabRefs.overview} data-section="overview" className="scroll-mt-4">
-                            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                                <div className="md:col-span-6">
-                                    <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                                </div>
-                                <div className="md:col-span-6">
-                                    <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm mb-2">
-                                        <div>
-                                            <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
-                                            <div className="space-y-1.5 text-xs text-gray-600">
-                                                {serviceRecord?.service_highlights && (
-                                                    serviceRecord.service_highlights.map((item: any) => (
-                                                        <div key={`highlight-record-${item.id}`}>{item.highlight}</div>
-                                                    ))
-                                                )}
+                    <div className="order-1 min-h-0 md:order-2 md:col-span-6">
+                        <main ref={mainDivRef} className="h-[calc(100vh-100px)] min-h-0 overflow-y-auto pr-1 scrollbar-hidden">
+                            <div ref={sectionTabRefs.overview} data-section="overview" className="scroll-mt-4">
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                                    <div className="md:col-span-6">
+                                        <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                    </div>
+                                    <div className="md:col-span-6">
+                                        <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm mb-2">
+                                            <div>
+                                                <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
+                                                <div className="space-y-1.5 text-xs text-gray-600">
+                                                    {serviceRecord?.service_highlights && (
+                                                        serviceRecord.service_highlights.map((item: any) => (
+                                                            <div key={`highlight-record-${item.id}`}>{item.highlight}</div>
+                                                        ))
+                                                    )}
 
-                                                {!serviceRecord?.service_highlights?.length && (
-                                                    <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
-                                                        <ListX className="h-3.5 w-3.5" />
-                                                        No Highlights Found
-                                                    </div>
-                                                )}
+                                                    {!serviceRecord?.service_highlights?.length && (
+                                                        <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+                                                            <ListX className="h-3.5 w-3.5" />
+                                                            No Highlights Found
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
+                                                <Sparkles />
                                             </div>
                                         </div>
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
-                                            <Sparkles />
-                                        </div>
-                                    </div>
 
-                                    <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                        <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div ref={sectionTabRefs["photos-videos"]} data-section="photos-videos" className="scroll-mt-4 mt-4">
-                            <CategoryServiceGallery categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                        </div>
+                            <div ref={sectionTabRefs["photos-videos"]} data-section="photos-videos" className="scroll-mt-4 mt-4">
+                                <CategoryServiceGallery categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                            </div>
 
-                        <div ref={sectionTabRefs.packages} data-section="packages" className="scroll-mt-4 mt-4">
-                            <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                        </div>
-                        <div ref={sectionTabRefs.reviews} data-section="reviews" className="scroll-mt-4 mt-4">
-                            <CategoryServiceReview categoryServiceId={categoryServiceId} />
-                        </div>
-                        <div ref={sectionTabRefs.offers} data-section="offers" className="scroll-mt-4 mt-4"     >{/* Offers component */}</div>
-                    </main>
+                            <div ref={sectionTabRefs.packages} data-section="packages" className="scroll-mt-4 mt-4">
+                                <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                            </div>
+                            <div ref={sectionTabRefs.reviews} data-section="reviews" className="scroll-mt-4 mt-4">
+                                <CategoryServiceReview categoryServiceId={categoryServiceId} />
+                            </div>
+                            <div ref={sectionTabRefs.offers} data-section="offers" className="scroll-mt-4 mt-4"     >{/* Offers component */}</div>
+                        </main>
+                    </div>
+
                     <aside className="order-3 md:order-3 md:col-span-3 space-y-6">
                         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                             <h3 className="mb-4 text-sm font-bold text-gray-900">Timeline</h3>
