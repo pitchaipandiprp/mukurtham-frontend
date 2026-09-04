@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { FiCheck } from "react-icons/fi";
 import { FiArrowUpRight, FiHeart, FiMail, FiMapPin, FiMessageCircle, FiMoreHorizontal, FiPhone, FiPlay, FiShield, } from "react-icons/fi";
@@ -20,12 +20,12 @@ import { sweetalert } from "@/utils/sweetalert";
 import { authUserId } from "@/utils/auth";
 import PopupModal from "@/components/common/popup/popup-modal";
 
-const tabs = [
+const tabSection = [
     { key: "overview", label: "Overview" },
     { key: "availability", label: "Availability" },
     { key: "photos-videos", label: "Photos & Videos" },
-    { key: "reviews", label: "Reviews" },
     { key: "packages", label: "Packages" },
+    { key: "reviews", label: "Reviews" },
     { key: "offers", label: "Offers" },
 ];
 
@@ -37,7 +37,6 @@ export function CategoryServiceDetails() {
 
     const [serviceNotFound, setServiceNotFound] = useState(false);
     const [serviceRecord, setServiceRecord] = useState<any>(null);
-    const [isTabOpen, setIsTabOpen] = useState("");
 
     const searchParams = useSearchParams();
     const categoryServiceId = Number(searchParams.get("serviceId"));
@@ -46,9 +45,94 @@ export function CategoryServiceDetails() {
     const [popupTitle, setPopupTitle] = useState("");
     const [popupContent, setPopupContent] = useState("");
 
+    //Main section scroll
+    const mainDivRef = useRef<HTMLElement | null>(null);
+    const sectionTabRefs = {
+        "overview": useRef<HTMLDivElement | null>(null),
+        "availability": useRef<HTMLDivElement | null>(null),
+        "photos-videos": useRef<HTMLDivElement | null>(null),
+        "packages": useRef<HTMLDivElement | null>(null),
+        "reviews": useRef<HTMLDivElement | null>(null),
+        "offers": useRef<HTMLDivElement | null>(null),
+    };
+    const [isTabOpen, setIsTabOpen] = useState("overview");
+
     useEffect(() => {
-        setIsTabOpen("overview")
+        const mainDivElement = mainDivRef.current;
+
+        if (!mainDivElement) return;
+
+        const sections = Object.entries(sectionTabRefs)
+            .map(([key, ref]) => ({
+                key,
+                element: ref.current,
+            }))
+            .filter(
+                (item): item is { key: string; element: HTMLDivElement } =>
+                    item.element !== null
+            );
+
+        if (!sections.length) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const visibleSections = entries
+                    .filter((entry) => entry.isIntersecting)
+                    .sort(
+                        (a, b) =>
+                            a.boundingClientRect.top - b.boundingClientRect.top
+                    );
+
+                if (visibleSections.length) {
+                    const activeSection = visibleSections[0].target.getAttribute(
+                        "data-section"
+                    );
+
+                    if (activeSection) {
+                        setIsTabOpen(activeSection);
+                    }
+                }
+            },
+            {
+                root: mainDivElement,
+                threshold: 0.15,
+                rootMargin: "-10% 0px -60% 0px",
+            }
+        );
+
+        sections.forEach(({ element }) => observer.observe(element));
+
+        return () => observer.disconnect();
     }, []);
+
+    const getSectionRef = (key: string) => {
+        if (key === "availability") {
+            return sectionTabRefs.overview.current;
+        }
+
+        return sectionTabRefs[key as keyof typeof sectionTabRefs]?.current;
+    };
+
+    const handleTabClick = (key: string) => {
+        setIsTabOpen(key);
+
+        const main = mainDivRef.current;
+        const section = getSectionRef(key);
+
+        if (!main || !section) return;
+
+        const mainRect = main.getBoundingClientRect();
+        const sectionRect = section.getBoundingClientRect();
+
+        const targetPosition =
+            sectionRect.top - mainRect.top + main.scrollTop;
+
+        main.scrollTo({
+            top: Math.max(0, targetPosition),
+            behavior: "smooth",
+        });
+    };
+    //Main section scroll
 
     useEffect(() => {
         if (categoryServiceId) {
@@ -107,8 +191,8 @@ export function CategoryServiceDetails() {
         <>
             <RecordNotFoundOverlay show={serviceNotFound} blurBackground={true} />
 
-            <main className="mx-auto max-w-screen-2xl space-y-12 px-4 py-2 sm:px-6 lg:px-8">
-                <div className="relative mb-2 overflow-hidden rounded-xl bg-white shadow-sm">
+            <main className="mx-auto flex h-screen max-w-screen-2xl flex-col overflow-hidden px-4 py-2 sm:px-6 lg:px-8">
+                <div className="relative mb-2 shrink-0 overflow-hidden rounded-xl bg-white shadow-sm">
                     <div className="relative w-full h-40 md:h-60">
                         <img
                             src={serviceRecord?.service_banner_image ? `${BACKEND_BASE_URL}/${serviceRecord.service_banner_image}` : undefined}
@@ -199,21 +283,28 @@ export function CategoryServiceDetails() {
                         </div>
                     </div> */}
 
-                    <div className="flex gap-8 overflow-x-auto border-t border-gray-200 px-6 text-xs font-medium text-gray-500">
-                        {tabs.map(({ key, label }) => (
+                    <div className="flex shrink-0 gap-6 overflow-x-auto border-t border-gray-200 bg-white px-6 text-[12px] font-semibold text-gray-700">
+                        {tabSection.map(({ key, label }) => (
                             <button
-                                key={`is-tab-${key}`}
+                                key={`is-tabsec-${key}`}
                                 type="button"
-                                className={(isTabOpen === key ? "border-b-2 border-primary font-semibold" : "") + " cursor-pointer whitespace-nowrap py-3.5 hover:text-primary"}
-                                onClick={() => setIsTabOpen(key)}
+                                className={`relative cursor-pointer whitespace-nowrap py-3.5 transition-colors ${isTabOpen === key
+                                    ? "font-semibold text-primary"
+                                    : "hover:text-primary"
+                                    }`}
+                                onClick={() => handleTabClick(key)}
                             >
                                 {label}
+
+                                {isTabOpen === key && (
+                                    <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-primary" />
+                                )}
                             </button>
                         ))}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 md:grid-cols-12">
                     <aside className="order-2 md:order-1 md:col-span-3 space-y-1">
                         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                             <div className="border-b border-gray-200 pb-3">
@@ -301,57 +392,52 @@ export function CategoryServiceDetails() {
                             </div>
                         </div>
                     </aside>
-                    <main className="order-1 md:order-2 md:col-span-6 space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                            <div className="md:col-span-6">
-                                {/* {(isTabOpen === "overview" || isTabOpen === "availability") && ( */}
-                                <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                                {/* )} */}
-                            </div>
-                            <div className="md:col-span-6">
-                                <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm mb-2">
-                                    <div>
-                                        <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
-                                        <div className="space-y-1.5 text-xs text-gray-600">
-                                            {serviceRecord?.service_highlights && (
-                                                serviceRecord.service_highlights.map((item: any) => (
-                                                    <div key={`highlight-record-${item.id}`}>{item.highlight}</div>
-                                                ))
-                                            )}
+                    <main ref={mainDivRef} className="order-1 min-h-0 overflow-y-auto pr-1 scrollbar-hidden md:order-2 md:col-span-6">
+                        <div ref={sectionTabRefs.overview} data-section="overview" className="scroll-mt-4">
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                                <div className="md:col-span-6">
+                                    <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                </div>
+                                <div className="md:col-span-6">
+                                    <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm mb-2">
+                                        <div>
+                                            <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
+                                            <div className="space-y-1.5 text-xs text-gray-600">
+                                                {serviceRecord?.service_highlights && (
+                                                    serviceRecord.service_highlights.map((item: any) => (
+                                                        <div key={`highlight-record-${item.id}`}>{item.highlight}</div>
+                                                    ))
+                                                )}
 
-                                            {!serviceRecord?.service_highlights?.length && (
-                                                <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
-                                                    <ListX className="h-3.5 w-3.5" />
-                                                    No Highlights Found
-                                                </div>
-                                            )}
+                                                {!serviceRecord?.service_highlights?.length && (
+                                                    <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+                                                        <ListX className="h-3.5 w-3.5" />
+                                                        No Highlights Found
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
+                                            <Sparkles />
                                         </div>
                                     </div>
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
-                                        <Sparkles />
-                                    </div>
+
+                                    <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
                                 </div>
-
-                                {/* {isTabOpen === "packages" && ( */}
-                                <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                                {/* )} */}
-                            </div>
-
-                            <div className="md:col-span-12">
-                                {/* {isTabOpen === "photos-videos" && ( */}
-                                <CategoryServiceGallery categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                                {/* )} */}
-                            </div>
-
-                            <div className="md:col-span-12">
-                                {/* {isTabOpen === "reviews" && ( */}
-                                <CategoryServiceReview categoryServiceId={categoryServiceId} />
-                                {/* )} */}
                             </div>
                         </div>
-                        {/* {isTabOpen === "overview" && (
-                            <CategoryServiceOverview categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                        )} */}
+
+                        <div ref={sectionTabRefs["photos-videos"]} data-section="photos-videos" className="scroll-mt-4 mt-4">
+                            <CategoryServiceGallery categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                        </div>
+
+                        <div ref={sectionTabRefs.packages} data-section="packages" className="scroll-mt-4 mt-4">
+                            <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                        </div>
+                        <div ref={sectionTabRefs.reviews} data-section="reviews" className="scroll-mt-4 mt-4">
+                            <CategoryServiceReview categoryServiceId={categoryServiceId} />
+                        </div>
+                        <div ref={sectionTabRefs.offers} data-section="offers" className="scroll-mt-4 mt-4"     >{/* Offers component */}</div>
                     </main>
                     <aside className="order-3 md:order-3 md:col-span-3 space-y-6">
                         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
