@@ -1,0 +1,6 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Yellow Moon Base -->
+  <circle cx="256" cy="256" r="220" fill="#F2CF59" stroke="#1A1A1A" stroke-width="12"/>
+  <!-- Dark Shadow Crescent (Theipirai) -->
+  <path d="M 256 36 A 220 220 0 0 1 256 476 A 130 220 0 0 0 256 36 Z" fill="#292929" stroke="#1A1A1A" stroke-width="8"/>
+</svg>

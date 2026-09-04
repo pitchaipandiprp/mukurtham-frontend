@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import "@/assets/css/fullcalendar.css";
+import "@/assets/css/compact-fullcalendar.css";
 import mainRoutes from "@/services/api/main.routes";
 import { common as commonUtils } from "@/utils/common";
 
@@ -23,6 +23,25 @@ export function CategoryServiceCalendar({
     const [loading, setLoading] = useState(false);
     const [serviceDates, setServiceDates] = useState<any[]>([]);
     const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
+    const calendarRef = useRef<FullCalendar>(null);
+
+    useEffect(() => {
+        const title = document.querySelector(".fc-toolbar-title");
+
+        if (!title) return;
+
+        title.classList.add("cursor-pointer");
+
+        const handleTitleClick = () => {
+            calendarRef.current?.getApi().today();
+        };
+
+        title.addEventListener("click", handleTitleClick);
+
+        return () => {
+            title.removeEventListener("click", handleTitleClick);
+        };
+    }, []);
 
     useEffect(() => {
         if (categoryServiceId) {
@@ -53,12 +72,12 @@ export function CategoryServiceCalendar({
                             item?.date_type?.toLowerCase() !== "available"
                     )
                     .map((item: any) => ({
-                        title: item?.event_name || item?.date_type,
+                        title: '',
                         start: item?.from_date,
                         allDay: true,
-                        classNames: [
-                            item?.date_type?.toLowerCase()
-                        ],
+                        // classNames: [
+                        //     item?.date_type?.toLowerCase()
+                        // ],
                         extendedProps: {
                             service_date_id: item?.id,
                             date_type: item?.date_type?.toLowerCase(),
@@ -138,18 +157,26 @@ export function CategoryServiceCalendar({
 
         const dateTypes = dateRecords.map((item: any) => item?.date_type?.toLowerCase()).filter(Boolean);
 
-        // Highest priority
+        /* Highest priority */
         if (dateTypes.includes("unavailable")) {
             return ["calendar-unavailable"];
         }
 
-        // if (dateTypes.includes("waxing")) {
-        //     return ["calendar-waxing"];
-        // }
+        if (dateTypes.includes("booked")) {
+            return ["calendar-booked"];
+        }
 
-        // if (dateTypes.includes("waning")) {
-        //     return ["calendar-waning"];
-        // }
+        if (dateTypes.includes("holiday")) {
+            return ["calendar-holiday"];
+        }
+
+        if (dateTypes.includes("waxing")) {
+            return ["calendar-waxing"];
+        }
+
+        if (dateTypes.includes("waning")) {
+            return ["calendar-waning"];
+        }
 
         // Ignore available
         return [];
@@ -158,42 +185,47 @@ export function CategoryServiceCalendar({
     return (
         <>
             <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-                <div className="mb-10">
-                    <div className="px-5 py-5">
-                        <div className="mb-4 flex items-center justify-center gap-2">
-                            <div className="h-1 w-8 rounded-full bg-primary/30" />
-                            <h3 className="text-lg font-bold text-gray-900">
-                                Availability Calendar
-                            </h3>
-                            <div className="h-1 w-8 rounded-full bg-primary/30" />
-                        </div>
+                <div className="mb-3">
+                    <div className="flex w-full flex-col gap-3">
+                        {/* Title - Top */}
+                        <h3 className="text-center text-lg font-bold text-gray-900">
+                            Availability Calendar
+                        </h3>
 
-                        <div className="flex flex-wrap items-center justify-center gap-3 border-t border-gray-100 pt-4">
-                            <div className="flex items-center gap-2 rounded-lg border border-green-100 bg-green-50 px-3 py-1.5">
-                                <span className="h-2.5 w-2.5 rounded-lg bg-green-500" />
-                                <span className="text-xs font-semibold text-green-700">
-                                    Waxing Crescent
+                        {/* Legend - Bottom */}
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                            {/* <div className="flex items-center gap-1 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
+                                <span className="text-[10px] font-semibold text-green-700">
+                                    Waxing
                                 </span>
                             </div>
 
-                            <div className="flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-1.5">
-                                <span className="h-2.5 w-2.5 rounded-lg bg-blue-500" />
-                                <span className="text-xs font-semibold text-blue-700">
-                                    Waning Crescent
+                            <div className="flex items-center gap-1 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+                                <span className="text-[10px] font-semibold text-blue-700">
+                                    Waning
                                 </span>
-                            </div>
+                            </div> */}
 
-                            <div className="flex items-center gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-1.5">
-                                <span className="h-2.5 w-2.5 rounded-lg bg-red-500" />
-                                <span className="text-xs font-semibold text-red-700">
+                            <div className="flex items-center gap-1 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
+                                <span className="text-[10px] font-semibold text-red-700">
                                     Booked
                                 </span>
                             </div>
 
-                            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5">
-                                <span className="h-2.5 w-2.5 rounded-lg bg-gray-400" />
-                                <span className="text-xs font-semibold text-gray-600">
+                            <div className="flex items-center gap-1 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-full bg-gray-400" />
+                                <span className="text-[10px] font-semibold text-gray-600">
                                     Unavailable
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-1 py-1.5">
+                                <span className="h-2.5 w-2.5 rounded-full bg-purple-400" />
+                                <span className="text-[10px] font-semibold text-purple-600">
+                                    Holiday
                                 </span>
                             </div>
                         </div>
@@ -202,6 +234,7 @@ export function CategoryServiceCalendar({
 
                 <div className="calendar-container">
                     <FullCalendar
+                        ref={calendarRef}
                         plugins={[
                             dayGridPlugin,
                             interactionPlugin,
@@ -216,12 +249,13 @@ export function CategoryServiceCalendar({
                             // start: new Date(),
                         }}
                         headerToolbar={{
-                            left: "prev,next today",
+                            left: "prev",
                             center: "title",
-                            right: "",
+                            right: "next",
                         }}
                         buttonText={{
-                            today: "Today",
+                            prev: "",
+                            next: "",
                         }}
                     />
                 </div>

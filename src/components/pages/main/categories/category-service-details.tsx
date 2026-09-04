@@ -22,8 +22,8 @@ import PopupModal from "@/components/common/popup/popup-modal";
 
 const tabs = [
     { key: "overview", label: "Overview" },
-    { key: "photos-videos", label: "Photos & Videos" },
     { key: "availability", label: "Availability" },
+    { key: "photos-videos", label: "Photos & Videos" },
     { key: "reviews", label: "Reviews" },
     { key: "packages", label: "Packages" },
     { key: "offers", label: "Offers" },
@@ -302,25 +302,56 @@ export function CategoryServiceDetails() {
                         </div>
                     </aside>
                     <main className="order-1 md:order-2 md:col-span-6 space-y-6">
-                        {isTabOpen === "overview" && (
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                            <div className="md:col-span-6">
+                                {/* {(isTabOpen === "overview" || isTabOpen === "availability") && ( */}
+                                <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                {/* )} */}
+                            </div>
+                            <div className="md:col-span-6">
+                                <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm mb-2">
+                                    <div>
+                                        <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
+                                        <div className="space-y-1.5 text-xs text-gray-600">
+                                            {serviceRecord?.service_highlights && (
+                                                serviceRecord.service_highlights.map((item: any) => (
+                                                    <div key={`highlight-record-${item.id}`}>{item.highlight}</div>
+                                                ))
+                                            )}
+
+                                            {!serviceRecord?.service_highlights?.length && (
+                                                <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+                                                    <ListX className="h-3.5 w-3.5" />
+                                                    No Highlights Found
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
+                                        <Sparkles />
+                                    </div>
+                                </div>
+
+                                {/* {isTabOpen === "packages" && ( */}
+                                <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                {/* )} */}
+                            </div>
+
+                            <div className="md:col-span-12">
+                                {/* {isTabOpen === "photos-videos" && ( */}
+                                <CategoryServiceGallery categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                {/* )} */}
+                            </div>
+
+                            <div className="md:col-span-12">
+                                {/* {isTabOpen === "reviews" && ( */}
+                                <CategoryServiceReview categoryServiceId={categoryServiceId} />
+                                {/* )} */}
+                            </div>
+                        </div>
+                        {/* {isTabOpen === "overview" && (
                             <CategoryServiceOverview categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                        )}
-
-                        {isTabOpen === "photos-videos" && (
-                            <CategoryServiceGallery categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                        )}
-
-                        {isTabOpen === "availability" && (
-                            <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                        )}
-
-                        {isTabOpen === "reviews" && (
-                            <CategoryServiceReview categoryServiceId={categoryServiceId} />
-                        )}
-
-                        {isTabOpen === "packages" && (
-                            <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
-                        )}
+                        )} */}
                     </main>
                     <aside className="order-3 md:order-3 md:col-span-3 space-y-6">
                         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
