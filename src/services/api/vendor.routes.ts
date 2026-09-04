@@ -82,8 +82,8 @@ const getServiceCertificate = async (payload: any) => {
 };
 
 /////Service Timeline/////
-const createTimeline = async (payload: any) => {
-    return await apiService.post<any>("/vendors/create-timeline", payload);
+const createTimeline = async (formData: FormData) => {
+    return await apiService.post<any>("/vendors/create-timeline", formData);
 };
 
 const updateTimelineStatus = async (payload: any) => {

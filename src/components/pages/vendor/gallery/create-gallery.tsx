@@ -256,7 +256,7 @@ export default function CreateGallery() {
                             )}
                         </div>
 
-                        <div className="md:col-span-12">
+                        {/* <div className="md:col-span-12">
                             <label htmlFor="galleryDescription" className="mb-2 block text-sm font-medium text-gray-700">
                                 Content
                             </label>
@@ -268,7 +268,7 @@ export default function CreateGallery() {
                                 value={form.gallery_description}
                                 onChange={(event) => updateField("gallery_description", event.target.value)}
                             ></textarea>
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
