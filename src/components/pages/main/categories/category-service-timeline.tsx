@@ -53,7 +53,7 @@ export function CategoryServiceTimeline({
             const result = await mainRoutes.serviceTimelineList({
                 category_service_id: categoryServiceId,
                 page,
-                limit: 2,
+                // limit: 2,
             });
 
             if (!result?.success) {

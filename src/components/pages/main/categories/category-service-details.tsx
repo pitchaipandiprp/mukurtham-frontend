@@ -229,9 +229,11 @@ export function CategoryServiceDetails() {
                                 <div className="flex items-center gap-2">
                                     <h1 className="text-2xl font-bold text-gray-900">
                                         {serviceRecord?.service_name}
-                                        <span className="inline-flex ml-2 h-4 w-4 items-center justify-center rounded-full bg-blue-500">
-                                            <FiCheck className="h-3 w-3 text-white" />
-                                        </span>
+                                        {serviceRecord?.verification_status?.aadhar && (
+                                            <span className="inline-flex ml-2 h-4 w-4 items-center justify-center rounded-full bg-blue-500">
+                                                <FiCheck className="h-3 w-3 text-white" />
+                                            </span>
+                                        )}
                                     </h1>
                                     <span className="text-sm text-blue-500"></span>
                                 </div>

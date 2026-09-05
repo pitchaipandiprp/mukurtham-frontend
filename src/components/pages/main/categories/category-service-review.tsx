@@ -20,6 +20,8 @@ type ReviewForm = {
 };
 
 export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId: number | null }) {
+    const [userId, setUserId] = useState<number | null>(null);
+
     const [reviewLoading, setReviewLoading] = useState(false);
     const [reviewPage, setReviewPage] = useState(1);
     const [totalReviewPages, setTotalReviewPages] = useState(0);
@@ -46,6 +48,15 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [selectedRating, setSelectedRating] = useState("5");
+
+    useEffect(() => {
+        const id = authUserId();
+
+        if (id !== null) {
+            setUserId(Number(id));
+        }
+    }, []);
+
 
     useEffect(() => {
         if (categoryServiceId) {
@@ -150,7 +161,7 @@ export function CategoryServiceReview({ categoryServiceId }: { categoryServiceId
                 ratingCounts={ratingCounts}
                 title="Reviews & Ratings"
                 description="Customer experiences and feedback"
-                showWriteReview={authUserId() !== null}
+                showWriteReview={userId !== null}
                 onWriteReview={onWriteReview}
             />
 
