@@ -37,6 +37,11 @@ const addToWishlist = async (payload: any) => {
     return await apiService.post<any>("/add-to-wishlist", payload);
 };
 
+const availabilityRequest = async (payload: any) => {
+    return await apiService.post<any>("/availability-request", payload);
+};
+
+
 const mainRoutes = {
     categoryServiceSearch,
     getCategoryService,
@@ -47,6 +52,7 @@ const mainRoutes = {
     serviceTimelineList,
     serviceDateForcalendar,
     addToWishlist,
+    availabilityRequest,
 };
 
 export default mainRoutes;

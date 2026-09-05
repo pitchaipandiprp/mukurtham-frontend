@@ -154,7 +154,7 @@ export function CategoryServiceGallery({
                     {/* View All */}
                     <button
                         type="button"
-                        className="cursor-pointer rounded-full px-3 py-1 text-[11px] bg-white border border-primary text-primary"
+                        className="cursor-pointer rounded-full px-3 py-1 text-[11px] bg-white border border-primary text-primary font-semibold"
                         onClick={() => setShowMediaGalleryViewer(true)}
                     >
                         View All

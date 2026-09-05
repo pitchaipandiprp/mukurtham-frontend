@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import mainRoutes from "@/services/api/main.routes";
+import { constants } from "@/utils/constants";
 
 
 
@@ -34,7 +35,9 @@ export function CategoryServicePackage({
                         </div>
                     </div>
                 </div>
-                <button type="button" className="mt-4 w-full rounded-lg border border-primary/30 py-1.5 text-xs font-medium text-primary hover:bg-[#FDF2F7]">
+                <button type="button"
+                    className={`${constants.buttonClassWhite} mt-3 w-full text-center`}
+                >
                     View All Packages
                 </button>
             </div>

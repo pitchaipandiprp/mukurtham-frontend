@@ -7,6 +7,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import "@/assets/css/compact-fullcalendar.css";
 import mainRoutes from "@/services/api/main.routes";
 import { common as commonUtils } from "@/utils/common";
+import { sweetalert } from "@/utils/sweetalert";
+import { constants } from "@/utils/constants";
 
 
 
@@ -22,9 +24,12 @@ export function CategoryServiceCalendar({
 
     const [loading, setLoading] = useState(false);
     const [serviceDates, setServiceDates] = useState<any[]>([]);
-    const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
+    const [requestedDates, setRequestedDates] = useState<string[]>([]);
     const calendarRef = useRef<FullCalendar>(null);
+    const [selectedDates, setSelectedDates] = useState<string[]>([]);
 
+
+    // Foucus on the today date when clicking the title of the calendar
     useEffect(() => {
         const title = document.querySelector(".fc-toolbar-title");
 
@@ -43,11 +48,33 @@ export function CategoryServiceCalendar({
         };
     }, []);
 
+
+    // Update the selected date highlight when selectedDates changes
     useEffect(() => {
+        const cells = document.querySelectorAll(".fc-daygrid-day");
+
+        cells.forEach((cell) => {
+            const date = cell.getAttribute("data-date");
+
+            if (!date) return;
+
+            const number = cell.querySelector(".fc-daygrid-day-number");
+
+            if (!number) return;
+
+            number.classList.toggle("calendar-selected-number", selectedDates.includes(date));
+        });
+    }, [selectedDates]);
+
+
+    useEffect(() => {
+        setSelectedDates([]);
+
         if (categoryServiceId) {
             fetchServiceDateForcalendar();
         }
     }, [categoryServiceId]);
+
 
     const fetchServiceDateForcalendar = async () => {
         try {
@@ -61,31 +88,16 @@ export function CategoryServiceCalendar({
                 return;
             }
 
-            const resultData = result.data || [];
-            setServiceDates(resultData);
+            const resultData = result.data || {};
+            const serviceDates = resultData.service_dates || [];
 
-            if (resultData && resultData.length > 0) {
+            let requestedDates = resultData.requested_dates || [];
+            requestedDates = requestedDates.map((item: any) =>
+                commonUtils.formatDateTime(item.service_date, "YYYY-MM-DD")
+            );
 
-                const eventsData = resultData
-                    .filter(
-                        (item: any) =>
-                            item?.date_type?.toLowerCase() !== "available"
-                    )
-                    .map((item: any) => ({
-                        title: '',
-                        start: item?.from_date,
-                        allDay: true,
-                        // classNames: [
-                        //     item?.date_type?.toLowerCase()
-                        // ],
-                        extendedProps: {
-                            service_date_id: item?.id,
-                            date_type: item?.date_type?.toLowerCase(),
-                        },
-                    }));
-
-                setCalendarEvents(eventsData);
-            }
+            setServiceDates(serviceDates);
+            setRequestedDates(requestedDates);
 
         } catch (caughtError) {
             console.error("Failed to load review records:", caughtError);
@@ -94,93 +106,162 @@ export function CategoryServiceCalendar({
         }
     };
 
-    const handleDateClick = async (arg: any) => {
-        await handleServiceDateClick(arg.dateStr);
-    }
 
-    const handleEventClick = async (info: any) => {
-        const event = info.event;
-
-        await handleServiceDateClick(
-            event.startStr,
-            event.extendedProps?.service_date_id,
-            event.extendedProps?.date_type
-        );
+    const getDateRecords = (date: string) => {
+        return serviceDates.filter((item: any) => {
+            const serviceDate = item?.from_date ? commonUtils.formatDateTime(item.from_date, "YYYY-MM-DD") : "";
+            return serviceDate === date;
+        });
     };
 
-    const handleServiceDateClick = async (clickedDate: string, serviceDateId?: number, currentDateType?: string) => {
+    const getDateTypes = (date: string) => {
+        return getDateRecords(date).map((item: any) => item?.date_type?.toLowerCase()).filter(Boolean);
+    };
+
+    const isRequestedDate = (date: string) => {
+        return requestedDates.includes(date);
+    };
+
+    /*Remove the default behavior of Ctrl+click (or Cmd+click) on FullCalendar cells, 
+    which selects multiple dates. We want to handle this ourselves.
+    Remove the outline / blur effect when click ctrl+click*/
+    const handleCalendarMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        const isMultiSelect = event.ctrlKey || event.metaKey;
+
+        if (!isMultiSelect) {
+            return;
+        }
+
+        const target = event.target as HTMLElement;
+        const dayCell = target.closest(".fc-daygrid-day[data-date]") as HTMLElement | null;
+
+        if (!dayCell) {
+            return;
+        }
+
+        // Prevent Firefox from focusing the FullCalendar cell
+        event.preventDefault();
+    };
+
+    const handleCalendarClick = async (event: React.MouseEvent<HTMLDivElement>) => {
+        const target = event.target as HTMLElement;
+        const dayCell = target.closest(".fc-daygrid-day[data-date]") as HTMLElement | null;
+
+        if (!dayCell) {
+            return;
+        }
+
+        const clickedDate = dayCell.dataset.date;
+
         if (!clickedDate) {
             return;
         }
 
-        //Only Future Date is clickable, Past Date is not clickable
-        if (new Date(clickedDate) < new Date(commonUtils.formatDateTime(new Date(), "YYYY-MM-DD"))) {
+        const today = commonUtils.formatDateTime(new Date(), "YYYY-MM-DD");
+
+        // Past date
+        if (clickedDate < today) {
+            sweetalert.toastError("Please select a current or future date.");
             return;
         }
 
-        let isUnavailable = false;
+        const dateTypes = getDateTypes(clickedDate);
 
-        const isUnavailableFromDateClick = serviceDates.some((item: any) => {
-            const serviceDate = item?.from_date ? commonUtils.formatDateTime(item.from_date, "YYYY-MM-DD") : "";
-            return (serviceDate === clickedDate && item?.date_type?.toLowerCase() === "unavailable");
-        });
-
-        if (isUnavailableFromDateClick || currentDateType?.toLowerCase() === "unavailable") {
-            isUnavailable = true;
+        // Booked / unavailable cannot be selected
+        if (dateTypes.includes("unavailable")) {
+            sweetalert.toastError("This date is not available for selection.");
+            return;
         }
 
-        if (isUnavailable) {
-            unavailableClickHandler(clickedDate, serviceDateId, currentDateType);
-        } else {
-            availableClickHandler(clickedDate, serviceDateId, currentDateType);
+        if (isRequestedDate(clickedDate)) {
+            sweetalert.toastError("You have already submitted a request for this service on this date.");
+            return;
         }
+
+        const isMultiSelect = event.ctrlKey || event.metaKey;
+        console.log("Clicked:", clickedDate);
+        console.log("Ctrl:", event.ctrlKey);
+        console.log("Meta:", event.metaKey);
+        console.log("Multi:", isMultiSelect);
+
+        if (isMultiSelect) {
+            // Important: don't let Ctrl+click do anything else
+            event.preventDefault();
+
+            setSelectedDates((prev) => {
+                if (prev.includes(clickedDate)) {
+                    // Remove date
+                    return prev.filter(
+                        (date) => date !== clickedDate
+                    );
+                }
+
+                // Add date
+                return [...prev, clickedDate];
+            });
+
+            return;
+        }
+
+        // Normal click = single selection
+        setSelectedDates([clickedDate]);
     };
-
-    const unavailableClickHandler = async (clickedDate: string, serviceDateId?: number, currentDateType?: string) => {
-
-    }
-    const availableClickHandler = async (clickedDate: string, serviceDateId?: number, currentDateType?: string) => {
-
-    }
 
     const handleDayCellClassNames = (arg: any) => {
         const date = commonUtils.formatDateTime(arg.date, "YYYY-MM-DD");
 
-        const dateRecords = serviceDates.filter((item: any) => {
-            const serviceDate = item?.from_date ? commonUtils.formatDateTime(item.from_date, "YYYY-MM-DD") : "";
-            return serviceDate === date;
-        });
+        const classes: string[] = [];
 
-        if (dateRecords.length === 0) {
-            return [];
+        if (selectedDates.includes(date)) {
+            classes.push("calendar-selected");
         }
+
+        const dateRecords = getDateRecords(date);
+
+        /*if (dateRecords.length === 0) {
+            return classes;
+        }*/
 
         const dateTypes = dateRecords.map((item: any) => item?.date_type?.toLowerCase()).filter(Boolean);
 
         /* Highest priority */
-        if (dateTypes.includes("unavailable")) {
-            return ["calendar-unavailable"];
+        if (isRequestedDate(date)) {
+            classes.push("calendar-requested");
+        } else if (dateTypes.includes("unavailable")) {
+            classes.push("calendar-unavailable");
+        } else if (dateTypes.includes("holiday")) {
+            classes.push("calendar-holiday");
+        } else if (dateTypes.includes("waxing")) {
+            classes.push("calendar-waxing");
+        } else if (dateTypes.includes("waning")) {
+            classes.push("calendar-waning");
         }
 
-        if (dateTypes.includes("booked")) {
-            return ["calendar-booked"];
-        }
-
-        if (dateTypes.includes("holiday")) {
-            return ["calendar-holiday"];
-        }
-
-        if (dateTypes.includes("waxing")) {
-            return ["calendar-waxing"];
-        }
-
-        if (dateTypes.includes("waning")) {
-            return ["calendar-waning"];
-        }
-
-        // Ignore available
-        return [];
+        return classes;
     };
+
+    const checkAvailability = async () => {
+        if (!selectedDates.length || selectedDates.length === 0) {
+            sweetalert.toastError("Please select at least one date to check availability.");
+            return;
+        }
+
+        try {
+            const result = await mainRoutes.availabilityRequest({
+                category_service_id: Number(categoryServiceId),
+                service_dates: selectedDates
+            });
+
+            if (!result?.success) {
+                return;
+            }
+
+            await sweetalert.success(result.message || "Availability request saved successfully.");
+
+        } catch (caughtError) {
+            console.error("Failed to save availability request:", caughtError);
+        }
+    }
 
     return (
         <>
@@ -232,32 +313,34 @@ export function CategoryServiceCalendar({
                     </div>
                 </div>
 
-                <div className="calendar-container">
-                    <FullCalendar
-                        ref={calendarRef}
-                        plugins={[
-                            dayGridPlugin,
-                            interactionPlugin,
-                        ]}
-                        initialView="dayGridMonth"
-                        dateClick={handleDateClick}
-                        eventClick={handleEventClick}
-                        events={calendarEvents}
-                        dayCellClassNames={handleDayCellClassNames}
-                        height="auto"
-                        validRange={{
-                            // start: new Date(),
-                        }}
-                        headerToolbar={{
-                            left: "prev",
-                            center: "title",
-                            right: "next",
-                        }}
-                        buttonText={{
-                            prev: "",
-                            next: "",
-                        }}
-                    />
+                <div>
+                    <div className="calendar-container" onMouseDownCapture={handleCalendarMouseDown} onClickCapture={handleCalendarClick}>
+                        <FullCalendar
+                            ref={calendarRef}
+                            plugins={[
+                                dayGridPlugin,
+                                interactionPlugin,
+                            ]}
+                            initialView="dayGridMonth"
+                            dayCellClassNames={handleDayCellClassNames}
+                            height="auto"
+                            headerToolbar={{
+                                left: "prev",
+                                center: "title",
+                                right: "next",
+                            }}
+                            buttonText={{
+                                prev: "",
+                                next: "",
+                            }}
+                        />
+                    </div>
+                    <button
+                        onClick={checkAvailability}
+                        className={`${constants.buttonClassWhite} mt-3 w-full text-center`}
+                    >
+                        Check Availability
+                    </button>
                 </div>
             </div>
         </>
