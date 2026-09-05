@@ -23,6 +23,7 @@ export function CategoryServiceCalendar({
 }: Props) {
 
     const [loading, setLoading] = useState(false);
+    const [dailyCalendar, setDailyCalendar] = useState<any[]>([]);
     const [serviceDates, setServiceDates] = useState<any[]>([]);
     const [requestedDates, setRequestedDates] = useState<string[]>([]);
     const calendarRef = useRef<FullCalendar>(null);
@@ -89,14 +90,17 @@ export function CategoryServiceCalendar({
             }
 
             const resultData = result.data || {};
+
+            const dailyCalendar = resultData.daily_calendar || [];
+            setDailyCalendar(dailyCalendar);
+
             const serviceDates = resultData.service_dates || [];
+            setServiceDates(serviceDates);
 
             let requestedDates = resultData.requested_dates || [];
             requestedDates = requestedDates.map((item: any) =>
                 commonUtils.formatDateTime(item.service_date, "YYYY-MM-DD")
             );
-
-            setServiceDates(serviceDates);
             setRequestedDates(requestedDates);
 
         } catch (caughtError) {
@@ -107,15 +111,34 @@ export function CategoryServiceCalendar({
     };
 
 
-    const getDateRecords = (date: string) => {
+    const getServiceDateRecords = (date: string) => {
         return serviceDates.filter((item: any) => {
             const serviceDate = item?.from_date ? commonUtils.formatDateTime(item.from_date, "YYYY-MM-DD") : "";
             return serviceDate === date;
         });
     };
 
-    const getDateTypes = (date: string) => {
-        return getDateRecords(date).map((item: any) => item?.date_type?.toLowerCase()).filter(Boolean);
+    const getServiceDateTypes = (date: string) => {
+        return getServiceDateRecords(date)
+            .map((item: any) => item?.date_type?.toLowerCase())
+            .filter(Boolean);
+    };
+
+    const getDailyCalendarRecord = (date: string) => {
+        return dailyCalendar.find((item: any) => {
+            const calendarDate = item?.calendar_date
+                ? commonUtils.formatDateTime(
+                    item.calendar_date,
+                    "YYYY-MM-DD"
+                )
+                : "";
+
+            return calendarDate === date;
+        });
+    };
+    const getDailyDateTypes = (date: string) => {
+        const record = getDailyCalendarRecord(date);
+        return record?.event_type?.toLowerCase() || "regular";
     };
 
     const isRequestedDate = (date: string) => {
@@ -165,10 +188,10 @@ export function CategoryServiceCalendar({
             return;
         }
 
-        const dateTypes = getDateTypes(clickedDate);
+        const serviceDateTypes = getServiceDateTypes(clickedDate);
 
-        // Booked / unavailable cannot be selected
-        if (dateTypes.includes("unavailable")) {
+        // Unavailable cannot be selected
+        if (serviceDateTypes.includes("unavailable")) {
             sweetalert.toastError("This date is not available for selection.");
             return;
         }
@@ -216,24 +239,24 @@ export function CategoryServiceCalendar({
             classes.push("calendar-selected");
         }
 
-        const dateRecords = getDateRecords(date);
-
-        /*if (dateRecords.length === 0) {
-            return classes;
-        }*/
-
-        const dateTypes = dateRecords.map((item: any) => item?.date_type?.toLowerCase()).filter(Boolean);
+        const serviceDateTypes = getServiceDateTypes(date);
+        const dailyDateType = getDailyDateTypes(date);
 
         /* Highest priority */
         if (isRequestedDate(date)) {
             classes.push("calendar-requested");
-        } else if (dateTypes.includes("unavailable")) {
+
+        } else if (serviceDateTypes.includes("unavailable")) {
             classes.push("calendar-unavailable");
-        } else if (dateTypes.includes("holiday")) {
+
+        } else if (dailyDateType === "holiday" || dailyDateType === "festival") {
+            // Festival uses the same color as Holiday
             classes.push("calendar-holiday");
-        } else if (dateTypes.includes("waxing")) {
+
+        } else if (dailyDateType === "valarpirai_muhurtham") {
             classes.push("calendar-waxing");
-        } else if (dateTypes.includes("waning")) {
+
+        } else if (dailyDateType === "theipirai_muhurtham") {
             classes.push("calendar-waning");
         }
 
