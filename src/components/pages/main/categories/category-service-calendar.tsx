@@ -5,29 +5,53 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import "@/assets/css/compact-fullcalendar.css";
+import { useAuthModalStore } from "@/stores/auth-modal-store";
 import mainRoutes from "@/services/api/main.routes";
 import { common as commonUtils } from "@/utils/common";
 import { sweetalert } from "@/utils/sweetalert";
 import { constants } from "@/utils/constants";
+import { authUserId } from "@/utils/auth";
 
 
 
 type Props = {
     categoryServiceId: number | null;
     serviceRecord: any | null;
+    onDateSelect?: (date: any) => void;
 };
 
 export function CategoryServiceCalendar({
     categoryServiceId,
     serviceRecord,
+    onDateSelect,
 }: Props) {
-
+    const userId = authUserId();
     const [loading, setLoading] = useState(false);
     const [dailyCalendar, setDailyCalendar] = useState<any[]>([]);
     const [serviceDates, setServiceDates] = useState<any[]>([]);
     const [requestedDates, setRequestedDates] = useState<string[]>([]);
     const calendarRef = useRef<FullCalendar>(null);
     const [selectedDates, setSelectedDates] = useState<string[]>([]);
+
+    const [selectedCalendarDate, setSelectedCalendarDate] = useState<any>(null);
+
+    const { openAuthModal } = useAuthModalStore();
+
+    useEffect(() => {
+        if (!dailyCalendar?.length) {
+            return;
+        }
+
+        const today = commonUtils.formatDateTime(
+            new Date(),
+            "YYYY-MM-DD"
+        );
+
+        const todayRecord = getDailyCalendarRecord(today);
+
+        setSelectedCalendarDate(todayRecord);
+        onDateSelect?.(todayRecord);
+    }, [dailyCalendar]);
 
 
     // Foucus on the today date when clicking the title of the calendar
@@ -228,6 +252,11 @@ export function CategoryServiceCalendar({
 
         // Normal click = single selection
         setSelectedDates([clickedDate]);
+
+        //It is used to show the details of the selected date in the right side panel
+        const dailyRecord = getDailyCalendarRecord(clickedDate);
+        setSelectedCalendarDate(dailyRecord);
+        onDateSelect?.(dailyRecord);
     };
 
     const handleDayCellClassNames = (arg: any) => {
@@ -264,6 +293,11 @@ export function CategoryServiceCalendar({
     };
 
     const checkAvailability = async () => {
+        if (!userId) {
+            openAuthModal();
+            return;
+        }
+
         if (!selectedDates.length || selectedDates.length === 0) {
             sweetalert.toastError("Please select at least one date to check availability.");
             return;

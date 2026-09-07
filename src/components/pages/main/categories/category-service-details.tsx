@@ -12,6 +12,7 @@ import { CategoryServiceReview } from "./category-service-review";
 import { CategoryServiceTimeline } from "./category-service-timeline";
 import { CategoryServiceGallery } from "./category-service-gallery";
 import { CategoryServiceCalendar } from "./category-service-calendar";
+import { CategoryServiceCalendarDetails } from "./category-service-calendar-details";
 import { CategoryServicePackage } from "./category-service-package";
 import { Building, CircleAlert, FileText, Info, ListX, Sparkles, UserRound } from "lucide-react";
 import { sweetalert } from "@/utils/sweetalert";
@@ -42,6 +43,8 @@ export function CategoryServiceDetails() {
     const [showPopup, setShowPopup] = useState(false);
     const [popupTitle, setPopupTitle] = useState("");
     const [popupContent, setPopupContent] = useState("");
+
+    const [selectedCalendarDate, setSelectedCalendarDate] = useState<any>(null);
 
     //Main section scroll
     const mainDivRef = useRef<HTMLElement | null>(null);
@@ -397,33 +400,13 @@ export function CategoryServiceDetails() {
                             <div ref={sectionTabRefs.overview} data-section="overview" className="scroll-mt-4">
                                 <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
                                     <div className="md:col-span-6">
-                                        <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                        <CategoryServiceCalendar categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} onDateSelect={setSelectedCalendarDate} />
+                                        <div className="mt-3">
+                                            <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                        </div>
                                     </div>
                                     <div className="md:col-span-6">
-                                        <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-5 shadow-sm mb-2">
-                                            <div>
-                                                <h4 className="mb-3 text-xs font-bold text-gray-900">Highlights</h4>
-                                                <div className="space-y-1.5 text-xs text-gray-600">
-                                                    {serviceRecord?.service_highlights && (
-                                                        serviceRecord.service_highlights.map((item: any) => (
-                                                            <div key={`highlight-record-${item.id}`}>{item.highlight}</div>
-                                                        ))
-                                                    )}
-
-                                                    {!serviceRecord?.service_highlights?.length && (
-                                                        <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
-                                                            <ListX className="h-3.5 w-3.5" />
-                                                            No Highlights Found
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F7] text-xl text-primary">
-                                                <Sparkles />
-                                            </div>
-                                        </div>
-
-                                        <CategoryServicePackage categoryServiceId={categoryServiceId} serviceRecord={serviceRecord} />
+                                        <CategoryServiceCalendarDetails calendarDate={selectedCalendarDate} />
                                     </div>
                                 </div>
                             </div>
