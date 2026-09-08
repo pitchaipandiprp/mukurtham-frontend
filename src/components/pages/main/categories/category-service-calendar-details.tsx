@@ -161,61 +161,44 @@ export function CategoryServiceCalendarDetails({
                 </div>
 
                 {/* Tithi Time */}
-                {(calendarDate.tithi_start_time ||
-                    calendarDate.tithi_end_time) && (
-                        <div className="mt-5 border-t border-slate-100 pt-4">
+                {/* {(calendarDate.tithi_start_time || calendarDate.tithi_end_time) && (
+                    <div className="mt-5 border-t border-slate-100 pt-4">
 
-                            <div className="mb-3 flex items-center gap-2">
-                                <Clock3 className="h-4 w-4 text-slate-400" />
+                        <div className="mb-3 flex items-center gap-2">
+                            <Clock3 className="h-4 w-4 text-slate-400" />
 
-                                <h4 className="text-xs font-bold text-slate-700">
-                                    Tithi Timing
-                                </h4>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <TimeItem
-                                    label="Start"
-                                    value={calendarDate.tithi_start_time}
-                                />
-
-                                <TimeItem
-                                    label="End"
-                                    value={calendarDate.tithi_end_time}
-                                />
-                            </div>
+                            <h4 className="text-xs font-bold text-slate-700">
+                                Tithi Timing
+                            </h4>
                         </div>
-                    )}
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <TimeItem label="Start" value={calendarDate.tithi_start_time} />
+                            <TimeItem label="End" value={calendarDate.tithi_end_time} />
+                        </div>
+                    </div>
+                )} */}
 
                 {/* Nakshatra Time */}
-                {(calendarDate.nakshatra_start_time ||
-                    calendarDate.nakshatra_end_time) && (
-                        <div className="mt-5 border-t border-slate-100 pt-4">
+                {/* {(calendarDate.nakshatra_start_time || calendarDate.nakshatra_end_time) && (
+                    <div className="mt-5 border-t border-slate-100 pt-4">
+                        <div className="mb-3 flex items-center gap-2">
+                            <Moon className="h-4 w-4 text-slate-400" />
 
-                            <div className="mb-3 flex items-center gap-2">
-                                <Moon className="h-4 w-4 text-slate-400" />
-
-                                <h4 className="text-xs font-bold text-slate-700">
-                                    Nakshatra Timing
-                                </h4>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <TimeItem
-                                    label="Start"
-                                    value={calendarDate.nakshatra_start_time}
-                                />
-
-                                <TimeItem
-                                    label="End"
-                                    value={calendarDate.nakshatra_end_time}
-                                />
-                            </div>
+                            <h4 className="text-xs font-bold text-slate-700">
+                                Nakshatra Timing
+                            </h4>
                         </div>
-                    )}
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <TimeItem label="Start" value={calendarDate.nakshatra_start_time} />
+                            <TimeItem label="End" value={calendarDate.nakshatra_end_time} />
+                        </div>
+                    </div>
+                )} */}
 
                 {/* Sun */}
-                <div className="mt-5 border-t border-slate-100 pt-4">
+                {/* <div className="mt-5 border-t border-slate-100 pt-4">
 
                     <h4 className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-700">
                         <Sun className="h-4 w-4 text-slate-400" />
@@ -223,27 +206,12 @@ export function CategoryServiceCalendarDetails({
                     </h4>
 
                     <div className="grid grid-cols-2 gap-3">
-                        <TimeItem
-                            label="Sunrise"
-                            value={calendarDate.sunrise}
-                        />
-
-                        <TimeItem
-                            label="Sunset"
-                            value={calendarDate.sunset}
-                        />
-
-                        <TimeItem
-                            label="Moonrise"
-                            value={calendarDate.moonrise}
-                        />
-
-                        <TimeItem
-                            label="Moonset"
-                            value={calendarDate.moonset}
-                        />
+                        <TimeItem label="Sunrise" value={calendarDate.sunrise} />
+                        <TimeItem label="Sunset" value={calendarDate.sunset} />
+                        <TimeItem label="Moonrise" value={calendarDate.moonrise} />
+                        <TimeItem label="Moonset" value={calendarDate.moonset} />
                     </div>
-                </div>
+                </div> */}
 
                 {/* Nalla Neram */}
                 <div className="mt-5 border-t border-slate-100 pt-4">
@@ -254,55 +222,24 @@ export function CategoryServiceCalendarDetails({
                     </h4>
 
                     <div className="space-y-2 text-xs">
-                        <RowItem
-                            label="Nalla Neram"
-                            value={calendarDate.nalla_neram}
-                        />
-
-                        <RowItem
-                            label="Gowri Nalla Neram"
-                            value={calendarDate.gowri_nalla_neram}
-                        />
+                        <RowItem label="Nalla Neram" value={calendarDate.nalla_neram} />
+                        <RowItem label="Gowri Nalla Neram" value={calendarDate.gowri_nalla_neram} />
                     </div>
                 </div>
 
                 {/* Dosham */}
                 <div className="mt-5 border-t border-slate-100 pt-4">
-
                     <h4 className="mb-3 text-xs font-bold text-slate-700">
                         Other Details
                     </h4>
 
                     <div className="space-y-2 text-xs">
-                        <RowItem
-                            label="Rahu Kalam"
-                            value={calendarDate.rahu_kalam}
-                        />
-
-                        <RowItem
-                            label="Yamagandam"
-                            value={calendarDate.yamagandam}
-                        />
-
-                        <RowItem
-                            label="Kuligai"
-                            value={calendarDate.kuligai}
-                        />
-
-                        <RowItem
-                            label="Chandrashtamam"
-                            value={calendarDate.chandrashtamam}
-                        />
-
-                        <RowItem
-                            label="Soolam"
-                            value={calendarDate.soolam}
-                        />
-
-                        <RowItem
-                            label="Pariharam"
-                            value={calendarDate.pariharam}
-                        />
+                        <RowItem label="Rahu Kalam" value={calendarDate.rahu_kalam} />
+                        <RowItem label="Yamagandam" value={calendarDate.yamagandam} />
+                        <RowItem label="Kuligai" value={calendarDate.kuligai} />
+                        <RowItem label="Chandrashtamam" value={calendarDate.chandrashtamam} />
+                        <RowItem label="Soolam" value={calendarDate.soolam} />
+                        <RowItem label="Pariharam" value={calendarDate.pariharam} />
                     </div>
                 </div>
 
@@ -342,12 +279,7 @@ const TimeItem = ({
         </div>
 
         <div className="mt-0.5 text-xs font-semibold text-slate-700">
-            {value
-                ? commonUtils.formatDateTime(
-                    value,
-                    "hh:mm A"
-                )
-                : "-"}
+            {value ? commonUtils.formatDateTime(value, "hh:mm A") : "-"}
         </div>
     </div>
 );

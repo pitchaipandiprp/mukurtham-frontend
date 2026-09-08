@@ -52,6 +52,14 @@ const updateServiceCertificate = async (payload: any) => {
     return await apiService.post<any>("/admin/update-service-certificate", payload);
 };
 
+//Availability Request
+const availabilityRequestList = async (payload: any) => {
+    return await apiService.post<any>("/admin/availability-request-list", payload);
+};
+const updateAvailabilityRequestStatus = async (payload: any) => {
+    return await apiService.post<any>("/admin/update-availability-request-status", payload);
+};
+
 
 export const adminRoutes = {
     vendorList,
@@ -67,4 +75,6 @@ export const adminRoutes = {
     getCategoryService,
     getServiceCertificate,
     updateServiceCertificate,
+    availabilityRequestList,
+    updateAvailabilityRequestStatus,
 };

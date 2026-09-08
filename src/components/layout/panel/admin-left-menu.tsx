@@ -23,8 +23,8 @@ const navItems: SidebarNavItem[] = [
         title: "Service",
         icon: CalendarDays,
         subItems: [
-            { title: "Service Date List", href: `${prefixUrl.admin}/service-date-list` },
-            { title: "Add Service Date", href: `${prefixUrl.admin}/create-service-date` },
+            // { title: "Service Date List", href: `${prefixUrl.admin}/service-date-list` },
+            { title: "Availability Request", href: `${prefixUrl.admin}/availability-request-list` },
         ],
     },
 ];
