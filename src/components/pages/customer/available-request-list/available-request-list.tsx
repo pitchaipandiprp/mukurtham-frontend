@@ -6,10 +6,12 @@ import Loading from "@/components/common/loading/loading"
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { customerRoutes } from "@/services/api/customer.routes";
+import { apiConfig } from "@/environments/api";
 
 const PAGE_SIZE = 100;
 
 export default function AvailableRequestList() {
+    const BACKEND_BASE_URL = apiConfig.baseUrl;
 
     const [loading, setLoading] = useState(false);
     const [rows, setRows] = useState<any[]>([]);
@@ -76,6 +78,14 @@ export default function AvailableRequestList() {
                                 <div key={`available-request-${rowItem.id ?? index}`} className="md:col-span-3">
                                     <div className="rounded-xl border border-gray-200 shadow-md">
 
+                                        {/* <div className="group overflow-hidden rounded-t-xl">
+                                            <img
+                                                src={rowItem?.category_service?.service_banner_image ? `${BACKEND_BASE_URL}/${rowItem.category_service.service_banner_image}` : undefined}
+                                                alt={rowItem?.category_service?.service_name || ""}
+                                                className="h-28 w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:opacity-90"
+                                            />
+                                        </div> */}
+
                                         {/* Service Details */}
                                         <div className="p-4">
                                             <h3 className="truncate text-base font-bold text-slate-900 sm:text-lg">
@@ -89,6 +99,8 @@ export default function AvailableRequestList() {
                                                 </span>
                                             </div>
                                         </div>
+
+
 
                                         {/* Requested Dates */}
                                         {Array.isArray(rowItem?.dates) && rowItem.dates.length > 0 && (
