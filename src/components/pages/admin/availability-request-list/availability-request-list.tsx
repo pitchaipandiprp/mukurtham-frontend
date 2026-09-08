@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2, Pencil, Trash2, XCircle } from "lucide-react";
+import { Banknote, CheckCircle2, CreditCard, IndianRupee, Pencil, ReceiptText, Trash2, Wallet, XCircle } from "lucide-react";
 import Link from "next/link";
 import DataTable from "@/components/common/datatable/datatable";
 import TablePagination from "@/components/common/datatable/pagination";
@@ -19,13 +19,17 @@ const amountInputRegex = /^\d*(\.\d{0,2})?$/;
 
 type ConfirmationForm = {
     status: string;
-    final_amount: string;
+    service_amount: string;
+    discount_amount: string;
+    tax_percentage: string;
     notes: string;
 };
 
 const initialForm: ConfirmationForm = {
     status: "",
-    final_amount: "",
+    service_amount: "",
+    discount_amount: "0.00",
+    tax_percentage: "0.00",
     notes: "",
 };
 
@@ -39,7 +43,8 @@ export default function AvailabilityRequestList() {
     const [totalPages, setTotalPages] = useState(0);
     const [totalRecords, setTotalRecords] = useState(0);
 
-    const [showPopup, setShowPopup] = useState(false);
+    const [showStatusPopup, setShowStatusPopup] = useState(false);
+    const [showPaymentPopup, setShowPaymentPopup] = useState(false);
     const [popupTitle, setPopupTitle] = useState("");
     const [selectedRow, setSelectedRow] = useState<any>(null);
     const [form, setForm] = useState<ConfirmationForm>(initialForm);
@@ -91,7 +96,7 @@ export default function AvailabilityRequestList() {
         }
         updateField("status", status);
         setSelectedRow(row);
-        setShowPopup(true);
+        setShowStatusPopup(true);
         setPopupTitle("Confirmation");
     };
 
@@ -103,15 +108,30 @@ export default function AvailabilityRequestList() {
         event.preventDefault();
         setError("");
 
+        const amountRegex = /^\d+(\.\d{1,2})?$/;
+
         if (form.status === "enabled") {
-            if (!form.final_amount.trim()) {
-                setError("Please enter the payable amount");
+            if (!form.service_amount.trim()) {
+                setError("Please enter the amount");
                 return;
             }
 
-            const amountRegex = /^\d+(\.\d{1,2})?$/;
-            if (!amountRegex.test(form.final_amount.trim())) {
-                setError("Please enter a valid payable amount");
+            if (!amountRegex.test(form.service_amount.trim())) {
+                setError("Please enter a valid amount");
+                return;
+            }
+        }
+
+        if (form.discount_amount) {
+            if (!amountRegex.test(form.discount_amount.trim())) {
+                setError("Please enter a valid discount amount");
+                return;
+            }
+        }
+
+        if (form.tax_percentage) {
+            if (!amountRegex.test(form.tax_percentage.trim())) {
+                setError("Please enter a valid tax percentage");
                 return;
             }
         }
@@ -126,11 +146,13 @@ export default function AvailabilityRequestList() {
                 {
                     id: selectedRow.id,
                     status: form.status,
-                    final_amount: form.final_amount,
+                    service_amount: form.service_amount,
+                    discount_amount: form.discount_amount,
+                    tax_percentage: form.tax_percentage,
                     notes: form.notes
                 });
             if (result?.success) {
-                setShowPopup(false);
+                setShowStatusPopup(false);
                 setForm(initialForm);
                 fetchAvailabilityRequestList();
                 await sweetalert.success(result.message);
@@ -141,6 +163,13 @@ export default function AvailabilityRequestList() {
             setLoading(false);
         }
     }
+
+    const handlePaymentDetails = async (row: any) => {
+        setSelectedRow(row);
+        setShowPaymentPopup(true);
+        setPopupTitle("Payment Details");
+    };
+
 
     const columns = useMemo<ColumnDef<any>[]>(() => [
         {
@@ -171,16 +200,10 @@ export default function AvailabilityRequestList() {
             },
         },
         {
-            accessorKey: "category_service",
-            header: "Service",
-            cell: ({ row }) => {
-                return row.original?.category_service?.service_name;
-            },
-        },
-        {
             accessorKey: "vendor",
             header: "Vendor",
             cell: ({ row }) => {
+                const serviceName = row.original?.category_service?.service_name;
                 const vendor = row.original?.category_service?.vendor;
 
                 if (!vendor) {
@@ -190,7 +213,7 @@ export default function AvailabilityRequestList() {
                 return (
                     <div className="min-w-[200px] space-y-1">
                         <div className="text-sm font-semibold text-slate-800">
-                            {vendor.name || "-"}
+                            {serviceName || "-"} : {vendor.name || "-"}
                         </div>
 
                         <div className="text-xs text-slate-500">
@@ -300,7 +323,10 @@ export default function AvailabilityRequestList() {
                 return <>
                     <div className="flex items-center whitespace-nowrap">
                         {isApproved ? (
-                            <button type="button" onClick={() => handleStatusUpdate(row.original, "disabled")} title="Disable" className={`mr-4 ${constants.buttonClassOrange}`}><XCircle className="h-4 w-4" /></button>
+                            <>
+                                <button type="button" onClick={() => handlePaymentDetails(row.original)} title="Payment Details" className={`mr-4 ${constants.buttonClassPurple}`}><IndianRupee className="h-4 w-4" /></button>
+                                <button type="button" onClick={() => handleStatusUpdate(row.original, "disabled")} title="Disable" className={`mr-4 ${constants.buttonClassOrange}`}><XCircle className="h-4 w-4" /></button>
+                            </>
                         ) : (
                             <button type="button" onClick={() => handleStatusUpdate(row.original, "enabled")} title="Enable" className={`mr-4 ${constants.buttonClassGreen}`}><CheckCircle2 className="h-4 w-4" /></button>
                         )}
@@ -329,10 +355,10 @@ export default function AvailabilityRequestList() {
             </div>
 
             <PopupModal
-                show={showPopup}
+                show={showStatusPopup}
                 title={popupTitle}
-                onClose={() => setShowPopup(false)}
-                width="sm"
+                onClose={() => setShowStatusPopup(false)}
+                width="md"
                 position="top"
                 blurBackground={false}
                 showFooter={false}
@@ -340,25 +366,67 @@ export default function AvailabilityRequestList() {
                 <form onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
                         {form.status === "enabled" && (
-                            <div className="md:col-span-12">
-                                <label htmlFor="finalAmount" className="mb-2 block text-sm font-medium text-gray-700">
-                                    Amount
-                                </label>
-                                <input
-                                    id="finalAmount"
-                                    type="text"
-                                    placeholder="Enter the Payable Amount"
-                                    className={constants.inputClass}
-                                    value={form.final_amount}
-                                    onChange={(event) => {
-                                        const value = event.target.value;
+                            <>
+                                <div className="md:col-span-12">
+                                    <label htmlFor="serviceAmount" className="mb-2 block text-sm font-medium text-gray-700">
+                                        Amount
+                                    </label>
+                                    <input
+                                        id="serviceAmount"
+                                        type="text"
+                                        placeholder="Enter the Payable Amount"
+                                        className={constants.inputClass}
+                                        value={form.service_amount}
+                                        onChange={(event) => {
+                                            const value = event.target.value;
 
-                                        if (amountInputRegex.test(value)) {
-                                            updateField("final_amount", value);
-                                        }
-                                    }}
-                                />
-                            </div>
+                                            if (amountInputRegex.test(value)) {
+                                                updateField("service_amount", value);
+                                            }
+                                        }}
+                                    />
+                                </div>
+
+                                <div className="md:col-span-12">
+                                    <label htmlFor="discountAmount" className="mb-2 block text-sm font-medium text-gray-700">
+                                        Discount Amount
+                                    </label>
+                                    <input
+                                        id="discountAmount"
+                                        type="text"
+                                        placeholder="Enter the Discount Amount"
+                                        className={constants.inputClass}
+                                        value={form.discount_amount}
+                                        onChange={(event) => {
+                                            const value = event.target.value;
+
+                                            if (amountInputRegex.test(value)) {
+                                                updateField("discount_amount", value);
+                                            }
+                                        }}
+                                    />
+                                </div>
+
+                                <div className="md:col-span-12">
+                                    <label htmlFor="taxPercentage" className="mb-2 block text-sm font-medium text-gray-700">
+                                        Tax (%)
+                                    </label>
+                                    <input
+                                        id="taxPercentage"
+                                        type="text"
+                                        placeholder="Enter the Tax Percentage"
+                                        className={constants.inputClass}
+                                        value={form.tax_percentage}
+                                        onChange={(event) => {
+                                            const value = event.target.value;
+
+                                            if (amountInputRegex.test(value)) {
+                                                updateField("tax_percentage", value);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </>
                         )}
 
                         <div className="md:col-span-12">
@@ -394,6 +462,109 @@ export default function AvailabilityRequestList() {
                         </div>
                     </div>
                 </form>
+            </PopupModal>
+
+            <PopupModal
+                show={showPaymentPopup}
+                title={popupTitle}
+                onClose={() => setShowPaymentPopup(false)}
+                width="md"
+                position="top"
+                blurBackground={false}
+                showFooter={false}
+            >
+                <div className="mb-5 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                    <div className="divide-y divide-slate-100">
+                        {/* Amount */}
+                        <div className="flex items-center justify-between gap-4 px-4 py-3">
+                            <span className="text-sm text-slate-500">
+                                Amount
+                            </span>
+
+                            <span className="inline-flex items-center gap-0.5 text-sm font-semibold text-slate-800">
+                                {selectedRow?.service_amount && selectedRow?.service_amount > 0 ? commonUtils.formatAmount(selectedRow.service_amount) : "-"}
+                            </span>
+                        </div>
+
+                        {/* Discount */}
+                        <div className="flex items-center justify-between gap-4 px-4 py-3">
+                            <span className="text-sm text-slate-500">
+                                Discount Amount
+                            </span>
+
+                            <span className="inline-flex items-center gap-0.5 text-sm font-semibold text-emerald-600">
+                                {selectedRow?.discount_amount && selectedRow.discount_amount > 0 ? (
+                                    <>
+                                        {commonUtils.formatAmount(selectedRow.discount_amount)}
+                                    </>
+                                ) : (
+                                    "-"
+                                )}
+                            </span>
+                        </div>
+
+                        {/* Net Amount */}
+                        <div className="flex items-center justify-between gap-4 bg-slate-50/50 px-4 py-3">
+                            <span className="text-sm font-medium text-slate-600">
+                                Net Amount
+                            </span>
+
+                            <span className="inline-flex items-center gap-0.5 text-sm font-bold text-slate-800">
+                                {selectedRow?.service_amount && selectedRow.service_amount > 0
+                                    ? (
+                                        commonUtils.formatAmount(selectedRow.service_amount - (selectedRow.discount_amount || 0))
+                                    )
+                                    : "-"}
+                            </span>
+                        </div>
+
+                        {/* Tax */}
+                        <div className="flex items-center justify-between gap-4 px-4 py-3">
+                            <span className="text-sm text-slate-500">
+                                Tax
+                            </span>
+
+                            <span className="text-sm font-semibold text-slate-800">
+                                {selectedRow?.tax_percentage && selectedRow.tax_percentage > 0 ? `${selectedRow.tax_percentage}%` : "-"}
+                            </span>
+                        </div>
+
+                        {/* Tax Amount */}
+                        <div className="flex items-center justify-between gap-4 px-4 py-3">
+                            <span className="text-sm text-slate-500">
+                                Tax Amount
+                            </span>
+
+                            <span className="inline-flex items-center gap-0.5 text-sm font-semibold text-slate-800">
+                                {selectedRow?.tax_amount && selectedRow.tax_amount > 0 ? (
+                                    <>
+                                        {commonUtils.formatAmount(selectedRow.tax_amount)}
+                                    </>
+                                ) : (
+                                    "-"
+                                )}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Payable Amount */}
+                    <div className="border-t border-slate-200 bg-indigo-50/60 px-4 py-4">
+                        <div className="flex items-center justify-between gap-4">
+                            <div>
+                                <p className="text-sm font-bold text-slate-800">
+                                    Payable Amount
+                                </p>
+                                <p className="mt-0.5 text-xs text-slate-500">
+                                    Final amount to be paid
+                                </p>
+                            </div>
+
+                            <span className="inline-flex items-center gap-0.5 text-xl font-semibold text-purple-700">
+                                {selectedRow?.payable_amount && selectedRow.payable_amount > 0 ? commonUtils.formatAmount(selectedRow.payable_amount) : "-"}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </PopupModal>
         </>
     );

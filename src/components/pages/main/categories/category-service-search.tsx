@@ -168,12 +168,12 @@ export default function CategoryServiceSearch() {
         try {
             setLoading(true);
             const response = await mainRoutes.categoryServiceSearch(fields);
-            const responData = response.data;
-            setSearchServiceData(responData.rows || []);
+            const responData = response?.data;
+            setSearchServiceData(responData?.rows || []);
             setTotalPages(responData?.totalPages ?? 0);
             setTotalRecords(responData?.total ?? 0);
 
-            const locations = responData.rows
+            const locations = responData?.rows
                 .map((item: any) => {
                     const latitude = Number(item.latitude);
                     const longitude = Number(item.longitude);
