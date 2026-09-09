@@ -1,22 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { KeyRound, MapPin, ReceiptText, CreditCard, Wallet, Banknote, CircleDollarSign, IndianRupee, CalendarDays, } from "lucide-react";
+import Link from "next/link";
+import { KeyRound, MapPin, ReceiptText, CreditCard, Wallet, Banknote, CircleDollarSign, IndianRupee, CalendarDays, Search, ShoppingBag, } from "lucide-react";
 import Loading from "@/components/common/loading/loading"
+import { useRouter } from "nextjs-toploader/app";
 import { constants } from "@/utils/constants";
 import { common as commonUtils } from "@/utils/common";
 import { customerRoutes } from "@/services/api/customer.routes";
 import { apiConfig } from "@/environments/api";
 import { sweetalert } from "@/utils/sweetalert";
 import { authUser } from "@/utils/auth";
-
+import { prefixUrl } from "@/utils/constants"
 import Script from "next/script";
 
 const PAGE_SIZE = 100;
 
 export default function AvailableRequestList() {
     const BACKEND_BASE_URL = apiConfig.baseUrl;
-
+    const router = useRouter();
     const userProfile = authUser();
 
     const [loading, setLoading] = useState(false);
@@ -121,9 +123,10 @@ export default function AvailableRequestList() {
             if (response?.success && response?.data?.verified) {
                 await sweetalert.success(response.message || 'Your payment has been completed successfully.');
 
+                router.push(`${prefixUrl.user}/my-orders`);
                 // Refresh list after successful payment
-                await fetchAvailableRequestList();
-                return;
+                // await fetchAvailableRequestList();
+                // return;
             } else {
                 await sweetalert.error('Payment Failed', response?.message || 'Your payment has failed.');
             }
@@ -137,15 +140,7 @@ export default function AvailableRequestList() {
         <>
             <main className="mx-auto max-w-screen-2xl space-y-12 px-4 py-6 sm:px-6 lg:px-8">
                 <div className="d-block">
-                    {/* <div className="mb-6 ml-1">
-                    <h1 className="text-xl font-semibold leading-tight text-slate-800">
-                        Check Availability Requests
-                    </h1>
-                </div> */}
                     <div className="min-h-full rounded-xl border border-primary/10 bg-white px-4 py-4 shadow-sm">
-                        {loading && (
-                            <Loading />
-                        )}
 
                         <div className="mb-6 ml-1">
                             <div className="flex items-center gap-3">
@@ -165,6 +160,10 @@ export default function AvailableRequestList() {
                             {/* Accent line */}
                             <div className="mt-5 w-full border border-gray-100" />
                         </div>
+
+                        {loading && (
+                            <Loading />
+                        )}
 
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-5">
                             {rows && rows.length > 0 && (
@@ -344,6 +343,38 @@ export default function AvailableRequestList() {
                                 ))
                             )}
                         </div>
+
+                        {!rows || !rows?.length && (
+                            <div className="flex min-h-[420px] items-center justify-center rounded-xl border border-slate-200 bg-white p-8">
+                                <div className="w-full max-w-md text-center">
+
+                                    {/* Icon */}
+                                    <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-[#FDF2F7]">
+                                        <ShoppingBag className="h-10 w-10 text-[#AA0C51]" />
+                                    </div>
+
+                                    {/* Title */}
+                                    <h2 className="text-xl font-bold text-slate-800">
+                                        No Requests Yet
+                                    </h2>
+
+                                    {/* Description */}
+                                    <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
+                                        You haven't placed any requests yet. Explore our services and
+                                        start planning your memorable moments with Mukurtham.
+                                    </p>
+
+                                    {/* Action */}
+                                    <Link
+                                        href="/service-search"
+                                        className="cursor-pointer mt-6 inline-flex items-center justify-center rounded-lg bg-[#AA0C51] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#8f0944]"
+                                    >
+                                        <Search className="mr-2 h-4 w-4" />
+                                        Explore Services
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
 
                     </div>
                 </div>

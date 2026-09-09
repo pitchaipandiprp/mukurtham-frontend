@@ -9,7 +9,7 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authUser, } from "@/utils/auth";
 import commonRoutes from "@/services/api/common.routes";
-import { KeyRound, UserRound, Wallet } from "lucide-react";
+import { KeyRound, UserRound, Wallet, DollarSign, ShoppingBag } from "lucide-react";
 import { prefixUrl } from "@/utils/constants"
 import { useAuthModalStore } from "@/stores/auth-modal-store";
 
@@ -254,6 +254,15 @@ export function MainHeader() {
                                                     <Wallet className="h-5 w-5 text-primary" />
                                                     <span className="font-medium">
                                                         Availability Requests
+                                                    </span>
+                                                </div>
+                                            </Link>
+
+                                            <Link href={`${prefixUrl.user}/my-orders`} onClick={() => setIsProfileMenuOpen(false)}>
+                                                <div className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50">
+                                                    <ShoppingBag className="h-5 w-5 text-primary" />
+                                                    <span className="font-medium">
+                                                        My Orders
                                                     </span>
                                                 </div>
                                             </Link>
