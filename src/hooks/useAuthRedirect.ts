@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function useAuthRedirect(redirectTo = "/login") {
+export function useAuthRedirect(redirectTo = "/") {
     const router = useRouter();
     const [isChecking, setIsChecking] = useState(true);
 

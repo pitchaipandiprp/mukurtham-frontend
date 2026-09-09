@@ -302,6 +302,11 @@ export default function AvailabilityRequestList() {
                         label = "Canceled";
                         className = "bg-rose-100 text-rose-700";
                         break;
+
+                    case "paid":
+                        label = "Paid";
+                        className = "bg-purple-100 text-purple-700";
+                        break;
                 }
 
                 return (
@@ -319,20 +324,61 @@ export default function AvailabilityRequestList() {
             size: 130,
             minSize: 130,
             cell: ({ row }) => {
-                const isApproved = row.original?.status == 'enabled';
-                return <>
+                const item = row.original;
+                const isPaid = item?.status === "paid";
+                const isApproved = item?.status === "enabled";
+
+                return (
                     <div className="flex items-center whitespace-nowrap">
+                        {/* Payment Details */}
+                        <button
+                            type="button"
+                            onClick={() => !isPaid && !isApproved
+                                ? undefined
+                                : handlePaymentDetails(item)
+                            }
+                            title="Payment Details"
+                            disabled={!isApproved && !isPaid}
+                            className={`mr-4 ${constants.buttonClassPurple}`}
+                        >
+                            <IndianRupee className="h-4 w-4" />
+                        </button>
+
+                        {/* Enable / Disable */}
                         {isApproved ? (
-                            <>
-                                <button type="button" onClick={() => handlePaymentDetails(row.original)} title="Payment Details" className={`mr-4 ${constants.buttonClassPurple}`}><IndianRupee className="h-4 w-4" /></button>
-                                <button type="button" onClick={() => handleStatusUpdate(row.original, "disabled")} title="Disable" className={`mr-4 ${constants.buttonClassOrange}`}><XCircle className="h-4 w-4" /></button>
-                            </>
+                            <button
+                                type="button"
+                                onClick={() => !isPaid && handleStatusUpdate(item, "disabled")}
+                                title="Disable"
+                                disabled={isPaid}
+                                className={`mr-4 ${constants.buttonClassOrange}`}
+                            >
+                                <XCircle className="h-4 w-4" />
+                            </button>
                         ) : (
-                            <button type="button" onClick={() => handleStatusUpdate(row.original, "enabled")} title="Enable" className={`mr-4 ${constants.buttonClassGreen}`}><CheckCircle2 className="h-4 w-4" /></button>
+                            <button
+                                type="button"
+                                onClick={() => !isPaid && handleStatusUpdate(item, "enabled")}
+                                title="Enable"
+                                disabled={isPaid}
+                                className={`mr-4 ${constants.buttonClassGreen}`}
+                            >
+                                <CheckCircle2 className="h-4 w-4" />
+                            </button>
                         )}
-                        <button type="button" className={constants.buttonClassRed} title="Cancel" onClick={() => handleStatusUpdate(row.original, "canceled")}><Trash2 className="h-4 w-4" /></button>
+
+                        {/* Cancel */}
+                        <button
+                            type="button"
+                            onClick={() => !isPaid && handleStatusUpdate(item, "canceled")}
+                            title="Cancel"
+                            disabled={isPaid}
+                            className={`${constants.buttonClassRed}`}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </button>
                     </div>
-                </>;
+                );
             },
         },
     ], []);
