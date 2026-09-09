@@ -1,4 +1,4 @@
-import AvailabilityRequestList from "@/components/pages/admin/availability-request-list/availability-request-list";
+import AvailabilityRequestList from "@/components/pages/admin/availability-requests/availability-request-list";
 
 export default function AvailabilityRequestListPage() {
     return <AvailabilityRequestList />;

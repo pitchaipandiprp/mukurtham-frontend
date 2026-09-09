@@ -60,6 +60,11 @@ const updateAvailabilityRequestStatus = async (payload: any) => {
     return await apiService.post<any>("/admin/update-availability-request-status", payload);
 };
 
+//Payment
+const paymentList = async (payload: any) => {
+    return await apiService.post<any>("/admin/payment-list", payload);
+};
+
 
 export const adminRoutes = {
     vendorList,
@@ -77,4 +82,5 @@ export const adminRoutes = {
     updateServiceCertificate,
     availabilityRequestList,
     updateAvailabilityRequestStatus,
+    paymentList,
 };

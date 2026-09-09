@@ -24,7 +24,7 @@ const formatAmount = (amount: number | null) => {
 
 export const formatDateTime = (
     date?: string | Date | null,
-    format: string = "DD MMM YYYY"
+    format: string = "MMM DD, YYYY"
 ): string => {
     if (!date) return "";
 

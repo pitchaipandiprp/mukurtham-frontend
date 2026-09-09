@@ -25,6 +25,7 @@ const navItems: SidebarNavItem[] = [
         subItems: [
             // { title: "Service Date List", href: `${prefixUrl.admin}/service-date-list` },
             { title: "Availability Request", href: `${prefixUrl.admin}/availability-request-list` },
+            { title: "Payment History", href: `${prefixUrl.admin}/payment-list` },
         ],
     },
 ];
